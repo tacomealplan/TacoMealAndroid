@@ -7,19 +7,19 @@ data class OnBoardingData(val titleR: Int, val textR: Int, val imageR: Int)
 fun getData(): List<OnBoardingData> {
     return listOf(
         OnBoardingData(
-            titleR = R.string.app_name,
-            textR = R.string.app_name,
-            imageR = android.R.drawable.star_big_off
+            titleR = R.string.onboarding_title_1,
+            textR = R.string.onboarding_text_1,
+            imageR = R.drawable.onboarding_1_image
         ),
         OnBoardingData(
-            titleR = R.string.app_name,
-            textR = R.string.app_name,
-            imageR = android.R.drawable.stat_sys_phone_call_forward
+            titleR = R.string.onboarding_title_2,
+            textR = R.string.onboarding_text_2,
+            imageR = R.drawable.onboarding_2_image
         ),
         OnBoardingData(
-            titleR = R.string.app_name,
-            textR = R.string.app_name,
-            imageR = android.R.drawable.star_big_off
+            titleR = R.string.onboarding_title_3,
+            textR = R.string.onboarding_text_3,
+            imageR = R.drawable.onboarding_3_image
         ),
     )
 }

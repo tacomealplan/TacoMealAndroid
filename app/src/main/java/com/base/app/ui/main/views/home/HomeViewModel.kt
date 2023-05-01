@@ -1,4 +1,4 @@
-package com.base.app.ui.views.home
+package com.base.app.ui.main.views.home
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel

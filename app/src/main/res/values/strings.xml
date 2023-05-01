@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Taco</string>
+    <string name="onboarding_title_1">İhtiyacın Olan Tüm Tarifler</string>
+    <string name="onboarding_text_1">Kullanıcılar tarafından oluşturulmuş binlerce sağlıklı tarif seninle</string>
+    <string name="onboarding_title_2">Alışveriş Listen Hazır</string>
+    <string name="onboarding_text_2">Beğendiğin tariflerdeki eksik malzemelerini işaretleyerek alışveriş listeni kolayca hazırla</string>
+    <string name="onboarding_title_3">Pişirelim O Zaman</string>
+    <string name="onboarding_text_3">Çok tarifle kafan karışmasın :)Yalnızca seveceğin tarifler seninle</string>
+
 </resources>

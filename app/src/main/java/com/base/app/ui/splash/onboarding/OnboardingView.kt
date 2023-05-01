@@ -6,31 +6,45 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.paint
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.*
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.*
 import androidx.core.content.ContextCompat.startActivity
+import com.base.app.R
 import com.base.app.ui.main.MainActivity
+import com.base.app.ui.theme.NeutralGray2
 import com.google.accompanist.pager.*
 import kotlinx.coroutines.launch
+import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun OnBoarding(toMainView: () -> Unit) {
     val scope = rememberCoroutineScope()
-    Column(modifier = Modifier.fillMaxSize()) {
-        //Top alanını oluşturan compose çağırıyoruz
-        TopSection()
+    Column(horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .fillMaxSize()
+            .paint(
+                // Replace with your image id
+                painterResource(id = R.drawable.background_image),
+                contentScale = ContentScale.FillBounds
+            )
+    ) {
         //OnBoardingData sınıfından OnBoarding ekran sayısını alıyoruz
         val item = getData()
         val state = rememberPagerState(pageCount = item.size)
@@ -42,10 +56,24 @@ fun OnBoarding(toMainView: () -> Unit) {
                 .fillMaxSize()
                 .weight(0.8f)
         ) { page ->
-            OnBoardingItem(item = item[page])
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                //Resim, image özelliğine atanıyor
+                Image(painter = painterResource(id = item[page].imageR), contentDescription = null)
+                //Bold ana başlık Text özelliğine atanıyor
+
+            }
         }
+        Box(modifier = Modifier.padding(bottom = 16.dp)){
+            Indicators(size = item.size, index = state.currentPage)
+        }
+
+
         //Ekran sayısını BottomSection compose da kullanarak pager ve scrool işlemi
-        BottomSection(size = item.size, index = state.currentPage) {
+        BottomSection(item = item[state.currentPage]) {
             if (state.currentPage+1 < item.size)
                 scope.launch {
                     state.scrollToPage(page = state.currentPage+1)
@@ -57,35 +85,6 @@ fun OnBoarding(toMainView: () -> Unit) {
     }
 }
 
-//Top alanını oluşturan compose
-@Composable
-@Preview
-fun TopSection() {
-    //Padding 12dp olan kutu oluşturuyoruz
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(12.dp)
-    ) { //Sol köşedeki ok simgeli butonu oluturma
-        IconButton(
-            onClick = {},
-            modifier = Modifier.align(Alignment.CenterStart)
-        ) {
-            //iconu atama
-            Icon(Icons.Outlined.KeyboardArrowLeft, contentDescription = null)
-        }
-        //Skip adlı text buttonunu oluşturma
-        TextButton(
-            onClick = { /*TODO*/ },
-            modifier = Modifier.align(Alignment.CenterEnd)
-        ) {
-            Text(
-                text = "Skip",
-                color = MaterialTheme.colors.onBackground
-            )
-        }
-    }
-}
 //Pager görselini ekran sayısı kadar çoğaltan compose
 @Composable
 fun BoxScope.Indicators(size: Int, index: Int) {
@@ -103,22 +102,41 @@ fun BoxScope.Indicators(size: Int, index: Int) {
 }
 //Bottom alanındaki FloatingActionButton ve Pager göstergesini oluşturma
 @Composable
-fun BottomSection(size: Int, index: Int, onNextClicked: () -> Unit) {
+fun BottomSection(item: OnBoardingData, onNextClicked: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(12.dp)
+            .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+            .background(color = Color.White)
     ) {//Pager bölümünü oluşturan compose çağırıyoruz
-        Indicators(size = size, index = index)
-        //Sağdaki FloatingActionButton rengini, iconunu tanımalama
-        FloatingActionButton(
-            onClick = onNextClicked,
-            modifier = Modifier.align(Alignment.CenterEnd),
-            backgroundColor = MaterialTheme.colors.primary,
-            contentColor = MaterialTheme.colors.onPrimary
-        ) {
-            Icon(Icons.Outlined.KeyboardArrowRight, null)
+
+        Column(horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(16.dp)
+            ) {
+            Text(
+                text = stringResource(id = item.titleR),
+                fontSize = 28.sp,
+                color = MaterialTheme.colors.onBackground,
+                fontWeight = FontWeight.Bold,
+            )
+            //Açıklama yazısı Text özelliğine atanıyor
+            Text(
+                text = stringResource(id = item.textR),
+                color = NeutralGray2,
+                textAlign = TextAlign.Center,
+                fontSize = 18.sp,
+                modifier = Modifier.padding(vertical = 10.dp)
+            )
+
+            Button(onClick = onNextClicked,
+                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black)
+
+            ) {
+                Text(text = "İleri", textAlign = TextAlign.Center, color = Color.White)
+            }
         }
+
+
     }
 }
 //Bir tane Circle şeklinde pager oluşturma
@@ -136,7 +154,7 @@ fun Indicator(isSelected: Boolean) {
             .width(width = width.value)
             .clip(shape = CircleShape)
             .background(
-                if (isSelected) MaterialTheme.colors.primary else MaterialTheme.colors.onBackground.copy(
+                if (isSelected) Color.White else Color.LightGray.copy(
                     alpha = 0.5f
                 )
             )
@@ -144,30 +162,4 @@ fun Indicator(isSelected: Boolean) {
 
     }
 
-}
-//OnBoardingData sınıfından gelen resim ve yazıların arayüz elementlerine aktarılması
-@Composable
-fun OnBoardingItem(item: OnBoardingData) {
-    //İçereklerin konumu belirleniyorz
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxSize()
-    ) {
-        //Resim, image özelliğine atanıyor
-        Image(painter = painterResource(id = item.imageR), contentDescription = null)
-        //Bold ana başlık Text özelliğine atanıyor
-        Text(
-            text = stringResource(id = item.titleR),
-            fontSize = 24.sp,
-            color = MaterialTheme.colors.onBackground,
-            fontWeight = FontWeight.Bold
-        )
-        //Açıklama yazısı Text özelliğine atanıyor
-        Text(
-            text = stringResource(id = item.textR),
-            color = MaterialTheme.colors.onBackground.copy(alpha = 0.8f),
-            textAlign = TextAlign.Center
-        )
-    }
 }

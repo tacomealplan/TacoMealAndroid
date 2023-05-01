@@ -1,11 +1,10 @@
-package com.base.app.ui.views.detail
+package com.base.app.ui.main.views.detail
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.base.app.ui.theme.White

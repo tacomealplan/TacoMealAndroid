@@ -2,15 +2,17 @@
 <resources>
 
     <style name="Theme.App" parent="android:Theme.Material.Light.NoActionBar">
-        <item name="android:statusBarColor">@color/purple_700</item>
+        <item name="android:statusBarColor">#FF5722</item>
     </style>
 
     <style name="Theme.SplashScreenApp" parent="android:Theme.Material.Light.NoActionBar">
-        <item name="android:statusBarColor">#00FFFFFF</item>
-
+        <!--<item name="android:statusBarColor">@color/white</item>-->
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
     </style>
 
     <style name="SplashScreenTheme" parent="Theme.SplashScreenApp">
-        <item name="android:windowBackground">@drawable/splash_image</item>
+        <item name="android:windowBackground">@drawable/background_image</item>
     </style>
 </resources>

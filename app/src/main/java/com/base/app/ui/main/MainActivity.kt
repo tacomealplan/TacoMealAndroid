@@ -20,8 +20,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.base.app.ui.theme.TacoTheme
 import com.base.app.ui.theme.White
-import com.base.app.ui.views.home.HomeScreen
-import com.base.app.ui.views.detail.StoryDetailScreen
+import com.base.app.ui.main.views.home.HomeScreen
+import com.base.app.ui.main.views.detail.StoryDetailScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -62,34 +62,36 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-}
 
-@Composable
-fun NavigationHost() {
-    val navController = rememberNavController()
-    NavHost(
-        navController = navController,
-        startDestination = "home_screen"
-    ) {
-        composable("home_screen") {
-            HomeScreen(navController = navController)
-        }
-        composable(
-            "detail_screen/{id}",
-            arguments = listOf(
-                navArgument("id") {
-                    type = NavType.StringType
-                }
-            )
+
+    @Composable
+    fun NavigationHost() {
+        val navController = rememberNavController()
+        NavHost(
+            navController = navController,
+            startDestination = "home_screen"
         ) {
-            val id = remember {
-                it.arguments?.getString("id")
+            composable("home_screen") {
+                HomeScreen(navController = navController)
             }
-            StoryDetailScreen(
-                id = id ?: "",
-                navController = navController
-            )
+            composable(
+                "detail_screen/{id}",
+                arguments = listOf(
+                    navArgument("id") {
+                        type = NavType.StringType
+                    }
+                )
+            ) {
+                val id = remember {
+                    it.arguments?.getString("id")
+                }
+                StoryDetailScreen(
+                    id = id ?: "",
+                    navController = navController
+                )
+            }
         }
     }
 }
+
 

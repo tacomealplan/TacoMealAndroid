@@ -11,6 +11,7 @@ import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
 import com.base.app.R
+import com.base.app.ui.account.AccountActivity
 import com.base.app.ui.main.MainActivity
 import com.base.app.ui.splash.onboarding.OnBoarding
 import com.base.app.ui.theme.TacoTheme
@@ -34,7 +35,7 @@ class SplashActivity : ComponentActivity() {
                     color = MaterialTheme.colors.background
                 ) {
                     OnBoarding(toMainView = {
-                        val intent = Intent(this@SplashActivity, MainActivity::class.java)
+                        val intent = Intent(this@SplashActivity, AccountActivity::class.java)
                         startActivity(intent)
                     })
                 }
