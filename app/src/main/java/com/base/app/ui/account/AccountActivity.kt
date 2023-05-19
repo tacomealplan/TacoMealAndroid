@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -30,8 +28,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.base.app.R
-import com.base.app.ui.main.views.detail.StoryDetailScreen
-import com.base.app.ui.theme.TacoTheme
+import com.base.app.ui.main.views.cart.CartScreen
 import com.base.app.ui.theme.components.buttons.PrimaryButton
 
 class AccountActivity : ComponentActivity() {
@@ -89,22 +86,6 @@ class AccountActivity : ComponentActivity() {
             }
             composable("LoginScreen") {
                 LoginScreen(navController = navController)
-            }
-            composable(
-                "detail_screen/{id}",
-                arguments = listOf(
-                    navArgument("id") {
-                        type = NavType.StringType
-                    }
-                )
-            ) {
-                val id = remember {
-                    it.arguments?.getString("id")
-                }
-                StoryDetailScreen(
-                    id = id ?: "",
-                    navController = navController
-                )
             }
         }
     }

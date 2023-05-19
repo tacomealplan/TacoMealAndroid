@@ -1,16 +1,13 @@
-package com.base.app.ui.main.views.detail
+package com.base.app.ui.main.views.cart
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.base.app.repository.ApiRepository
-import com.base.app.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class DetailViewModel @Inject constructor(
+class CartViewModel @Inject constructor(
     var repository: ApiRepository
 ) :ViewModel() {
     var isLoading = mutableStateOf(false)
