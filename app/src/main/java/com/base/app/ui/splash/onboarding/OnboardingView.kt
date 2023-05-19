@@ -28,6 +28,7 @@ import androidx.core.content.ContextCompat.startActivity
 import com.base.app.R
 import com.base.app.ui.main.MainActivity
 import com.base.app.ui.theme.NeutralGray2
+import com.base.app.ui.theme.components.buttons.PrimaryButton
 import com.google.accompanist.pager.*
 import kotlinx.coroutines.launch
 import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
@@ -120,6 +121,7 @@ fun BottomSection(item: OnBoardingData, onNextClicked: () -> Unit) {
                 fontWeight = FontWeight.Bold,
             )
             //Açıklama yazısı Text özelliğine atanıyor
+
             Text(
                 text = stringResource(id = item.textR),
                 color = NeutralGray2,
@@ -128,12 +130,10 @@ fun BottomSection(item: OnBoardingData, onNextClicked: () -> Unit) {
                 modifier = Modifier.padding(vertical = 10.dp)
             )
 
-            Button(onClick = onNextClicked,
-                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black)
-
-            ) {
-                Text(text = "İleri", textAlign = TextAlign.Center, color = Color.White)
+            PrimaryButton(text = "İleri") {
+                onNextClicked.invoke()
             }
+
         }
 
 

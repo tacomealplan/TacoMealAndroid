@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -30,13 +31,22 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.base.app.R
 import com.base.app.ui.main.views.detail.StoryDetailScreen
-import com.base.app.ui.main.views.home.HomeScreen
+import com.base.app.ui.theme.TacoTheme
+import com.base.app.ui.theme.components.buttons.PrimaryButton
 
 class AccountActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
+            val navController = rememberNavController()
+            AccountNavigationHost(navController)
+        }
+    }
+
+    @Composable
+    fun MainAccountScreen(navController: NavHostController){
+       // TacoTheme() {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
@@ -58,26 +68,27 @@ class AccountActivity : ComponentActivity() {
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(vertical = 12.dp, horizontal = 16.dp))
 
-                Button(onClick = {},
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black)
-
-                ) {
-                    Text(text = "Giriş Yap", textAlign = TextAlign.Center, color = Color.White)
+                PrimaryButton(text = "Giriş Yap") {
+                    navController.navigate("LoginScreen")
                 }
+                Text("Yeni Hesap Oluştur", textAlign = TextAlign.Center, color = Color.White, modifier = Modifier.padding(16.dp))
             }
-        }
+        //}
     }
 
 
     @Composable
-    fun NavigationHost() {
-        val navController = rememberNavController()
+    fun AccountNavigationHost(navController: NavHostController) {
+
         NavHost(
             navController = navController,
-            startDestination = "home_screen"
+            startDestination = "MainAccountScreen"
         ) {
-            composable("home_screen") {
-                HomeScreen(navController = navController)
+            composable("MainAccountScreen") {
+                MainAccountScreen(navController = navController)
+            }
+            composable("LoginScreen") {
+                LoginScreen(navController = navController)
             }
             composable(
                 "detail_screen/{id}",
