@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.base.app">
+    package="com.android.taco">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:name=".Application"
+        android:name="com.android.taco.Application"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -17,10 +17,10 @@
         android:theme="@style/Theme.App"
         tools:targetApi="31">
         <activity
-            android:name=".ui.account.AccountActivity"
+            android:name="com.android.taco.ui.account.AccountActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.splash.SplashActivity"
+            android:name="com.android.taco.ui.splash.SplashActivity"
             android:exported="true"
             android:theme="@style/SplashScreenTheme">
             <intent-filter>
@@ -30,10 +30,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.main.MainActivity"
+            android:name="com.android.taco.ui.main.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.App"></activity>
+            android:theme="@style/Theme.App" />
     </application>
 
 </manifest>

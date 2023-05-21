@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "172135876131",
+    "project_id": "pisirgecus",
+    "storage_bucket": "pisirgecus.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:172135876131:android:6c39cdc90b770bacdbd396",
+        "android_client_info": {
+          "package_name": "com.android.taco"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "172135876131-dkuq0qfne15svcse329hafqp75kp8lo0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAESMBT4yxEwA-l88lLSPoU2FsbfPaxUZA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "172135876131-dkuq0qfne15svcse329hafqp75kp8lo0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "172135876131-pmqkugtul03pdrdp2f567o4a0m5up8nm.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.taco.TacoMeal"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
