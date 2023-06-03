@@ -82,10 +82,10 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun BottomNavigation(navController: NavController) {
         val items = listOf(
-            BottomNavItem.Home,
             BottomNavItem.Search,
-            BottomNavItem.Cart,
             BottomNavItem.Chef,
+            BottomNavItem.Home,
+            BottomNavItem.Cart,
             BottomNavItem.Profile
         )
         BottomNavigation(

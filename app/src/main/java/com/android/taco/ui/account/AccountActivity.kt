@@ -20,16 +20,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.android.taco.R
 import com.android.taco.ui.theme.components.buttons.PrimaryButton
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class AccountActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
 
         setContent {
             val navController = rememberNavController()
@@ -72,7 +76,7 @@ class AccountActivity : ComponentActivity() {
 
     @Composable
     fun AccountNavigationHost(navController: NavHostController) {
-
+        val viewModel: AuthViewModel = viewModel()
         NavHost(
             navController = navController,
             startDestination = "MainAccountScreen"
@@ -81,7 +85,7 @@ class AccountActivity : ComponentActivity() {
                 MainAccountScreen(navController = navController)
             }
             composable("LoginScreen") {
-                LoginScreen(navController = navController)
+                LoginScreen(navController = navController, viewModel = viewModel)
             }
         }
     }

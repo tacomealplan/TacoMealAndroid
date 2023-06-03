@@ -18,19 +18,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.Blue
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.android.taco.R
 import com.android.taco.ui.theme.NeutralGray2
 
 @Composable
-fun PrimaryTextField(label : String, placeholder: String) {
+fun EmailTextField(label : String, placeholder: String) {
     Column(horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.Center,
         modifier = Modifier.padding(8.dp).fillMaxWidth()
     ) {
         Text(
@@ -41,12 +44,11 @@ fun PrimaryTextField(label : String, placeholder: String) {
                 fontWeight = FontWeight.Medium)
 
         )
-        Spacer(
-            modifier = Modifier
-                .height(height = 12.dp))
+        Spacer(modifier = Modifier.height(height = 12.dp))
         TextField(
             value = "",
             onValueChange = {},
+            leadingIcon = { Icon(painter = painterResource(id = R.drawable.email), "", tint = Black)},
             shape = RoundedCornerShape(16.dp),
             placeholder = { Text(placeholder) },
             textStyle = TextStyle(
@@ -58,12 +60,13 @@ fun PrimaryTextField(label : String, placeholder: String) {
                 unfocusedIndicatorColor = Color.Transparent,
                 disabledIndicatorColor = Color.Transparent
             ),
-            modifier = Modifier.fillMaxWidth().border(width = 1.dp, color = NeutralGray2, shape = RoundedCornerShape(16.dp)))
+            modifier = Modifier.fillMaxWidth()
+                .border(width = 1.dp, color = NeutralGray2, shape = RoundedCornerShape(16.dp)))
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun PrimaryTextFieldPreview(){
-    PrimaryTextField(label = "E-Posta", placeholder = "E-Posta adresinizi girin")
+fun EmailTextFieldPreview(){
+    EmailTextField(label = "E-Posta", placeholder = "E-Posta adresinizi girin")
 }

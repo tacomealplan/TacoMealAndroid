@@ -17,6 +17,7 @@ class AuthRepository @Inject constructor(
 ) {
     suspend fun logIn(email : String, password : String) = flow {
         try {
+
             auth.let{ login->
                 login.signInWithEmailAndPassword(email,password).await()
                 emit(Resource.Success(true))
@@ -34,23 +35,4 @@ class AuthRepository @Inject constructor(
         }
     }
 
-    suspend fun firebaseSignInAnonymously() = flow {
-        try {
-            auth.signInAnonymously().await()
-            emit(Resource.Success(true))
-        } catch (e: Exception) {
-            emit(Error(e.message ?: "ERROR_MESSAGE"))
-        }
-    }
-
-    /*suspend fun makeRequest(id: String): Resource<CommonResponse> {
-        val response = try {
-            val body = RequestBody()
-            body.add( "-")
-            api.request(body = body)
-        } catch(e: Exception) {
-            return Resource.Error(e.message.toString())
-        }
-        return Resource.Success(response)
-    }*/
 }
