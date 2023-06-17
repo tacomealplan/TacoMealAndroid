@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,6 +17,7 @@ import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -26,6 +28,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.android.taco.R
+import com.android.taco.ui.theme.TacoTheme
 import com.android.taco.ui.theme.components.buttons.PrimaryButton
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -43,7 +46,7 @@ class AccountActivity : ComponentActivity() {
 
     @Composable
     fun MainAccountScreen(navController: NavHostController){
-       // TacoTheme() {
+        TacoTheme() {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
@@ -68,9 +71,19 @@ class AccountActivity : ComponentActivity() {
                 PrimaryButton(text = "Giriş Yap") {
                     navController.navigate("LoginScreen")
                 }
-                Text("Yeni Hesap Oluştur", textAlign = TextAlign.Center, color = Color.White, modifier = Modifier.padding(16.dp))
+                Text(
+                    text = "Yeni Hesap Oluştur",
+                    color = Color.White,
+                    textAlign = TextAlign.Center,
+                    style = TextStyle(
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold),
+                    modifier = Modifier.padding(16.dp).clickable {
+                        navController.navigate("SignUpScreen")
+                    }
+                )
             }
-        //}
+        }
     }
 
 
@@ -86,6 +99,12 @@ class AccountActivity : ComponentActivity() {
             }
             composable("LoginScreen") {
                 LoginScreen(navController = navController, viewModel = viewModel)
+            }
+            composable("ForgotPasswordScreen") {
+                ForgotPasswordScreen(navController = navController, viewModel = viewModel)
+            }
+            composable("SignUpScreen") {
+                SignUpScreen(navController = navController, viewModel = viewModel)
             }
         }
     }

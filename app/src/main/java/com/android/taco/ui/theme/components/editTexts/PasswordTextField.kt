@@ -28,10 +28,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.android.taco.R
+import com.android.taco.ui.theme.BrandPrimary
 import com.android.taco.ui.theme.NeutralGray2
 
 @Composable
-fun PasswordTextField(label : String, placeholder: String) {
+fun PasswordTextField(value : String, label : String, placeholder: String, onValueChange : (String) -> Unit) {
     Column(horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.Center,
         modifier = Modifier.padding(8.dp).fillMaxWidth()
@@ -48,8 +49,8 @@ fun PasswordTextField(label : String, placeholder: String) {
             modifier = Modifier
                 .height(height = 12.dp))
         TextField(
-            value = "",
-            onValueChange = {},
+            value = value,
+            onValueChange = onValueChange,
             leadingIcon = { Icon(painter = painterResource(id = R.drawable.password), "", tint = Black)},
             trailingIcon = { Icon(painter = painterResource(id = R.drawable.eye), "")},
             shape = RoundedCornerShape(16.dp),
@@ -57,7 +58,7 @@ fun PasswordTextField(label : String, placeholder: String) {
             textStyle = TextStyle(
                 fontSize = 16.sp),
             colors = TextFieldDefaults.textFieldColors(
-                textColor = NeutralGray2,
+                textColor = BrandPrimary,
                 backgroundColor = Color.Transparent,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
@@ -70,5 +71,5 @@ fun PasswordTextField(label : String, placeholder: String) {
 @Preview(showBackground = true)
 @Composable
 fun PasswordTextFieldPreview(){
-    PasswordTextField(label = "Parola", placeholder = "Parolanızı girin")
+    PasswordTextField(value = "", label = "Parola", placeholder = "Parolanızı girin"){}
 }

@@ -15,24 +15,6 @@ import javax.inject.Inject
 class AuthRepository @Inject constructor(
     private val auth: FirebaseAuth
 ) {
-    suspend fun logIn(email : String, password : String) = flow {
-        try {
 
-            auth.let{ login->
-                login.signInWithEmailAndPassword(email,password).await()
-                emit(Resource.Success(true))
-                    /*.addOnCompleteListener {task: Task<AuthResult> ->
-                        if(!task.isSuccessful){
-                            println("Login Failed with ${task.exception}")
-                            emit(Resource.Success(auth.currentUser))
-                        }else{
-                            emit(Error(e.message ?: "ERROR_MESSAGE"))
-                        }
-                    }*/
-            }
-        }catch (e : Exception){
-            emit(Error(e.message ?: "ERROR_MESSAGE"))
-        }
-    }
 
 }

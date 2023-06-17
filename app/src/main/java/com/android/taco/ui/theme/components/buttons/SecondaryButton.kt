@@ -16,17 +16,21 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.android.taco.ui.theme.BrandSecondary
 import com.android.taco.ui.theme.TacoTheme
 
 @Composable
-fun SecondaryButton(text : String, onClick : () -> Unit){
+fun SecondaryButton(text : String,
+                    modifier: Modifier = Modifier,
+                    onClick : () -> Unit
+){
     TacoTheme() {
         Button(
             onClick = onClick,
             shape = RoundedCornerShape(16.dp),
-            colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFFF8C00)),
-            border = BorderStroke(1.dp, Color(0xFFFF8C00)),
-            modifier = Modifier
+            colors = ButtonDefaults.buttonColors(backgroundColor = BrandSecondary),
+            border = BorderStroke(1.dp, BrandSecondary),
+            modifier = modifier
                 .width(width = 327.dp)
                 .height(height = 54.dp)
         ) {

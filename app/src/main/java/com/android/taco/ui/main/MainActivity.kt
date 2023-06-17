@@ -16,6 +16,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -27,6 +28,10 @@ import com.android.taco.ui.theme.TacoTheme
 import com.android.taco.ui.main.views.home.HomeScreen
 import com.android.taco.ui.main.views.cart.CartScreen
 import com.android.taco.ui.main.views.chef.ChefScreen
+import com.android.taco.ui.main.views.chef.plan.PlanScreen
+import com.android.taco.ui.main.views.favourites.FavouritesScreen
+import com.android.taco.ui.main.views.populars.PopularsScreen
+import com.android.taco.ui.main.views.profile.ProfileEditScreen
 import com.android.taco.ui.main.views.profile.ProfileScreen
 import com.android.taco.ui.main.views.search.SearchScreen
 import dagger.hilt.android.AndroidEntryPoint
@@ -65,7 +70,7 @@ class MainActivity : ComponentActivity() {
                 HomeScreen(navController = navController)
             }
             composable(BottomNavItem.Search.screen_route) {
-                SearchScreen()
+                SearchScreen(navController = navController)
             }
             composable(BottomNavItem.Chef.screen_route) {
                 ChefScreen()
@@ -74,7 +79,20 @@ class MainActivity : ComponentActivity() {
                 CartScreen()
             }
             composable(BottomNavItem.Profile.screen_route) {
-                ProfileScreen()
+                ProfileScreen(navController = navController)
+            }
+            composable(BottomNavItem.Profile.screen_route +"/Edit") {
+                ProfileEditScreen(navController = navController)
+            }
+            composable(ScreensNavItem.Favourites.screen_route) {
+                FavouritesScreen(navController = navController)
+            }
+            composable(ScreensNavItem.Populars.screen_route) {
+                PopularsScreen(navController = navController, viewModel = viewModel())
+            }
+
+            composable(ScreensNavItem.Plan.screen_route) {
+                PlanScreen(navController = navController)
             }
         }
     }
@@ -102,7 +120,7 @@ class MainActivity : ComponentActivity() {
                     selectedContentColor = Color.White,
                     unselectedContentColor = Color.White.copy(0.4f),
                     alwaysShowLabel = true,
-                    selected = currentRoute == item.screen_route,
+                    selected = currentRoute?.contains(item.screen_route) == true,
                     onClick = {
                         navController.navigate(item.screen_route) {
 
@@ -129,11 +147,17 @@ class MainActivity : ComponentActivity() {
 
 sealed class BottomNavItem(var title:String, var icon:Int, var screen_route:String){
 
-    object Home : BottomNavItem("Home", R.drawable.cart,"home")
+    object Home : BottomNavItem("Home", R.drawable.home,"home")
     object Search: BottomNavItem("Search",R.drawable.search,"search")
     object Chef: BottomNavItem("Chef",R.drawable.chef,"chef")
     object Cart: BottomNavItem("Cart",R.drawable.cart,"cart")
     object Profile: BottomNavItem("Profile",R.drawable.profile,"profile")
+}
+
+sealed class ScreensNavItem(var title:String, var screen_route:String){
+    object Favourites : ScreensNavItem("Favourites", "favourites")
+    object Populars : ScreensNavItem("Populars", "populars")
+    object Plan : ScreensNavItem("Plan", "plan")
 }
 
 

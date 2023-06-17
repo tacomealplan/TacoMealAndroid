@@ -1,6 +1,8 @@
 package com.android.taco.ui.account
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,6 +17,10 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,38 +38,28 @@ import androidx.navigation.compose.rememberNavController
 import com.android.taco.ui.main.MainActivity
 import com.android.taco.ui.theme.NeutralGray2
 import com.android.taco.ui.theme.TacoTheme
+import com.android.taco.ui.theme.components.bars.PrimaryTopBar
 import com.android.taco.ui.theme.components.buttons.GoogleButton
 import com.android.taco.ui.theme.components.buttons.PrimaryButton
 import com.android.taco.ui.theme.components.editTexts.EmailTextField
 import com.android.taco.ui.theme.components.editTexts.PasswordTextField
 import com.android.taco.ui.theme.components.editTexts.PrimaryTextField
+import com.android.taco.util.Resource
 
 @Composable
-fun LoginScreen(navController: NavHostController, viewModel : AuthViewModel){
+fun LoginScreen(navController: NavHostController,
+                viewModel : AuthViewModel
+){
     val context = LocalContext.current
 
-    //val viewModel : AuthViewModel = hiltViewModel()
     TacoTheme() {
         Scaffold(
             topBar = {
-                Row(horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)
-                ) {
-                    Icon(Icons.Rounded.ArrowBack, contentDescription = "Localized description",
-                        modifier = Modifier)
-                    Text(
-                        text = "Giriş Yap",
-                        color = Color(0xff0a2533),
-                        textAlign = TextAlign.Center,
-                        lineHeight = 135.sp,
-                        style = TextStyle(
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold))
+                PrimaryTopBar(title = "Giriş Yap"){
+                    navController.popBackStack()
                 }
-
             }
-        ) {
+        ) { it ->
             Column(horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
@@ -72,20 +68,35 @@ fun LoginScreen(navController: NavHostController, viewModel : AuthViewModel){
                     .padding(it)
 
             ) {
-
+                var email by remember { mutableStateOf("acetinkaya892@gmail.com") }
+                var password by remember { mutableStateOf("123456") }
                 Column(horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 16.dp)
                         .padding(horizontal = 24.dp)
                 ) {
-                    EmailTextField(label = "E-Posta", placeholder = "E-Posta adresinizi girin")
-                    PasswordTextField(label = "Parola", placeholder = "Parolanızı girin")
+                    EmailTextField(value = email, label = "E-Posta", placeholder = "E-Posta adresinizi girin"){ value ->
+                        email = value
+                    }
+                    PasswordTextField(value = password, label = "Parola", placeholder = "Parolanızı girin"){value ->
+                        password = value
+                    }
                 }
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     PrimaryButton(text = "Giriş Yap") {
-                        viewModel.logIn()
-                        MainActivity.start(context)
+                        viewModel.signIn(email = email, password = password) {
+                            when (it) {
+                                is Resource.Success -> {
+                                    MainActivity.start(context)
+                                }
+
+                                is Resource.Error -> {
+
+                                }
+                            }
+                        }
+
                     }
                     Spacer(modifier = Modifier.size(16.dp))
                     Text(
@@ -95,7 +106,10 @@ fun LoginScreen(navController: NavHostController, viewModel : AuthViewModel){
                         lineHeight = 135.sp,
                         style = TextStyle(
                             fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold)
+                            fontWeight = FontWeight.Bold),
+                        modifier = Modifier.clickable {
+                            navController.navigate("ForgotPasswordScreen")
+                        }
                     )
                 }
 
