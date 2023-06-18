@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.android.taco.ui.main.BottomNavItem
@@ -23,7 +24,9 @@ import com.android.taco.ui.theme.TacoTheme
 import com.android.taco.ui.theme.components.cards.ProfileCardView
 
 @Composable
-fun ProfileScreen(navController: NavController) {
+fun ProfileScreen(navController: NavController,
+                  viewModel: ProfileViewModel
+) {
     TacoTheme() {
         Column(
             verticalArrangement = Arrangement.Top,
@@ -32,13 +35,16 @@ fun ProfileScreen(navController: NavController) {
                 .padding(24.dp)
                 .background(Color.White)
         ) {
-            ProfileCardView() {
+            ProfileCardView(username = viewModel.username.value,
+                bio = "",
+                ppUrl = viewModel.ppUrl.value
+            ) {
                 navController.navigate(BottomNavItem.Profile.screen_route +"/Edit")
             }
 
             Spacer(modifier = Modifier.size(24.dp))
 
-            FavouritesWidget(navController)
+            FavouritesWidget(navController, viewModel = viewModel())
 
             Spacer(modifier = Modifier.size(24.dp))
 
@@ -51,5 +57,5 @@ fun ProfileScreen(navController: NavController) {
 @Preview(showBackground = true)
 @Composable
 fun ProfileScreenPreview(){
-    ProfileScreen(navController = rememberNavController())
+    ProfileScreen(navController = rememberNavController(), viewModel = viewModel())
 }

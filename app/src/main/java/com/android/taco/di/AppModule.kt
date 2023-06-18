@@ -1,5 +1,6 @@
 package com.android.taco.di
 
+import com.android.taco.data.SharedPref
 import com.android.taco.remote.Api
 import com.android.taco.remote.Client
 import com.android.taco.repository.ApiRepository
@@ -16,6 +17,10 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 class AppModule {
+
+    @Singleton
+    @Provides
+    fun provideSharedPreference() : SharedPref = SharedPref.invoke()
 
     @Singleton
     @Provides

@@ -55,13 +55,13 @@ fun PrimaryTextField(value : String,
 
         TextField(
             value = value,
-            onValueChange = {},
+            onValueChange = onValueChange,
             shape = RoundedCornerShape(16.dp),
             placeholder = { Text(placeholder) },
             textStyle = TextStyle(
                 fontSize = 16.sp),
             colors = TextFieldDefaults.textFieldColors(
-                textColor = NeutralGray2,
+                textColor = BrandPrimary,
                 backgroundColor = Color.Transparent,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,

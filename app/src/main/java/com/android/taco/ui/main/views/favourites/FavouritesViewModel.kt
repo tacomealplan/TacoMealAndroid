@@ -1,27 +1,29 @@
-package com.android.taco.ui.main.views.populars
+package com.android.taco.ui.main.views.favourites
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.android.taco.model.Recipe
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.toObject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 
 @HiltViewModel
-class PopularsViewModel @Inject constructor(
+class FavouritesViewModel @Inject constructor(
 ): ViewModel() {
     val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
     var isLoading = mutableStateOf(false)
-    var popularRecipes = mutableListOf<Recipe>()
+    var favouritesRecipes = mutableListOf<Recipe>()
     init {
-        getPopularRecipeIds()
+        getFavouritesRecipeIds()
     }
 
-    private fun getPopularRecipeIds(forWidget : Boolean = false){
+    private fun getFavouritesRecipeIds(){
         isLoading.value = true
-        firestore.collection("PopularRecipes")
+        val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
+        firestore.collection("UserRecipeLike")
+            .whereEqualTo("UserId", currentUserId)
             .get()
             .addOnSuccessListener {
                 val recipeIdList = ArrayList<String>()
@@ -29,7 +31,7 @@ class PopularsViewModel @Inject constructor(
                 data.forEach { item->
                     recipeIdList.add(item.data?.get("RecipeId").toString())
                 }
-                getPopularRecipes(recipeIdList)
+                getFavouriteRecipes(recipeIdList)
             }
             .addOnFailureListener{
                 it.printStackTrace()
@@ -37,7 +39,11 @@ class PopularsViewModel @Inject constructor(
             }
     }
 
-    private fun getPopularRecipes(recipeIdList : List<String>){
+    private fun getFavouriteRecipes(recipeIdList : List<String>){
+        if(recipeIdList.isEmpty()){
+            isLoading.value = false
+            return
+        }
         firestore.collection("Recipe")
             .whereIn("id",recipeIdList)
             .get()
@@ -48,7 +54,7 @@ class PopularsViewModel @Inject constructor(
                     if(item.data != null)
                         recipes.add(Recipe.newInstance(item.data!!))
                 }
-                popularRecipes.addAll(recipes)
+                favouritesRecipes.addAll(recipes)
                 isLoading.value = false
             }
             .addOnFailureListener{

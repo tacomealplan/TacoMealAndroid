@@ -21,6 +21,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.*
 import com.android.taco.R
+import com.android.taco.data.SharedPref
+import com.android.taco.ui.main.views.chef.recipe.getUrlForStorage
 import com.android.taco.ui.theme.NeutralGray2
 import com.android.taco.ui.theme.components.buttons.PrimaryButton
 import com.google.accompanist.pager.*
@@ -29,6 +31,10 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun OnBoarding(toMainView: () -> Unit) {
+    LaunchedEffect(Unit){
+        SharedPref.invoke().setSkipOnboarding()
+    }
+
     val scope = rememberCoroutineScope()
     Column(horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier

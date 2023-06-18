@@ -32,7 +32,12 @@ import com.android.taco.ui.theme.BrandPrimary
 import com.android.taco.ui.theme.NeutralGray2
 
 @Composable
-fun EmailTextField(value : String, label : String, placeholder: String, onValueChange : (String) -> Unit) {
+fun EmailTextField(value : String,
+                   label : String,
+                   placeholder: String,
+                   enabled : Boolean = true,
+                   onValueChange : (String) -> Unit
+) {
     Column(horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.Center,
         modifier = Modifier.padding(8.dp).fillMaxWidth()
@@ -52,6 +57,7 @@ fun EmailTextField(value : String, label : String, placeholder: String, onValueC
             leadingIcon = { Icon(painter = painterResource(id = R.drawable.email), "", tint = Black)},
             shape = RoundedCornerShape(16.dp),
             placeholder = { Text(placeholder) },
+            enabled = enabled,
             textStyle = TextStyle(
                 fontSize = 16.sp),
             colors = TextFieldDefaults.textFieldColors(

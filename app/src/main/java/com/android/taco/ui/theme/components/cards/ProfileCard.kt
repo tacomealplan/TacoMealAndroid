@@ -29,9 +29,16 @@ import androidx.compose.ui.unit.sp
 import com.android.taco.ui.main.views.search.SearchScreen
 import com.android.taco.ui.theme.components.buttons.RightArrowButton
 import com.android.taco.ui.theme.components.image.CircularImageView
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun ProfileCardView(modifier: Modifier = Modifier ,onClick : () -> Unit) {
+fun ProfileCardView(
+    username : String,
+    bio : String,
+    ppUrl : String,
+    modifier: Modifier = Modifier,
+    onClick : () -> Unit
+) {
     Surface(
         elevation = 9.dp, // play with the elevation values
         shape = RoundedCornerShape(16.dp),
@@ -48,11 +55,11 @@ fun ProfileCardView(modifier: Modifier = Modifier ,onClick : () -> Unit) {
                 .padding(horizontal = 24.dp, vertical = 12.dp)
         ) {
             Row() {
-                CircularImageView(size = 48)
+                CircularImageView(url = ppUrl, size = 48)
                 Spacer(modifier = Modifier.width(16.dp))
                 Column() {
                     Text(
-                        text = "Alena Sabyan",
+                        text = username,
                         color = Color(0xff0a2533),
                         lineHeight = 110.sp,
                         style = TextStyle(
@@ -60,7 +67,7 @@ fun ProfileCardView(modifier: Modifier = Modifier ,onClick : () -> Unit) {
                             fontWeight = FontWeight.Bold)
                     )
                     Text(
-                        text = "Recipe Developer",
+                        text = bio,
                         color = Color(0xff48525f),
                         lineHeight = 145.sp,
                         style = TextStyle(
@@ -80,5 +87,5 @@ fun ProfileCardView(modifier: Modifier = Modifier ,onClick : () -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun ProfileCardPreview(){
-    ProfileCardView(){}
+    ProfileCardView(username = "Test", bio = "Text", ppUrl = ""){}
 }

@@ -70,7 +70,7 @@ class MainActivity : ComponentActivity() {
                 HomeScreen(navController = navController)
             }
             composable(BottomNavItem.Search.screen_route) {
-                SearchScreen(navController = navController)
+                SearchScreen(navController = navController, viewModel = viewModel())
             }
             composable(BottomNavItem.Chef.screen_route) {
                 ChefScreen()
@@ -79,13 +79,13 @@ class MainActivity : ComponentActivity() {
                 CartScreen()
             }
             composable(BottomNavItem.Profile.screen_route) {
-                ProfileScreen(navController = navController)
+                ProfileScreen(navController = navController, viewModel = viewModel())
             }
             composable(BottomNavItem.Profile.screen_route +"/Edit") {
-                ProfileEditScreen(navController = navController)
+                ProfileEditScreen(navController = navController, viewModel = viewModel())
             }
             composable(ScreensNavItem.Favourites.screen_route) {
-                FavouritesScreen(navController = navController)
+                FavouritesScreen(navController = navController, viewModel = viewModel())
             }
             composable(ScreensNavItem.Populars.screen_route) {
                 PopularsScreen(navController = navController, viewModel = viewModel())

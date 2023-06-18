@@ -40,6 +40,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.android.taco.ui.main.views.chef.MealWidget
@@ -56,7 +57,9 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun SearchScreen(navController: NavController) {
+fun SearchScreen(navController: NavController,
+                 viewModel: SearchViewModel
+) {
     var searchText by remember { mutableStateOf("") }
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
@@ -97,9 +100,12 @@ fun SearchScreen(navController: NavController) {
                     }
                 }
             }
-            Row(modifier = Modifier.padding(horizontal = 24.dp)) {
-                PopularsWidget(navController)
+            if(searchText.isBlank()){
+                Row(modifier = Modifier.padding(horizontal = 24.dp)) {
+                    PopularsWidget(navController)
+                }
             }
+
 
             Column(modifier = Modifier.fillMaxSize()) {
 
@@ -154,5 +160,5 @@ fun BottomSheet() {
 @Preview(showBackground = true)
 @Composable
 fun SearchScreenPreview(){
-    SearchScreen(navController = rememberNavController())
+    SearchScreen(navController = rememberNavController(), viewModel = viewModel())
 }

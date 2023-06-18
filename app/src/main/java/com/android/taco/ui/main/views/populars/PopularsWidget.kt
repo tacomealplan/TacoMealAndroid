@@ -45,7 +45,7 @@ fun PopularsWidget(navController: NavController,
             CircularProgressIndicator(color = BrandSecondary)
         }
 
-    }else{
+    }else if(viewModel.popularRecipes.isNotEmpty()) {
         Column(modifier = Modifier
             .fillMaxWidth()) {
             Row(verticalAlignment = Alignment.CenterVertically,
@@ -78,12 +78,10 @@ fun PopularsWidget(navController: NavController,
                     .horizontalScroll(rememberScrollState())
                     .fillMaxWidth()
             ){
-                RecipeCard()
-                Spacer(modifier = Modifier.width(16.dp))
-                RecipeCard()
-                Spacer(modifier = Modifier.width(16.dp))
-                RecipeCard()
-                Spacer(modifier = Modifier.width(16.dp))
+                viewModel.popularRecipes.take(3).forEach { recipe ->
+                    RecipeCard(recipe = recipe)
+                    Spacer(modifier = Modifier.width(16.dp))
+                }
             }
 
         }

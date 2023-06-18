@@ -24,6 +24,7 @@ import com.android.taco.ui.main.views.chef.plan.DailyMenuWidget
 import com.android.taco.ui.main.views.chef.plan.PlanWidget
 import com.android.taco.ui.main.views.populars.PopularsWidget
 import com.android.taco.ui.theme.*
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun HomeScreen(
@@ -69,7 +70,7 @@ fun Header() {
         }
 
         Text(
-            text = "Taha Sarıcan",
+            text = FirebaseAuth.getInstance().currentUser?.displayName ?: "",
             color = Color(0xff0a2533),
             style = TextStyle(
                 fontSize = 24.sp,
