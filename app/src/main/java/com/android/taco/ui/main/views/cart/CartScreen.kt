@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -22,6 +23,10 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.outlined.Circle
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,6 +36,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.android.taco.R
 import com.android.taco.ui.theme.Black
 import com.android.taco.ui.theme.BrandSecondary
@@ -40,13 +46,20 @@ import com.android.taco.ui.theme.components.bars.PrimaryTopBar
 import com.android.taco.ui.theme.components.bars.TitleTopBar
 
 @Composable
-fun CartScreen() {
+fun CartScreen(viewModel: CartViewModel) {
+    var isLoading by remember {
+        viewModel.isLoading
+    }
+
+    LaunchedEffect(key1 = Unit, block = {
+        viewModel.getUserCartItems()
+    })
     TacoTheme() {
         Scaffold(topBar = {
             TitleTopBar(title = "Alışveriş Listem")
         }, floatingActionButton = {
             FloatingActionButton(
-                onClick = {},
+                onClick = {viewModel.addUserCartItem()},
                 backgroundColor = BrandSecondary,
                 contentColor = White
             ) {
@@ -57,21 +70,20 @@ fun CartScreen() {
                 verticalArrangement = Arrangement.Top,
                 modifier = Modifier
                     .padding(it)
-                    .padding(24.dp)
+                    .padding(12.dp)
                     .fillMaxSize()
                     .background(White)
             ) {
-                CartItem("Ekmek", false){
+                if(isLoading){
+                    CircularProgressIndicator()
+                }else{
+                    viewModel.userCartItems.forEach {item->
+                        CartItem(cartItem = item.materialName,
+                            isSelected = item.isChecked
+                        ) {
 
-                }
-                CartItem("Ekmek", false){
-
-                }
-                CartItem("Ekmek", true){
-
-                }
-                CartItem("Ekmek", false){
-
+                        }
+                    }
                 }
 
             }
@@ -120,5 +132,5 @@ fun CircleCheckbox(selected: Boolean, enabled: Boolean = true, onChecked: () -> 
 @Composable
 
 fun CartScreenPreview(){
-    CartScreen()
+    CartScreen(viewModel = viewModel())
 }

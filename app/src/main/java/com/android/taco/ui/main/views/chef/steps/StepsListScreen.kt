@@ -40,7 +40,7 @@ import com.android.taco.ui.theme.TacoTheme
 import com.android.taco.ui.theme.White
 
 @Composable
-fun StepListScreen(stepList: List<Step>){
+fun StepListScreen(stepList: ArrayList<Step>){
     TacoTheme() {
         Column(
             verticalArrangement = Arrangement.Top,
@@ -73,7 +73,7 @@ fun StepListScreen(stepList: List<Step>){
             Column(
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.Start,
-                modifier = Modifier.verticalScroll(state = rememberScrollState())
+                modifier = Modifier
             ) {
                 //stepList.forEach {
                   //  StepRow(it)
@@ -135,7 +135,7 @@ fun Number(number : Int) {
 @Preview
 @Composable
 fun StepListScreenPreview(){
-    StepListScreen(listOf<Step>(
+    StepListScreen(arrayListOf<Step>(
         Step("","",1,""),
         Step("","",2,""),
         Step("","",3,""),

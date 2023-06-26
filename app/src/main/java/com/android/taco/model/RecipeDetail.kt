@@ -6,8 +6,8 @@ import com.google.gson.Gson
 data class RecipeDetail(
     val id: String,
     val recipeId: String,
-    val materials: List<Material>,
-    val steps: List<Step>
+    val materials: ArrayList<Material>,
+    val steps: ArrayList<Step>
 ) {
 
     companion object{
@@ -23,5 +23,5 @@ data class RecipeDetail(
     }
 }
 
-fun <T> Gson.fromJsonList(jsonString: String): List<T> =
+fun <T> Gson.fromJsonList(jsonString: String): ArrayList<T> =
     this.fromJson(jsonString, object: TypeToken<ArrayList<T>>() { }.type)

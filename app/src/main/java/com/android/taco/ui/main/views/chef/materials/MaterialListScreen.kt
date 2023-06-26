@@ -38,7 +38,7 @@ import com.android.taco.ui.theme.components.buttons.PrimaryButton
 import com.android.taco.ui.theme.components.buttons.SecondaryButton
 
 @Composable
-fun MaterialListScreen(materialList: List<Material>){
+fun MaterialListScreen(materialList: ArrayList<Material>){
     TacoTheme() {
         Column(
             verticalArrangement = Arrangement.Top,
@@ -105,7 +105,7 @@ fun MaterialRow(material: Material, onAdded : () -> Unit) {
     Surface(
         shape = RoundedCornerShape(16.dp),
         color = White,
-        elevation = 9.dp,
+        elevation = 6.dp,
         modifier = Modifier
             .fillMaxWidth()
             .height(60.dp)
@@ -143,7 +143,8 @@ fun MaterialRow(material: Material, onAdded : () -> Unit) {
 @Preview
 @Composable
 fun MaterialListScreenPreview(){
-    MaterialListScreen(listOf<Material>(Material("1", "Test"),
+    MaterialListScreen(
+        arrayListOf<Material>(Material("1", "Test"),
         Material("1", "Test"),
         Material("1", "Test")))
 }

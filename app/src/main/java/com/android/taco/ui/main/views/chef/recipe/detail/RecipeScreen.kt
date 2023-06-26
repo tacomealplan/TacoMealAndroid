@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
@@ -94,115 +95,129 @@ fun RecipeScreen(recipeId : String,
             if(viewModel.isLoading.value){
                 CircularProgressIndicator()
             }else{
-                Image(
-                    painter = rememberImagePainter(
-                        data = coverPhotoUrl,
-                        builder = {
-                            crossfade(false)
-                            placeholder(R.color.imagePlaceholderColor)
-                        }
-                    ),
-                    contentDescription = "description",
-                    contentScale = ContentScale.FillBounds,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(300.dp)
-                )
-
-                Column(
-                    verticalArrangement = Arrangement.Top,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .verticalScroll(state = rememberScrollState())
-                        .fillMaxSize()
-                        .padding(24.dp)
-                        .background(color = Color.White)
-                ){
-
-                    Text(
-                        text = recipe?.name ?: "",
-                        color = BrandPrimary,
-                        style = TextStyle(
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold),
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    Image(
+                        painter = rememberImagePainter(
+                            data = coverPhotoUrl,
+                            builder = {
+                                crossfade(false)
+                                placeholder(R.color.imagePlaceholderColor)
+                            }
+                        ),
+                        contentDescription = "description",
+                        contentScale = ContentScale.Fit,
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 6.dp)
                     )
-                    Text(
-                        text = buildAnnotatedString {
-                            withStyle(style = SpanStyle(
-                                color = Color(0xff748189),
-                                fontSize = 16.sp)
-                            ) {append(recipe?.description ?: "")}
-                        },
+                    Column(
+                        verticalArrangement = Arrangement.Top,
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 12.dp))
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 12.dp)
+                            .fillMaxSize()
+                            .background(color = Color.Transparent)
                     ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center,
+                        Spacer(modifier = Modifier.height(250.dp))
+                        Column(
+                            verticalArrangement = Arrangement.Top,
+                            horizontalAlignment = Alignment.CenterHorizontally,
                             modifier = Modifier
-                                .width(width = 71.dp)
-                                .height(height = 20.dp)
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.time_circle),
-                                tint = NeutralGray2,
-                                contentDescription = "Iconly/Light/Time Circle")
-                            Spacer(modifier = Modifier.width(4.dp))
+                                .verticalScroll(state = rememberScrollState())
+                                .fillMaxSize()
+                                .background(color = Color.White, shape = RoundedCornerShape(16.dp))
+                        ){
+
                             Text(
-                                text = "${recipe?.personCount} Kişilik",
-                                color = Color(0xff748189),
+                                text = recipe?.name ?: "",
+                                color = BrandPrimary,
                                 style = TextStyle(
-                                    fontSize = 14.sp))
-                        }
-
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center,
-                            modifier = Modifier
-                                .width(width = 71.dp)
-                                .height(height = 20.dp)
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.time_circle),
-                                tint = NeutralGray2,
-                                contentDescription = "Iconly/Light/Time Circle")
-                            Spacer(modifier = Modifier.width(4.dp))
+                                    fontSize = 24.sp,
+                                    fontWeight = FontWeight.Bold),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 6.dp)
+                                    .padding(horizontal = 24.dp)
+                            )
                             Text(
-                                text = "${recipe?.duration} dk",
-                                color = Color(0xff748189),
-                                style = TextStyle(
-                                    fontSize = 14.sp))
+                                text = buildAnnotatedString {
+                                    withStyle(style = SpanStyle(
+                                        color = Color(0xff748189),
+                                        fontSize = 16.sp)
+                                    ) {append(recipe?.description ?: "")}
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 24.dp)
+                                    .padding(bottom = 12.dp))
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 24.dp)
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Center,
+                                    modifier = Modifier
+                                        .width(width = 71.dp)
+                                        .height(height = 20.dp)
+                                ) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.time_circle),
+                                        tint = NeutralGray2,
+                                        contentDescription = "Iconly/Light/Time Circle")
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(
+                                        text = "${recipe?.personCount} Kişilik",
+                                        color = Color(0xff748189),
+                                        style = TextStyle(
+                                            fontSize = 14.sp))
+                                }
+
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Center,
+                                    modifier = Modifier
+                                        .width(width = 71.dp)
+                                        .height(height = 20.dp)
+                                ) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.time_circle),
+                                        tint = NeutralGray2,
+                                        contentDescription = "Iconly/Light/Time Circle")
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(
+                                        text = "${recipe?.duration} dk",
+                                        color = Color(0xff748189),
+                                        style = TextStyle(
+                                            fontSize = 14.sp))
+                                }
+                            }
+
+                            Column(horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier.padding(24.dp)
+                            ) {
+                                TabsTwoOptions(selectedTab){ selected ->
+                                    selectedTab = selected
+                                }
+                                if(selectedTab == 0){
+                                    if(recipeDetail?.materials?.isNotEmpty() == true){
+                                        MaterialListScreen(recipeDetail?.materials ?: arrayListOf())
+                                    }
+                                }
+                                else{
+                                    if(recipeDetail?.steps?.isNotEmpty() == true){
+                                        StepListScreen(recipeDetail?.steps ?: arrayListOf())
+                                    }
+                                }
+                            }
+                            Divider(modifier = Modifier.padding(horizontal = 24.dp))
+                            BottomProfileView(ppUrl = recipe?.creatorPhotoURL ?: "", username = recipe?.creatorUserName ?: "")
+
                         }
                     }
-
-                    TabsTwoOptions(selectedTab){ selected ->
-                        selectedTab = selected
-                    }
-                    if(selectedTab == 0){
-                        if(recipeDetail?.materials?.isNotEmpty() == true){
-                            MaterialListScreen(recipeDetail?.materials ?: listOf())
-                        }
-                    }
-                    else{
-                        if(recipeDetail?.steps?.isNotEmpty() == true){
-                            StepListScreen(recipeDetail?.steps ?: listOf())
-                        }
-                    }
-
-                    Divider(modifier = Modifier.padding(vertical = 8.dp))
-                    BottomProfileView(ppUrl = recipe?.creatorPhotoURL ?: "", username = recipe?.creatorUserName ?: "")
-
                 }
+
+
+
             }
 
 
@@ -216,7 +231,7 @@ private fun BottomProfileView(ppUrl : String, username : String){
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)
     ){
         Text(
             text = "Oluşturan",
@@ -231,7 +246,7 @@ private fun BottomProfileView(ppUrl : String, username : String){
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)
     ) {
         CircularImageView(url = ppUrl, size = 48)
         Spacer(modifier = Modifier.width(12.dp))

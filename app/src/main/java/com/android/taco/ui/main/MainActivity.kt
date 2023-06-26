@@ -78,7 +78,7 @@ class MainActivity : ComponentActivity() {
                 ChefScreen(navController = navController, viewModel = viewModel())
             }
             composable(BottomNavItem.Cart.screen_route) {
-                CartScreen()
+                CartScreen(viewModel = viewModel())
             }
             composable(BottomNavItem.Profile.screen_route) {
                 ProfileScreen(navController = navController, viewModel = viewModel())
