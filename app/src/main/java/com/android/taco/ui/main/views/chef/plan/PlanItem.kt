@@ -1,14 +1,16 @@
-package com.android.taco.ui.main.views.chef.recipe
+package com.android.taco.ui.main.views.chef.plan
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -29,63 +31,62 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import com.android.taco.R
-import com.android.taco.model.Recipe
+import com.android.taco.model.Plan
+import com.android.taco.ui.main.views.chef.recipe.getUrlForStorage
 import com.android.taco.ui.theme.BrandPrimary
 import com.android.taco.ui.theme.components.buttons.RightArrowButton
+import com.android.taco.ui.theme.components.image.CircularImageView
 
 @Composable
-fun RecipeItem(recipe : Recipe, onClick : () -> Unit){
-    var coverPhotoUrl by remember {
+fun PlanItem(plan: Plan, onClick : () -> Unit){
+    var creatorPpUrl by remember {
         mutableStateOf("")
     }
     LaunchedEffect(Unit){
-        getUrlForStorage(recipe.coverPhotoLink ?: ""){
-            coverPhotoUrl = it
+        getUrlForStorage(plan.creatorProfileURL ?: ""){
+            creatorPpUrl = it
         }
     }
 
     Surface(
         elevation = 9.dp, // play with the elevation values
         shape = RoundedCornerShape(16.dp),
-        modifier = Modifier.padding(4.dp).clickable {
-            onClick.invoke()
-        }
+        modifier = Modifier
+            .padding(4.dp)
+            .clickable {
+                onClick.invoke()
+            }
     ){
         Row(verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.height(100.dp).padding(12.dp)
+            modifier = Modifier
+                .height(100.dp)
+                .padding(12.dp)
         ) {
-            Column(modifier = Modifier.fillMaxHeight().fillMaxWidth(0.33f)) {
-                Image(
-                    painter = rememberImagePainter(
-                        data = coverPhotoUrl,
-                        builder = {
-                            crossfade(false)
-                            placeholder(R.color.imagePlaceholderColor)
-                        }
-                    ),
-                    contentDescription = "description",
-                    contentScale = ContentScale.FillBounds,
-                    modifier = Modifier
-                        .fillMaxSize()
-                )
-            }
 
-            Column(modifier = Modifier.fillMaxHeight().fillMaxWidth(0.8f).padding(8.dp)) {
+            Column(modifier = Modifier
+                .fillMaxHeight()
+                .fillMaxWidth(0.8f)
+                .padding(8.dp)) {
                 Text(
-                    text = recipe.name,
+                    text = plan.name,
                     color = BrandPrimary,
                     style = TextStyle(
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold),
                     modifier = Modifier
                 )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    CircularImageView(url = creatorPpUrl, size = 30)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = plan.creatorUserName,
+                        color = Color(0xff97a2b0).copy(alpha = 0.75f),
+                        style = TextStyle(
+                            fontSize = 14.sp)
+                    )
+                }
 
-                Text(
-                    text = recipe.creatorUserName,
-                    color = Color(0xff97a2b0).copy(alpha = 0.75f),
-                    lineHeight = 145.sp,
-                    style = TextStyle(
-                        fontSize = 14.sp))
+
 
 
             }
@@ -101,6 +102,6 @@ fun RecipeItem(recipe : Recipe, onClick : () -> Unit){
 
 @Preview
 @Composable
-fun RecipeItemPreview(){
-    RecipeItem(Recipe.dummyInstance()){}
+fun PlanItemPreview(){
+    PlanItem(plan = Plan.dummyInstance()){}
 }

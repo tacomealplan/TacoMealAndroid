@@ -14,6 +14,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.android.taco.ui.main.ScreensNavItem
 import com.android.taco.ui.main.views.chef.recipe.RecipeCard
 import com.android.taco.ui.theme.TacoTheme
 import com.android.taco.ui.theme.components.bars.PrimaryTopBar
@@ -35,7 +36,9 @@ fun FavouritesScreen(navController: NavController,
             ) {
                 items(viewModel.favouritesRecipes) {recipe ->
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        RecipeCard(recipe = recipe)
+                        RecipeCard(recipe = recipe){
+                            navController.navigate(ScreensNavItem.Recipe.screen_route+ "/${recipe.id}")
+                        }
                     }
                 }
             }

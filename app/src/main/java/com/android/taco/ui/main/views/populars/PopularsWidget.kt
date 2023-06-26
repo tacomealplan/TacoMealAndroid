@@ -79,7 +79,9 @@ fun PopularsWidget(navController: NavController,
                     .fillMaxWidth()
             ){
                 viewModel.popularRecipes.take(3).forEach { recipe ->
-                    RecipeCard(recipe = recipe)
+                    RecipeCard(recipe = recipe){
+                        navController.navigate(ScreensNavItem.Recipe.screen_route+ "/${recipe.id}")
+                    }
                     Spacer(modifier = Modifier.width(16.dp))
                 }
             }

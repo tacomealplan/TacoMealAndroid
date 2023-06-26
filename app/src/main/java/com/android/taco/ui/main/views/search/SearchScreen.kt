@@ -3,6 +3,8 @@ package com.android.taco.ui.main.views.search
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,8 +16,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetLayout
@@ -43,7 +48,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.android.taco.ui.main.views.chef.CategoriesWidget
 import com.android.taco.ui.main.views.chef.MealWidget
+import com.android.taco.ui.main.views.chef.recipe.RecipeItem
 import com.android.taco.ui.main.views.populars.PopularsScreen
 import com.android.taco.ui.main.views.populars.PopularsWidget
 import com.android.taco.ui.theme.BrandPrimary
@@ -74,7 +81,7 @@ fun SearchScreen(navController: NavController,
         sheetState = sheetState,
         sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
         sheetElevation = 9.dp,
-        sheetContent = { BottomSheet() },
+        sheetContent = { BottomSheet(viewModel = viewModel) },
         modifier = Modifier.fillMaxSize()
     ) {
         Column(
@@ -82,7 +89,6 @@ fun SearchScreen(navController: NavController,
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.White)
-                .wrapContentSize(Alignment.Center)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
@@ -91,6 +97,8 @@ fun SearchScreen(navController: NavController,
             ) {
                 SearchTextField(value = searchText, placeholder = "Ara", modifier = Modifier.fillMaxWidth(0.8f), onValueChange = {value ->
                     searchText = value
+                    if(searchText.isNotBlank() && !viewModel.isLoading.value)
+                        viewModel.searchRecipeByText(searchText)
                 })
 
                 FilterButton {
@@ -104,12 +112,38 @@ fun SearchScreen(navController: NavController,
                 Row(modifier = Modifier.padding(horizontal = 24.dp)) {
                     PopularsWidget(navController)
                 }
+            }else{
+                Column(modifier = Modifier
+                    .fillMaxSize()
+                    .padding(24.dp)
+                    .verticalScroll(rememberScrollState())
+                ) {
+                    if(viewModel.isLoading.value){
+                        Box(contentAlignment = Alignment.Center,
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            CircularProgressIndicator(color = BrandSecondary)
+                        }
+
+                    }else{
+                        if(viewModel.searchResults.isEmpty()){
+                            Text(
+                                text = "Aradağınız kriterlerde tarif bulunamadı",
+                                color = BrandPrimary,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+                        viewModel.searchResults.forEach {
+                            RecipeItem(recipe = it){}
+                        }
+                    }
+
+                }
             }
 
 
-            Column(modifier = Modifier.fillMaxSize()) {
 
-            }
 
 
         }
@@ -117,7 +151,7 @@ fun SearchScreen(navController: NavController,
 }
 
 @Composable
-fun BottomSheet() {
+fun BottomSheet(viewModel: SearchViewModel) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.padding(24.dp)
@@ -131,6 +165,8 @@ fun BottomSheet() {
         )
 
         MealWidget()
+        Spacer(modifier = Modifier.height(24.dp))
+        CategoriesWidget(viewModel.categories)
         Spacer(modifier = Modifier.height(24.dp))
 
         SecondaryButton(text = "Filtreyi Uygula") {

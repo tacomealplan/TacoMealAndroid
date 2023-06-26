@@ -42,7 +42,7 @@ import com.android.taco.model.Recipe
 import com.google.firebase.storage.FirebaseStorage
 
 @Composable
-fun RecipeCard(recipe: Recipe) {
+fun RecipeCard(recipe: Recipe, onClick: () -> Unit) {
     var coverPhotoUrl by remember {
         mutableStateOf("")
     }
@@ -62,7 +62,7 @@ fun RecipeCard(recipe: Recipe) {
             modifier = Modifier
                 .padding()
                 .clickable {
-
+                    onClick.invoke()
                 }
         ) {
             Column(
@@ -170,5 +170,5 @@ fun ButtonLike(onClick : () -> Unit) {
 @Preview
 @Composable
 fun RecipeCardPreview(){
-    RecipeCard(recipe = Recipe.dummyInstance())
+    RecipeCard(recipe = Recipe.dummyInstance()){}
 }

@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.android.taco.ui.main.ScreensNavItem
 import com.android.taco.ui.main.views.chef.recipe.RecipeCard
 import com.android.taco.ui.theme.BrandSecondary
 import com.android.taco.ui.theme.TacoTheme
@@ -43,7 +44,9 @@ fun PopularsScreen(navController: NavController,
                 ) {
                     items(viewModel.popularRecipes) {recipe ->
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            RecipeCard(recipe = recipe)
+                            RecipeCard(recipe = recipe){
+                                navController.navigate(ScreensNavItem.Recipe.screen_route+ "/${recipe.id}")
+                            }
                         }
                     }
                 }

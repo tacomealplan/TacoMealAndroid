@@ -72,8 +72,8 @@ fun MealWidget(){
 }
 
 @Composable
-fun List(selectedDay : Meal = Meal.Breakfast, onItemSelected : (meal : Meal) -> Unit) {
-    Row(modifier = Modifier.scrollable(state = rememberScrollState(), orientation = Orientation.Horizontal)
+private fun List(selectedDay : Meal = Meal.Breakfast, onItemSelected : (meal : Meal) -> Unit) {
+    Row(modifier = Modifier
     ) {
         Meal.values().forEach { meal ->
             Box(

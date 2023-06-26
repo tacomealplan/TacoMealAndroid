@@ -24,11 +24,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.android.taco.R
+import com.android.taco.model.Plan
 import com.android.taco.ui.theme.TacoTheme
 import com.android.taco.ui.main.views.home.HomeScreen
 import com.android.taco.ui.main.views.cart.CartScreen
 import com.android.taco.ui.main.views.chef.ChefScreen
 import com.android.taco.ui.main.views.chef.plan.PlanScreen
+import com.android.taco.ui.main.views.chef.recipe.detail.RecipeScreen
 import com.android.taco.ui.main.views.favourites.FavouritesScreen
 import com.android.taco.ui.main.views.populars.PopularsScreen
 import com.android.taco.ui.main.views.profile.ProfileEditScreen
@@ -73,7 +75,7 @@ class MainActivity : ComponentActivity() {
                 SearchScreen(navController = navController, viewModel = viewModel())
             }
             composable(BottomNavItem.Chef.screen_route) {
-                ChefScreen()
+                ChefScreen(navController = navController, viewModel = viewModel())
             }
             composable(BottomNavItem.Cart.screen_route) {
                 CartScreen()
@@ -92,7 +94,13 @@ class MainActivity : ComponentActivity() {
             }
 
             composable(ScreensNavItem.Plan.screen_route) {
-                PlanScreen(navController = navController)
+                PlanScreen(plan = Plan.dummyInstance(), navController = navController)
+            }
+
+            composable(ScreensNavItem.Recipe.screen_route + "/{recipeId}") {
+                it.arguments?.getString("recipeId")?.let { recipeId ->
+                    RecipeScreen(recipeId = recipeId, navController = navController, viewModel = viewModel())
+                }
             }
         }
     }
@@ -106,36 +114,42 @@ class MainActivity : ComponentActivity() {
             BottomNavItem.Cart,
             BottomNavItem.Profile
         )
-        BottomNavigation(
-            backgroundColor = Color(0xFFFF8C00),
-            contentColor = Color.White,
-            modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(15.dp, 15.dp, 0.dp, 0.dp)).height(height = 80.dp)
-        ) {
-            val navBackStackEntry by navController.currentBackStackEntryAsState()
-            val currentRoute = navBackStackEntry?.destination?.route
-            items.forEach { item ->
-                BottomNavigationItem(
-                    icon = { Icon(painterResource(id = item.icon), contentDescription = item.title) },
-                    label = { /*Text(text = item.title,fontSize = 9.sp)*/ },
-                    selectedContentColor = Color.White,
-                    unselectedContentColor = Color.White.copy(0.4f),
-                    alwaysShowLabel = true,
-                    selected = currentRoute?.contains(item.screen_route) == true,
-                    onClick = {
-                        navController.navigate(item.screen_route) {
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+        val currentRoute = navBackStackEntry?.destination?.route
+        if(items.any { it.screen_route == currentRoute }){
+            BottomNavigation(
+                backgroundColor = Color(0xFFFF8C00),
+                contentColor = Color.White,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(15.dp, 15.dp, 0.dp, 0.dp))
+                    .height(height = 80.dp)
+            ) {
+                items.forEach { item ->
+                    BottomNavigationItem(
+                        icon = { Icon(painterResource(id = item.icon), contentDescription = item.title) },
+                        label = { /*Text(text = item.title,fontSize = 9.sp)*/ },
+                        selectedContentColor = Color.White,
+                        unselectedContentColor = Color.White.copy(0.4f),
+                        alwaysShowLabel = true,
+                        selected = currentRoute?.contains(item.screen_route) == true,
+                        onClick = {
+                            navController.navigate(item.screen_route) {
 
-                            navController.graph.startDestinationRoute?.let { screen_route ->
-                                popUpTo(screen_route) {
-                                    saveState = true
+                                navController.graph.startDestinationRoute?.let { screen_route ->
+                                    popUpTo(screen_route) {
+                                        saveState = true
+                                    }
                                 }
+                                launchSingleTop = true
+                                restoreState = true
                             }
-                            launchSingleTop = true
-                            restoreState = true
                         }
-                    }
-                )
+                    )
+                }
             }
         }
+
     }
 
     companion object{
@@ -158,6 +172,7 @@ sealed class ScreensNavItem(var title:String, var screen_route:String){
     object Favourites : ScreensNavItem("Favourites", "favourites")
     object Populars : ScreensNavItem("Populars", "populars")
     object Plan : ScreensNavItem("Plan", "plan")
+    object Recipe : ScreensNavItem("Recipe", "recipe")
 }
 
 
