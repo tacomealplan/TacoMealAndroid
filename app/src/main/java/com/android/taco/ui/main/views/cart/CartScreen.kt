@@ -3,6 +3,7 @@ package com.android.taco.ui.main.views.cart
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,7 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
@@ -25,6 +28,7 @@ import androidx.compose.material.icons.outlined.Circle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -44,12 +48,17 @@ import com.android.taco.ui.theme.TacoTheme
 import com.android.taco.ui.theme.White
 import com.android.taco.ui.theme.components.bars.PrimaryTopBar
 import com.android.taco.ui.theme.components.bars.TitleTopBar
+import com.android.taco.ui.theme.components.dialogBox.NewCartItemDialog
 
 @Composable
 fun CartScreen(viewModel: CartViewModel) {
     var isLoading by remember {
         viewModel.isLoading
     }
+    var cartItems = remember {
+        viewModel.userCartItems
+    }
+    var openDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = Unit, block = {
         viewModel.getUserCartItems()
@@ -59,34 +68,50 @@ fun CartScreen(viewModel: CartViewModel) {
             TitleTopBar(title = "Alışveriş Listem")
         }, floatingActionButton = {
             FloatingActionButton(
-                onClick = {viewModel.addUserCartItem()},
+                onClick = {openDialog = true},
                 backgroundColor = BrandSecondary,
                 contentColor = White
             ) {
                 Icon(Icons.Filled.Add,"")
             }
         }) {
-            Column(
-                verticalArrangement = Arrangement.Top,
-                modifier = Modifier
-                    .padding(it)
-                    .padding(12.dp)
-                    .fillMaxSize()
-                    .background(White)
-            ) {
-                if(isLoading){
-                    CircularProgressIndicator()
-                }else{
-                    viewModel.userCartItems.forEach {item->
-                        CartItem(cartItem = item.materialName,
-                            isSelected = item.isChecked
-                        ) {
-
+            Box(modifier = Modifier.fillMaxSize()) {
+                Column(
+                    verticalArrangement = Arrangement.Top,
+                    modifier = Modifier
+                        .verticalScroll(state = rememberScrollState())
+                        .padding(it)
+                        .padding(12.dp)
+                        .fillMaxSize()
+                        .background(White)
+                ) {
+                    if(isLoading){
+                        Box(contentAlignment = Alignment.Center,
+                            modifier = Modifier.fillMaxSize()) {
+                            CircularProgressIndicator(color = BrandSecondary)
+                        }
+                    }else{
+                        cartItems.forEach {item->
+                            CartItem(cartItem = item.materialName,
+                                isSelected = item.isChecked
+                            ) {
+                                item.isChecked = !item.isChecked
+                                viewModel.checkCartItem(item)
+                            }
                         }
                     }
+
                 }
 
+                if(openDialog){
+                    NewCartItemDialog(onDismiss = { openDialog = false }, onSaved = {cartItem ->
+                        viewModel.addUserCartItem(cartItem)
+                        openDialog = false
+                    })
+                }
             }
+
+
         }
     }
 
