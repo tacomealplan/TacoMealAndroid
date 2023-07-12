@@ -15,6 +15,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Divider
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -52,10 +53,10 @@ import com.android.taco.ui.theme.components.dialogBox.NewCartItemDialog
 
 @Composable
 fun CartScreen(viewModel: CartViewModel) {
-    var isLoading by remember {
+    val isLoading by remember {
         viewModel.isLoading
     }
-    var cartItems = remember {
+    val cartItems = remember {
         viewModel.userCartItems
     }
     var openDialog by remember { mutableStateOf(false) }
@@ -98,6 +99,7 @@ fun CartScreen(viewModel: CartViewModel) {
                                 item.isChecked = !item.isChecked
                                 viewModel.checkCartItem(item)
                             }
+                            Divider()
                         }
                     }
 

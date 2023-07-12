@@ -47,14 +47,14 @@ fun MaterialListScreen(materialList: ArrayList<Material>){
         ) {
             Text(
                 text = "Malzemeler",
-                color = Color(0xff0a2533),
+                color = BrandPrimary,
                 style = TextStyle(
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold),
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Row(horizontalArrangement = Arrangement.SpaceBetween,
+            Row(horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -64,7 +64,7 @@ fun MaterialListScreen(materialList: ArrayList<Material>){
                     style = TextStyle(
                         fontSize = 16.sp))
 
-                Text(
+                /*Text(
                     text = "Hepsini Sepete Ekle",
                     color = Color(0xffff8c00),
                     style = TextStyle(
@@ -73,7 +73,7 @@ fun MaterialListScreen(materialList: ArrayList<Material>){
                     modifier = Modifier.clickable {
 
                     }
-                )
+                )*/
             }
             /*LazyColumn {
                 items(materialList.size) { index ->
@@ -86,7 +86,7 @@ fun MaterialListScreen(materialList: ArrayList<Material>){
             MaterialRow(material = materialList.first()) {
                 
             }*/
-            /*Column(
+            Column(
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier//.verticalScroll(state = rememberScrollState()).fillMaxSize()
@@ -96,12 +96,14 @@ fun MaterialListScreen(materialList: ArrayList<Material>){
 
                 }
 
-            }*/
+            }
         }
     }
 }
 @Composable
 fun MaterialRow(material: Material, onAdded : () -> Unit) {
+    val isTitle = material.name.startsWith("**") &&
+            material.name.endsWith("**")
     Surface(
         shape = RoundedCornerShape(16.dp),
         color = White,
@@ -116,26 +118,29 @@ fun MaterialRow(material: Material, onAdded : () -> Unit) {
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp)
+                .padding(vertical = 8.dp, horizontal = 12.dp)
         ) {
             Text(
-                text = material.name,
+                text = if(isTitle) material.name.removeSurrounding("**") else material.name,
                 color = BrandPrimary,
                 style = TextStyle(
                     fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold),
+                    fontWeight = if(isTitle) FontWeight.Bold else FontWeight.Normal),
                 modifier = Modifier
                     .width(width = 196.dp))
-            Image(
-                painter = painterResource(id = R.drawable.plus),
-                contentDescription = "Added",
-                colorFilter = ColorFilter.tint(Color(0xffff8c00)),
-                modifier = Modifier
-                    .size(size = 28.dp)
-                    .clickable {
-                        onAdded.invoke()
-                    }
-            )
+            if(!isTitle){
+                Image(
+                    painter = painterResource(id = R.drawable.plus),
+                    contentDescription = "Added",
+                    colorFilter = ColorFilter.tint(Color(0xffff8c00)),
+                    modifier = Modifier
+                        .size(size = 28.dp)
+                        .clickable {
+                            onAdded.invoke()
+                        }
+                )
+            }
+
         }
     }
 }
@@ -145,6 +150,6 @@ fun MaterialRow(material: Material, onAdded : () -> Unit) {
 fun MaterialListScreenPreview(){
     MaterialListScreen(
         arrayListOf<Material>(Material("1", "Test"),
-        Material("1", "Test"),
+        Material("1", "**Test**"),
         Material("1", "Test")))
 }

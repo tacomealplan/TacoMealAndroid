@@ -14,6 +14,7 @@ class RecipeByIdViewModel @Inject constructor(
     val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
     var isLoading = mutableStateOf(false)
     var recipe = mutableStateOf<Recipe?>(null)
+    var coverPhotoUrl = mutableStateOf("")
 
 
     fun getRecipeById(recipeId : String ){
@@ -27,8 +28,13 @@ class RecipeByIdViewModel @Inject constructor(
                     if(item.data != null)
                         recipes.add(Recipe.newInstance(item.data!!))
                 }
-                if(recipes.isNotEmpty())
+                if(recipes.isNotEmpty()){
                     recipe.value = recipes.first()
+                    getUrlForStorage(recipe.value!!.coverPhotoLink ?: ""){url->
+                        coverPhotoUrl.value = url
+                    }
+                }
+
                 isLoading.value = false
             }
             .addOnFailureListener{

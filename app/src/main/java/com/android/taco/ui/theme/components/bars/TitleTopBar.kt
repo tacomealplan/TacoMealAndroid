@@ -35,9 +35,8 @@ fun TitleTopBar(title : String){
                 text = title,
                 color = BrandPrimary,
                 textAlign = TextAlign.Center,
-                lineHeight = 135.sp,
                 style = TextStyle(
-                    fontSize = 24.sp,
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.Bold)
             )
         }

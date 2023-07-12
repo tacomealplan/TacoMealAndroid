@@ -1,5 +1,7 @@
 package com.android.taco.ui.account
 
+import android.content.Intent
+import android.provider.Settings.Global.getString
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,10 +33,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.android.taco.R
 import com.android.taco.ui.main.MainActivity
 import com.android.taco.ui.theme.NeutralGray2
 import com.android.taco.ui.theme.TacoTheme
@@ -44,14 +48,16 @@ import com.android.taco.ui.theme.components.buttons.PrimaryButton
 import com.android.taco.ui.theme.components.editTexts.EmailTextField
 import com.android.taco.ui.theme.components.editTexts.PasswordTextField
 import com.android.taco.ui.theme.components.editTexts.PrimaryTextField
+import com.android.taco.ui.theme.components.loadingBar.CircularProgress
 import com.android.taco.util.Resource
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 
 @Composable
 fun LoginScreen(navController: NavHostController,
                 viewModel : AuthViewModel
 ){
     val context = LocalContext.current
-
     TacoTheme() {
         Scaffold(
             topBar = {
@@ -60,77 +66,83 @@ fun LoginScreen(navController: NavHostController,
                 }
             }
         ) { it ->
-            Column(horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .fillMaxWidth()
-                    .padding(it)
-
-            ) {
-                var email by remember { mutableStateOf("acetinkaya892@gmail.com") }
-                var password by remember { mutableStateOf("123456") }
+            Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()){
                 Column(horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier
+                        .fillMaxSize()
                         .fillMaxWidth()
-                        .padding(top = 16.dp)
-                        .padding(horizontal = 24.dp)
+                        .padding(it)
+
                 ) {
-                    EmailTextField(value = email, label = "E-Posta", placeholder = "E-Posta adresinizi girin"){ value ->
-                        email = value
+                    var email by remember { mutableStateOf("acetinkaya892@gmail.com") }
+                    var password by remember { mutableStateOf("123456") }
+                    Column(horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp)
+                            .padding(horizontal = 24.dp)
+                    ) {
+                        EmailTextField(value = email, label = "E-Posta", placeholder = "E-Posta adresinizi girin"){ value ->
+                            email = value
+                        }
+                        PasswordTextField(value = password, label = "Parola", placeholder = "Parolanızı girin"){value ->
+                            password = value
+                        }
                     }
-                    PasswordTextField(value = password, label = "Parola", placeholder = "Parolanızı girin"){value ->
-                        password = value
-                    }
-                }
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    PrimaryButton(text = "Giriş Yap") {
-                        viewModel.signIn(email = email, password = password) {
-                            when (it) {
-                                is Resource.Success -> {
-                                    MainActivity.start(context)
-                                }
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        PrimaryButton(text = "Giriş Yap") {
+                            viewModel.signIn(email = email, password = password) {
+                                when (it) {
+                                    is Resource.Success -> {
+                                        MainActivity.start(context)
+                                    }
 
-                                is Resource.Error -> {
+                                    is Resource.Error -> {
 
+                                    }
                                 }
                             }
+
                         }
-
+                        Spacer(modifier = Modifier.size(16.dp))
+                        Text(
+                            text = "Parolanı mı unuttun?",
+                            color = Color(0xff0a2533),
+                            textAlign = TextAlign.Center,
+                            lineHeight = 135.sp,
+                            style = TextStyle(
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold),
+                            modifier = Modifier.clickable {
+                                navController.navigate("ForgotPasswordScreen")
+                            }
+                        )
                     }
-                    Spacer(modifier = Modifier.size(16.dp))
-                    Text(
-                        text = "Parolanı mı unuttun?",
-                        color = Color(0xff0a2533),
-                        textAlign = TextAlign.Center,
-                        lineHeight = 135.sp,
-                        style = TextStyle(
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold),
-                        modifier = Modifier.clickable {
-                            navController.navigate("ForgotPasswordScreen")
+
+
+
+                    Spacer(modifier = Modifier.height(140.dp))
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            text = "veya diğer hesaplarınızla girin",
+                            color = NeutralGray2,
+                            textAlign = TextAlign.Center,
+                            lineHeight = 145.sp,
+                            style = TextStyle(
+                                fontSize = 16.sp))
+                        Spacer(modifier = Modifier.size(16.dp))
+                        GoogleButton {
+
                         }
-                    )
-                }
-
-
-                
-                Spacer(modifier = Modifier.height(140.dp))
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        text = "veya diğer hesaplarınızla girin",
-                        color = NeutralGray2,
-                        textAlign = TextAlign.Center,
-                        lineHeight = 145.sp,
-                        style = TextStyle(
-                            fontSize = 16.sp))
-                    Spacer(modifier = Modifier.size(16.dp))
-                    GoogleButton {
-
                     }
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
-                Spacer(modifier = Modifier.height(16.dp))
+                if(viewModel.isLoading.value){
+                    CircularProgress()
+                }
             }
+
         }
     }
 }

@@ -1,5 +1,7 @@
 package com.android.taco.ui.account
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -28,6 +30,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.android.taco.R
+import com.android.taco.ui.main.MainActivity
 import com.android.taco.ui.theme.TacoTheme
 import com.android.taco.ui.theme.components.buttons.PrimaryButton
 import dagger.hilt.android.AndroidEntryPoint
@@ -41,6 +44,17 @@ class AccountActivity : ComponentActivity() {
         setContent {
             val navController = rememberNavController()
             AccountNavigationHost(navController)
+        }
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        finishAffinity()
+    }
+
+    companion object{
+        fun start(context : Context){
+            context.startActivity(Intent(context, AccountActivity::class.java))
         }
     }
 

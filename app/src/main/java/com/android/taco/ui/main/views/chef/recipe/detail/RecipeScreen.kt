@@ -24,6 +24,8 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -54,8 +56,10 @@ import com.android.taco.model.Material
 import com.android.taco.model.Step
 import com.android.taco.ui.main.views.chef.materials.MaterialListScreen
 import com.android.taco.ui.main.views.chef.materials.MaterialRow
+import com.android.taco.ui.main.views.chef.recipe.ButtonLike
 import com.android.taco.ui.main.views.chef.steps.StepListScreen
 import com.android.taco.ui.theme.BrandPrimary
+import com.android.taco.ui.theme.BrandSecondary
 import com.android.taco.ui.theme.NeutralGray2
 import com.android.taco.ui.theme.NeutralGray4
 import com.android.taco.ui.theme.TacoTheme
@@ -93,7 +97,7 @@ fun RecipeScreen(recipeId : String,
                 .background(color = Color.White)
         ) {
             if(viewModel.isLoading.value){
-                CircularProgressIndicator()
+                CircularProgressIndicator(color = BrandSecondary)
             }else{
                 Box(modifier = Modifier.fillMaxWidth()) {
                     Image(
@@ -114,7 +118,8 @@ fun RecipeScreen(recipeId : String,
                             .fillMaxSize()
                             .background(color = Color.Transparent)
                     ) {
-                        Spacer(modifier = Modifier.height(250.dp))
+                        HeaderBar(navController)
+                        Spacer(modifier = Modifier.height(120.dp))
                         Column(
                             verticalArrangement = Arrangement.Top,
                             horizontalAlignment = Alignment.CenterHorizontally,
@@ -123,7 +128,7 @@ fun RecipeScreen(recipeId : String,
                                 .fillMaxSize()
                                 .background(color = Color.White, shape = RoundedCornerShape(16.dp))
                         ){
-
+                            Spacer(modifier = Modifier.height(12.dp))
                             Text(
                                 text = recipe?.name ?: "",
                                 color = BrandPrimary,
@@ -138,7 +143,7 @@ fun RecipeScreen(recipeId : String,
                             Text(
                                 text = buildAnnotatedString {
                                     withStyle(style = SpanStyle(
-                                        color = Color(0xff748189),
+                                        color = BrandPrimary,
                                         fontSize = 16.sp)
                                     ) {append(recipe?.description ?: "")}
                                 },
@@ -167,9 +172,9 @@ fun RecipeScreen(recipeId : String,
                                     Spacer(modifier = Modifier.width(4.dp))
                                     Text(
                                         text = "${recipe?.personCount} Kişilik",
-                                        color = Color(0xff748189),
+                                        color = BrandPrimary,
                                         style = TextStyle(
-                                            fontSize = 14.sp))
+                                            fontSize = 16.sp))
                                 }
 
                                 Row(
@@ -186,16 +191,16 @@ fun RecipeScreen(recipeId : String,
                                     Spacer(modifier = Modifier.width(4.dp))
                                     Text(
                                         text = "${recipe?.duration} dk",
-                                        color = Color(0xff748189),
+                                        color = BrandPrimary,
                                         style = TextStyle(
-                                            fontSize = 14.sp))
+                                            fontSize = 16.sp))
                                 }
                             }
 
                             Column(horizontalAlignment = Alignment.CenterHorizontally,
                                 modifier = Modifier.padding(24.dp)
                             ) {
-                                TabsTwoOptions(selectedTab){ selected ->
+                                TabsTwoOptions(tabs = arrayListOf("Malzemeler", "Adımlar"), selectedTab){ selected ->
                                     selectedTab = selected
                                 }
                                 if(selectedTab == 0){
@@ -211,27 +216,47 @@ fun RecipeScreen(recipeId : String,
                             }
                             Divider(modifier = Modifier.padding(horizontal = 24.dp))
                             BottomProfileView(ppUrl = recipe?.creatorPhotoURL ?: "", username = recipe?.creatorUserName ?: "")
+                            Spacer(modifier = Modifier.height(12.dp))
 
                         }
                     }
                 }
-
-
-
             }
-
-
-
         }
     }
 
 }
+
+@Composable
+private fun HeaderBar(navController: NavController) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 12.dp, horizontal = 12.dp)
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.cancel),
+            contentDescription = "Localized description",
+            tint= Color.White,
+            modifier = Modifier.clickable {
+                navController.popBackStack()
+            })
+        ButtonLike(size = 48) {
+
+        }
+    }
+}
+
 @Composable
 private fun BottomProfileView(ppUrl : String, username : String){
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start,
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp)
     ){
         Text(
             text = "Oluşturan",
@@ -246,7 +271,9 @@ private fun BottomProfileView(ppUrl : String, username : String){
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start,
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp)
     ) {
         CircularImageView(url = ppUrl, size = 48)
         Spacer(modifier = Modifier.width(12.dp))

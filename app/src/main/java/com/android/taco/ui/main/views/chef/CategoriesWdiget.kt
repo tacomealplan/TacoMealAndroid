@@ -21,6 +21,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -40,10 +41,7 @@ import com.android.taco.ui.theme.BrandSecondary
 import com.android.taco.ui.theme.NeutralGray4
 
 @Composable
-fun CategoriesWidget(categories : List<String>){
-    val selectedItems = remember {
-        mutableStateListOf<String>()
-    }
+fun CategoriesWidget(categories : List<String>, selectedItems: List<String> = ArrayList(), onItemSelected : (item : String) -> Unit){
     Column(modifier = Modifier
         .fillMaxWidth()) {
         Row(verticalAlignment = Alignment.CenterVertically,
@@ -70,11 +68,8 @@ fun CategoriesWidget(categories : List<String>){
                 .fillMaxWidth()
         ){
             List(categories = categories, selectedItems = selectedItems.toList()){
-                if(selectedItems.contains(it)){
-                    selectedItems.remove(it)
-                }else{
-                    selectedItems.add(it)
-                }
+                onItemSelected.invoke(it)
+
             }
         }
 
@@ -110,5 +105,5 @@ private fun List(categories: List<String>, selectedItems: List<String> = ArrayLi
 @Preview
 @Composable
 fun CategoriesPreview(){
-    CategoriesWidget(listOf("Dünya Mutfakları","Diyet", "Et Yemeği"))
+    CategoriesWidget(listOf("Dünya Mutfakları","Diyet", "Et Yemeği"), selectedItems = listOf("Diyet")){}
 }

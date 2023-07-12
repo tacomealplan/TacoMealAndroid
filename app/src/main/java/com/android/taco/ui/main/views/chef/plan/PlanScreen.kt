@@ -11,6 +11,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,19 +27,30 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.android.taco.model.Plan
+import com.android.taco.ui.main.ScreensNavItem
 import com.android.taco.ui.main.views.chef.recipe.RecipeCardById
 import com.android.taco.ui.theme.BrandPrimary
 import com.android.taco.ui.theme.TacoTheme
 import com.android.taco.ui.theme.components.bars.PrimaryTopBar
 
 @Composable
-fun PlanScreen(plan: Plan, navController: NavController){
+fun PlanScreen(planId: String,
+               viewModel: PlanViewModel,
+               navController: NavController
+){
+    LaunchedEffect(key1 = Unit, block = {
+        viewModel.getPlanById(planId)
+    })
     var selectedDay by remember {
         mutableStateOf<Day>(Day.Monday)
     }
+
+    val plan by remember {
+        viewModel.plan
+    }
     TacoTheme() {
         Scaffold(topBar = {
-            PrimaryTopBar(title = "Haftalık Planım") {
+            PrimaryTopBar(title = "Plan Detayı") {
                 navController.popBackStack()
             }
         }) {
@@ -73,9 +85,11 @@ fun PlanScreen(plan: Plan, navController: NavController){
                     horizontalArrangement = Arrangement.Start,
                     modifier = Modifier
                 ) {
-                    plan.getDay(selectedDay).breakfast.forEach { recipeId ->
+                    plan?.getDay(selectedDay)?.breakfast?.forEach { recipeId ->
                         if(recipeId.isNotBlank())
-                            RecipeCardById(recipeId = recipeId, viewModel = viewModel())
+                            RecipeCardById(recipeId = recipeId, viewModel = viewModel()){
+                                navController.navigate(ScreensNavItem.Recipe.screen_route + "/${recipeId}")
+                            }
                     }
 
                 }
@@ -92,9 +106,11 @@ fun PlanScreen(plan: Plan, navController: NavController){
                     horizontalArrangement = Arrangement.Start,
                     modifier = Modifier
                 ) {
-                    plan.getDay(selectedDay).lunch.forEach {recipeId ->
+                    plan?.getDay(selectedDay)?.lunch?.forEach { recipeId ->
                         if(recipeId.isNotBlank())
-                            RecipeCardById(recipeId = recipeId, viewModel = viewModel())
+                            RecipeCardById(recipeId = recipeId, viewModel = viewModel()){
+                                navController.navigate(ScreensNavItem.Recipe.screen_route + "/${recipeId}")
+                            }
                     }
 
                 }
@@ -112,9 +128,11 @@ fun PlanScreen(plan: Plan, navController: NavController){
                     horizontalArrangement = Arrangement.Start,
                     modifier = Modifier
                 ) {
-                    plan.getDay(selectedDay).dinner.forEach {recipeId ->
+                    plan?.getDay(selectedDay)?.dinner?.forEach { recipeId ->
                         if(recipeId.isNotBlank())
-                            RecipeCardById(recipeId = recipeId, viewModel = viewModel())
+                            RecipeCardById(recipeId = recipeId, viewModel = viewModel()){
+                                navController.navigate(ScreensNavItem.Recipe.screen_route + "/${recipeId}")
+                            }
                     }
 
                 }
@@ -122,10 +140,4 @@ fun PlanScreen(plan: Plan, navController: NavController){
             }
         }
     }
-}
-
-@Preview
-@Composable
-fun PlanScreenPreview(){
-    PlanScreen(plan = Plan.dummyInstance(), navController = rememberNavController())
 }

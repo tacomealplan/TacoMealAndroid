@@ -25,7 +25,7 @@ import com.android.taco.ui.theme.BrandPrimary
 import com.android.taco.ui.theme.NeutralGray4
 
 @Composable
-fun TabsTwoOptions(selectedTab : Int, onTabSelected : (tab : Int) -> Unit){
+fun TabsTwoOptions(tabs : ArrayList<String>, selectedTab : Int, onTabSelected : (tab : Int) -> Unit){
     Surface(shape = RoundedCornerShape(16.dp),
         color = NeutralGray4,
         modifier = Modifier.wrapContentSize()
@@ -37,46 +37,27 @@ fun TabsTwoOptions(selectedTab : Int, onTabSelected : (tab : Int) -> Unit){
                 .wrapContentSize()
                 .padding(4.dp)
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier
-                    .clip(shape = RoundedCornerShape(16.dp))
-                    .background(color = if (selectedTab == 0) BrandPrimary else NeutralGray4)
-                    .clickable {
-                        onTabSelected.invoke(0)
-                    }
-            ) {
-                Text(
-                    text = "Malzemeler",
-                    textAlign = TextAlign.Center,
-                    color = if(selectedTab == 0) Color.White else BrandPrimary,
+            tabs.forEachIndexed { index, s ->
+                Box(
+                    contentAlignment = Alignment.Center,
                     modifier = Modifier
-                        .width(150.dp)
-                        .padding(vertical = 8.dp),
-                    style = TextStyle(
-                        fontSize = 16.sp)
-                )
-            }
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .clip(shape = RoundedCornerShape(16.dp))
-                    .background(color = if (selectedTab == 1) BrandPrimary else NeutralGray4)
-                    .clickable {
-                        onTabSelected.invoke(1)
-                    }
-            ) {
-                Text(
-                    text = "Adımlar",
-                    textAlign = TextAlign.Center,
-                    color = if(selectedTab == 1) Color.White else BrandPrimary,
-                    modifier = Modifier
-                        .width(150.dp)
-                        .padding(vertical = 8.dp),
-                    style = TextStyle(
-                        fontSize = 16.sp)
-                )
+                        .clip(shape = RoundedCornerShape(16.dp))
+                        .background(color = if (selectedTab == index) BrandPrimary else NeutralGray4)
+                        .clickable {
+                            onTabSelected.invoke(index)
+                        }
+                ) {
+                    Text(
+                        text = s,
+                        textAlign = TextAlign.Center,
+                        color = if(selectedTab == index) Color.White else BrandPrimary,
+                        modifier = Modifier
+                            .width(150.dp)
+                            .padding(vertical = 16.dp),
+                        style = TextStyle(
+                            fontSize = 16.sp)
+                    )
+                }
             }
         }
     }
@@ -85,5 +66,5 @@ fun TabsTwoOptions(selectedTab : Int, onTabSelected : (tab : Int) -> Unit){
 @Preview
 @Composable
 fun TabsTwoOptionsPreview(){
-    TabsTwoOptions(selectedTab = 0){}
+    TabsTwoOptions(tabs = arrayListOf("Malzemeler", "Adımlar"),selectedTab = 0){}
 }

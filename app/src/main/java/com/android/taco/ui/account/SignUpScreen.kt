@@ -1,6 +1,7 @@
 package com.android.taco.ui.account
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -32,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.android.taco.ui.main.MainActivity
 import com.android.taco.ui.theme.BrandPrimary
 import com.android.taco.ui.theme.TacoTheme
 import com.android.taco.ui.theme.components.bars.PrimaryTopBar
@@ -39,83 +42,99 @@ import com.android.taco.ui.theme.components.buttons.PrimaryButton
 import com.android.taco.ui.theme.components.editTexts.EmailTextField
 import com.android.taco.ui.theme.components.editTexts.PasswordTextField
 import com.android.taco.ui.theme.components.editTexts.PrimaryTextField
+import com.android.taco.ui.theme.components.loadingBar.CircularProgress
+import com.android.taco.util.Resource
 
 @Composable
 fun SignUpScreen(navController: NavHostController,
                  viewModel : AuthViewModel
 ){
-    var email by remember { mutableStateOf("acetinkaya892@gmail.com") }
-    var password by remember { mutableStateOf("123456") }
+    val context = LocalContext.current
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var userName by remember { mutableStateOf("") }
+
     TacoTheme() {
         Scaffold(topBar = {
             PrimaryTopBar(title = "Hesap Oluştur") {
                 navController.popBackStack()
             }
         }) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .padding(it)
-                    .padding(24.dp)
-                    .fillMaxSize()) {
-                Row {
-                    PrimaryTextField(value = "", label = "Ad", placeholder = "Ad", modifier = Modifier.fillMaxWidth(0.5f)){
+            Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()){
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .padding(it)
+                        .padding(24.dp)
+                        .fillMaxSize()) {
 
+                    PrimaryTextField(value = userName, label = "Kullanıcı Adı", placeholder = "Kullanıcı Adı"){value->
+                        userName = value
                     }
-                    PrimaryTextField(value = "", label = "Soyad", placeholder = "Soyad"){
-
+                    EmailTextField(value = email, label = "E-Posta", placeholder = "E-Posta adresinizi girin"){ value ->
+                        email = value
                     }
-                }
-
-                EmailTextField(value = email, label = "E-Posta", placeholder = "E-Posta adresinizi girin"){ value ->
-                    email = value
-                }
-                PasswordTextField(value = password, label = "Parola", placeholder = "Parolanızı girin"){value ->
-                    password = value
-                }
+                    PasswordTextField(value = password, label = "Parola", placeholder = "Parolanızı girin"){value ->
+                        password = value
+                    }
 
 
-                Spacer(modifier = Modifier.fillMaxHeight(0.15f))
-                PrimaryButton(text = "Devam Et") {
+                    Spacer(modifier = Modifier.fillMaxHeight(0.15f))
+                    PrimaryButton(text = "Devam Et") {
+                        viewModel.signUp(username = userName, email = email, password = password){
+                            when (it) {
+                                is Resource.Success -> {
+                                    MainActivity.start(context)
+                                }
 
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    textAlign = TextAlign.Center,
-                    text = "Devam ederek şunları kabul etmiş olursunuz ",
-                    color = Color(0xff48525f),
-                    fontSize = 14.sp)
-                Row() {
-                    Text(
-                        textAlign = TextAlign.Center,
-                        text = "Kullanıcı Sözleşmesi",
-                        color = BrandPrimary,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp,
-                        modifier = Modifier.clickable {
+                                is Resource.Error -> {
 
+                                }
+                            }
                         }
-                    )
-
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
                     Text(
                         textAlign = TextAlign.Center,
-                        text = " & ",
-                        color = Color(0xff48525f),
-                        fontSize = 14.sp)
-
-                    Text(
-                        textAlign = TextAlign.Center,
-                        text = "Gizlilik Politikasını",
-                        fontWeight = FontWeight.Bold,
+                        text = "Devam ederek şunları kabul etmiş olursunuz ",
                         color = BrandPrimary,
-                        fontSize = 14.sp,
-                        modifier = Modifier.clickable {
+                        fontSize = 16.sp)
+                    Row() {
+                        Text(
+                            textAlign = TextAlign.Center,
+                            text = "Kullanıcı Sözleşmesi",
+                            color = BrandPrimary,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp,
+                            modifier = Modifier.clickable {
 
-                        }
-                    )
+                            }
+                        )
+
+                        Text(
+                            textAlign = TextAlign.Center,
+                            text = " & ",
+                            color = Color(0xff48525f),
+                            fontSize = 16.sp)
+
+                        Text(
+                            textAlign = TextAlign.Center,
+                            text = "Gizlilik Politikasını",
+                            fontWeight = FontWeight.Bold,
+                            color = BrandPrimary,
+                            fontSize = 16.sp,
+                            modifier = Modifier.clickable {
+
+                            }
+                        )
+                    }
+
                 }
-
+                if(viewModel.isLoading.value){
+                    CircularProgress()
+                }
             }
+
         }
     }
 }

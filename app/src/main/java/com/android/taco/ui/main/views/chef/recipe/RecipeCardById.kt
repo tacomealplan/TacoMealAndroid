@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -42,12 +43,13 @@ import coil.compose.rememberImagePainter
 import com.android.taco.R
 import com.android.taco.model.Recipe
 import com.android.taco.ui.theme.BrandSecondary
+import com.android.taco.ui.theme.components.image.CircularImageView
 import com.google.firebase.storage.FirebaseStorage
 
 @Composable
-fun RecipeCardById(recipeId: String, viewModel: RecipeByIdViewModel) {
-    var coverPhotoUrl by remember {
-        mutableStateOf("")
+fun RecipeCardById(recipeId: String, viewModel: RecipeByIdViewModel, onClick: () -> Unit) {
+    val coverPhotoUrl by remember {
+        viewModel.coverPhotoUrl
     }
     val recipe : Recipe? by remember {
         viewModel.recipe
@@ -66,7 +68,7 @@ fun RecipeCardById(recipeId: String, viewModel: RecipeByIdViewModel) {
             modifier = Modifier
                 .padding()
                 .clickable {
-
+                    onClick.invoke()
                 }
         ) {
             Column(
@@ -99,6 +101,11 @@ fun RecipeCardById(recipeId: String, viewModel: RecipeByIdViewModel) {
                             contentScale = ContentScale.FillBounds,
                             modifier = Modifier
                                 .fillMaxSize()
+                                .clip(shape = RoundedCornerShape(
+                                    topStart = 16.dp,
+                                    topEnd = 16.dp,
+                                    bottomStart = 16.dp,
+                                    bottomEnd = 16.dp))
                         )
                         Column(
                             verticalArrangement = Arrangement.Top,
@@ -121,13 +128,22 @@ fun RecipeCardById(recipeId: String, viewModel: RecipeByIdViewModel) {
                             .fillMaxWidth()
                             .padding(horizontal = 24.dp))
                     Spacer(modifier = Modifier.height(12.dp))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Start,
+                        modifier = Modifier.fillMaxWidth(0.9f)
+                    ) {
+                        Spacer(modifier = Modifier.width(4.dp))
+                        recipe?.creatorPhotoURL?.let { CircularImageView(url = it, size = 28) }
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = recipe?.creatorUserName ?: "",
+                            color = Color(0xff97a2b0).copy(alpha = 0.75f),
+                            style = TextStyle(
+                                fontSize = 14.sp)
+                        )
+                    }
 
-                    Text(
-                        text = recipe?.creatorUserName ?: "",
-                        color = Color(0xff97a2b0).copy(alpha = 0.75f),
-                        style = TextStyle(
-                            fontSize = 14.sp)
-                    )
                 }
             }
         }
@@ -137,5 +153,5 @@ fun RecipeCardById(recipeId: String, viewModel: RecipeByIdViewModel) {
 @Preview
 @Composable
 fun RecipeCardByIdPreview(){
-    RecipeCardById(recipeId = "", viewModel = viewModel())
+    RecipeCardById(recipeId = "", viewModel = viewModel()){}
 }

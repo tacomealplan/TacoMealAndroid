@@ -2,6 +2,7 @@ package com.android.taco.ui.main.views.chef.plan
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -52,21 +53,20 @@ fun PlanItem(plan: Plan, onClick : () -> Unit){
         elevation = 9.dp, // play with the elevation values
         shape = RoundedCornerShape(16.dp),
         modifier = Modifier
-            .padding(4.dp)
             .clickable {
                 onClick.invoke()
             }
     ){
         Row(verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .height(100.dp)
-                .padding(12.dp)
+                .height(70.dp)
+                .padding(4.dp)
         ) {
-
-            Column(modifier = Modifier
+            Spacer(modifier = Modifier.width(12.dp))
+            Column(verticalArrangement = Arrangement.Center,
+                modifier = Modifier
                 .fillMaxHeight()
-                .fillMaxWidth(0.8f)
-                .padding(8.dp)) {
+                .fillMaxWidth(0.8f)) {
                 Text(
                     text = plan.name,
                     color = BrandPrimary,
@@ -75,27 +75,28 @@ fun PlanItem(plan: Plan, onClick : () -> Unit){
                         fontWeight = FontWeight.Bold),
                     modifier = Modifier
                 )
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    CircularImageView(url = creatorPpUrl, size = 30)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = plan.creatorUserName,
-                        color = Color(0xff97a2b0).copy(alpha = 0.75f),
-                        style = TextStyle(
-                            fontSize = 14.sp)
-                    )
-                }
-
-
-
-
+                Text(
+                    text = plan.motivation,
+                    color = BrandPrimary.copy(alpha = 0.9f),
+                    style = TextStyle(
+                        fontSize = 10.sp)
+                )
+                Text(
+                    text = "2023/05/23 23:06",
+                    color = BrandPrimary,
+                    style = TextStyle(
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold),
+                    modifier = Modifier
+                )
             }
-            Column(modifier = Modifier.fillMaxWidth(1f)) {
-                RightArrowButton {
+            Column(horizontalAlignment = Alignment.End,
+                modifier = Modifier.fillMaxWidth(1f).padding(end = 12.dp)
+            ) {
+                RightArrowButton(size = 36) {
 
                 }
             }
-
         }
     }
 }

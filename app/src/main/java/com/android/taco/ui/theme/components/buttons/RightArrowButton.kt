@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
@@ -23,16 +24,16 @@ import com.android.taco.ui.theme.BrandPrimary
 import com.android.taco.ui.theme.components.cards.ProfileCardView
 
 @Composable
-fun RightArrowButton(onClick : () -> Unit) {
+fun RightArrowButton(size: Int = 28, onClick : () -> Unit) {
     Column(
         verticalArrangement = Arrangement.Bottom,
         modifier = Modifier
-            .size(size = 28.dp)
+            .size(size = size.dp)
     ) {
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
-                .size(size = 28.dp)
+                .fillMaxSize()
                 .clip(shape = RoundedCornerShape(8.dp))
                 .clickable {
                     onClick.invoke()
@@ -43,7 +44,8 @@ fun RightArrowButton(onClick : () -> Unit) {
                 contentDescription = "Iconly/Light/Arrow - Right",
                 tint = Color.White,
                 modifier = Modifier
-                    .size(size = 16.dp))
+                    .size(size = (size*0.55).dp)
+            )
         }
 
     }

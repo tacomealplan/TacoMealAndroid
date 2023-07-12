@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.android.taco.R
+import com.android.taco.model.Plan
 import com.android.taco.ui.main.ScreensNavItem
 import com.android.taco.ui.main.views.chef.planList.PlanListScreen
 import com.android.taco.ui.main.views.chef.recipeList.RecipeListScreen
@@ -41,6 +42,7 @@ import com.android.taco.ui.theme.BrandSecondary
 import com.android.taco.ui.theme.NeutralGray4
 import com.android.taco.ui.theme.TacoTheme
 import com.android.taco.ui.theme.components.tabs.TabsTwoOptions
+import com.google.gson.Gson
 
 @Composable
 fun ChefScreen(navController: NavController,
@@ -58,7 +60,7 @@ fun ChefScreen(navController: NavController,
                     .fillMaxWidth()
                     .padding(12.dp)
             ) {
-                TabsTwoOptions(selectedTab = selectedTab, onTabSelected = {selected ->
+                TabsTwoOptions(tabs = arrayListOf("Tariflerim", "Planlarım"),selectedTab = selectedTab, onTabSelected = { selected ->
                     selectedTab = selected
                 })
             }
@@ -72,12 +74,12 @@ fun ChefScreen(navController: NavController,
                     .background(Color.White)
             ) {
                 if(selectedTab == 0){
-                    RecipeListScreen(recipeList = viewModel.myRecipes.toList()){selectedRecipe ->
-                        navController.navigate(ScreensNavItem.Recipe.screen_route+ "/${selectedRecipe.id}")
+                    RecipeListScreen(navController = navController, recipeList = viewModel.myRecipes.toList()){selectedRecipe ->
+                        navController.navigate(ScreensNavItem.Recipe.screen_route + "/${selectedRecipe.id}")
                     }
                 }else{
-                    PlanListScreen(planList = viewModel.myPlans.toList()){selectedPlan ->
-                        navController.navigate(ScreensNavItem.Plan.screen_route)
+                    PlanListScreen(navController = navController, planList = viewModel.myPlans.toList() as ArrayList<Plan>){ selectedPlan ->
+                        navController.navigate(ScreensNavItem.Plan.screen_route + "/${selectedPlan.id}")
                     }
                 }
             }

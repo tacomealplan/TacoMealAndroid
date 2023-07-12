@@ -2,20 +2,18 @@ package com.android.taco.ui.main.views.chef.steps
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -23,19 +21,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberImagePainter
 import com.android.taco.R
-import com.android.taco.model.Material
 import com.android.taco.model.Step
-import com.android.taco.ui.main.views.chef.materials.MaterialRow
-import com.android.taco.ui.theme.BrandPrimary
 import com.android.taco.ui.theme.TacoTheme
 import com.android.taco.ui.theme.White
 
@@ -75,9 +70,9 @@ fun StepListScreen(stepList: ArrayList<Step>){
                 horizontalAlignment = Alignment.Start,
                 modifier = Modifier
             ) {
-                //stepList.forEach {
-                  //  StepRow(it)
-                //}
+                stepList.forEach {
+                    StepRow(it)
+                }
 
             }
         }
@@ -89,33 +84,57 @@ fun StepRow(step: Step) {
     Surface(
         shape = RoundedCornerShape(16.dp),
         color = White,
-        elevation = 9.dp,
+        elevation = 6.dp,
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 6.dp)
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-        ) {
-            Number(step.index)
-            Spacer(modifier = Modifier.width(12.dp))
-            Text(
-                text = step.description,
-                color = Color(0xff48525f),
-                style = TextStyle(
-                    fontSize = 16.sp),
+        Column() {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start,
                 modifier = Modifier
-                    .fillMaxWidth())
+                    .fillMaxWidth()
+                    .padding(8.dp)
+            ) {
+                StepNumber(step.index)
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(
+                    text = step.description,
+                    color = Color(0xff48525f),
+                    style = TextStyle(
+                        fontSize = 16.sp),
+                    modifier = Modifier
+                        .fillMaxWidth())
+            }
+            if(step.photoLink.isNotBlank()){
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.padding(12.dp).fillMaxWidth().height(150.dp)
+                ) {
+                    Image(
+                        painter = rememberImagePainter(
+                            data = step.photoLink,
+                            builder = {
+                                crossfade(false)
+                                placeholder(R.color.imagePlaceholderColor)
+                            }
+                        ),
+                        contentDescription = "description",
+                        contentScale = ContentScale.FillBounds,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+
+            }
         }
+
     }
 }
 
 @Composable
-fun Number(number : Int) {
+fun StepNumber(number : Int) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
@@ -136,7 +155,7 @@ fun Number(number : Int) {
 @Composable
 fun StepListScreenPreview(){
     StepListScreen(arrayListOf<Step>(
-        Step("","",1,""),
+        Step("Deneme deneme deneme deneme deneme deneme deneme","",1,"32423"),
         Step("","",2,""),
         Step("","",3,""),
     ))

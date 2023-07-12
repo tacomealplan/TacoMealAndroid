@@ -30,8 +30,9 @@ import com.android.taco.ui.theme.NeutralGray2
 
 @Composable
 fun PrimaryTextField(value : String,
-                     label : String,
+                     label : String = "",
                      placeholder: String,
+                     enabled : Boolean = true,
                      modifier: Modifier = Modifier,
                      onValueChange: (String) -> Unit
 ) {
@@ -57,6 +58,7 @@ fun PrimaryTextField(value : String,
             value = value,
             onValueChange = onValueChange,
             shape = RoundedCornerShape(16.dp),
+            enabled = enabled,
             placeholder = { Text(placeholder) },
             textStyle = TextStyle(
                 fontSize = 16.sp),

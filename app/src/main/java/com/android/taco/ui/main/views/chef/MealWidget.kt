@@ -40,7 +40,8 @@ import com.android.taco.ui.theme.NeutralGray4
 import com.android.taco.ui.theme.White
 
 @Composable
-fun MealWidget(){
+fun MealWidget(selectedMeal : Meal? = null,
+               onItemSelected : (meal : Meal) -> Unit){
     Column(modifier = Modifier
         .fillMaxWidth()) {
         Row(verticalAlignment = Alignment.CenterVertically,
@@ -48,7 +49,7 @@ fun MealWidget(){
             modifier = Modifier.fillMaxWidth().scrollable(state = rememberScrollState(), orientation = Orientation.Horizontal)
         ) {
             Text(
-                text = "Öğünler",
+                text = "Öğün",
                 color = BrandPrimary,
                 style = TextStyle(
                     fontSize = 20.sp,
@@ -63,7 +64,7 @@ fun MealWidget(){
                 .horizontalScroll(rememberScrollState())
                 .fillMaxWidth()
         ){
-            List(selectedDay = Meal.Lunch){
+            List(selectedMeal = selectedMeal){
 
             }
         }
@@ -72,7 +73,7 @@ fun MealWidget(){
 }
 
 @Composable
-private fun List(selectedDay : Meal = Meal.Breakfast, onItemSelected : (meal : Meal) -> Unit) {
+private fun List(selectedMeal : Meal? = Meal.Breakfast, onItemSelected : (meal : Meal) -> Unit) {
     Row(modifier = Modifier
     ) {
         Meal.values().forEach { meal ->
@@ -81,14 +82,14 @@ private fun List(selectedDay : Meal = Meal.Breakfast, onItemSelected : (meal : M
                 modifier = Modifier
                     .padding(horizontal = 8.dp)
                     .clip(shape = RoundedCornerShape(40.dp))
-                    .background(color = if (selectedDay == meal) BrandSecondary else NeutralGray4)
+                    .background(color = if (selectedMeal == meal) BrandSecondary else NeutralGray4)
                     .clickable {
                         onItemSelected.invoke(meal)
                     }
             ) {
                 Text(
                     text = meal.name,
-                    color = if(selectedDay == meal) Color.White else BrandPrimary,
+                    color = if(selectedMeal == meal) Color.White else BrandPrimary,
                     modifier = Modifier.padding(8.dp),
                     style = TextStyle(
                         fontSize = 16.sp))
@@ -116,5 +117,5 @@ sealed class Meal(var name:String){
 @Preview
 @Composable
 fun MealWidgetPreview(){
-    MealWidget()
+    MealWidget(){}
 }

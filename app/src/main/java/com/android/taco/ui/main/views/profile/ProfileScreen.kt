@@ -36,7 +36,7 @@ fun ProfileScreen(navController: NavController,
                 .background(Color.White)
         ) {
             ProfileCardView(username = viewModel.username.value,
-                bio = "",
+                bio = viewModel.bio.value,
                 ppUrl = viewModel.ppUrl.value
             ) {
                 navController.navigate(BottomNavItem.Profile.screen_route +"/Edit")

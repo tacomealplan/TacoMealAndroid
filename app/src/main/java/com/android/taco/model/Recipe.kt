@@ -1,18 +1,20 @@
 package com.android.taco.model
 
+import java.util.UUID
+
 data class Recipe(
     val id: String,
     val meal: String,
-    val name: String,
-    val personCount: Int,
+    var name: String,
+    var personCount: Int,
     val categories: ArrayList<String>,
     val coverPhotoLink: String,
     val createDate: String,
     val createdBy: String,
     val creatorPhotoURL: String,
     val creatorUserName: String,
-    val description: String,
-    val duration: Int,
+    var description: String,
+    var duration: Int,
 ) {
     companion object{
 
@@ -30,6 +32,24 @@ data class Recipe(
                 creatorUserName = data["creatorUserName"].toString(),
                 description = data["description"].toString(),
                 duration = data["duration"].toString().toInt()
+            )
+            return recipe
+        }
+
+        fun createNewInstance():Recipe{
+            val recipe = Recipe(
+                id = UUID.randomUUID().toString(),
+                meal = "",
+                name = "",
+                personCount = 0,
+                categories = ArrayList<String>(),
+                coverPhotoLink = "",
+                createDate = "",
+                createdBy = "",
+                creatorPhotoURL = "",
+                creatorUserName = "",
+                description = "",
+                duration = 0
             )
             return recipe
         }

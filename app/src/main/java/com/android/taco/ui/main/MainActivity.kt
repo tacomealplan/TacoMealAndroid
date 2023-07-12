@@ -6,14 +6,18 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.DarkGray
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -31,16 +35,28 @@ import com.android.taco.ui.main.views.cart.CartScreen
 import com.android.taco.ui.main.views.chef.ChefScreen
 import com.android.taco.ui.main.views.chef.plan.PlanScreen
 import com.android.taco.ui.main.views.chef.recipe.detail.RecipeScreen
+import com.android.taco.ui.main.views.chef.recipe.edit.EditRecipeDetailScreen
+import com.android.taco.ui.main.views.chef.recipe.edit.EditRecipeScreen
 import com.android.taco.ui.main.views.favourites.FavouritesScreen
 import com.android.taco.ui.main.views.populars.PopularsScreen
 import com.android.taco.ui.main.views.profile.ProfileEditScreen
 import com.android.taco.ui.main.views.profile.ProfileScreen
 import com.android.taco.ui.main.views.search.SearchScreen
+import com.android.taco.ui.theme.BrandPrimary
+import com.android.taco.ui.theme.BrandSecondary
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val viewModel : MainViewModel by viewModels()
+    val items = listOf(
+        BottomNavItem.Search,
+        BottomNavItem.Chef,
+        BottomNavItem.Home,
+        BottomNavItem.Cart,
+        BottomNavItem.Profile
+    )
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -93,8 +109,10 @@ class MainActivity : ComponentActivity() {
                 PopularsScreen(navController = navController, viewModel = viewModel())
             }
 
-            composable(ScreensNavItem.Plan.screen_route) {
-                PlanScreen(plan = Plan.dummyInstance(), navController = navController)
+            composable(ScreensNavItem.Plan.screen_route+ "/{planId}") {
+                it.arguments?.getString("planId")?.let { planId ->
+                    PlanScreen(planId = planId, viewModel= viewModel(), navController = navController)
+                }
             }
 
             composable(ScreensNavItem.Recipe.screen_route + "/{recipeId}") {
@@ -102,37 +120,46 @@ class MainActivity : ComponentActivity() {
                     RecipeScreen(recipeId = recipeId, navController = navController, viewModel = viewModel())
                 }
             }
+            composable(ScreensNavItem.EditRecipe.screen_route + "/{recipeId}") {
+                it.arguments?.getString("recipeId")?.let { recipeId ->
+                    EditRecipeScreen(recipeId = recipeId, navController = navController, viewModel = viewModel())
+                }
+            }
+            composable(ScreensNavItem.EditRecipe.screen_route) {
+                EditRecipeScreen(recipeId = "", navController = navController, viewModel = viewModel())
+            }
+
+            composable(ScreensNavItem.EditRecipeDetail.screen_route) {
+                EditRecipeDetailScreen(navController = navController, viewModel = viewModel())
+            }
         }
     }
 
     @Composable
     fun BottomNavigation(navController: NavController) {
-        val items = listOf(
-            BottomNavItem.Search,
-            BottomNavItem.Chef,
-            BottomNavItem.Home,
-            BottomNavItem.Cart,
-            BottomNavItem.Profile
-        )
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
         if(items.any { it.screen_route == currentRoute }){
             BottomNavigation(
-                backgroundColor = Color(0xFFFF8C00),
+                backgroundColor = BrandSecondary,
                 contentColor = Color.White,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(15.dp, 15.dp, 0.dp, 0.dp))
+                    .clip(RoundedCornerShape(16.dp, 16.dp, 0.dp, 0.dp))
                     .height(height = 80.dp)
             ) {
                 items.forEach { item ->
+                    val isSelected = currentRoute?.contains(item.screen_route) == true
                     BottomNavigationItem(
-                        icon = { Icon(painterResource(id = item.icon), contentDescription = item.title) },
+                        icon = { Icon(painterResource(id = item.icon),
+                            contentDescription = item.title,
+                            modifier = Modifier.size(if(isSelected) 36.dp else 24.dp))
+                        },
                         label = { /*Text(text = item.title,fontSize = 9.sp)*/ },
                         selectedContentColor = Color.White,
-                        unselectedContentColor = Color.White.copy(0.4f),
+                        unselectedContentColor = Color.White.copy(0.8f),
                         alwaysShowLabel = true,
-                        selected = currentRoute?.contains(item.screen_route) == true,
+                        selected = isSelected,
                         onClick = {
                             navController.navigate(item.screen_route) {
 
@@ -144,6 +171,11 @@ class MainActivity : ComponentActivity() {
                                 launchSingleTop = true
                                 restoreState = true
                             }
+                        },
+                        modifier = if (isSelected) {
+                            Modifier.background(color = Color.Transparent)
+                        } else {
+                            Modifier.background(color = Color.Transparent)
                         }
                     )
                 }
@@ -173,6 +205,8 @@ sealed class ScreensNavItem(var title:String, var screen_route:String){
     object Populars : ScreensNavItem("Populars", "populars")
     object Plan : ScreensNavItem("Plan", "plan")
     object Recipe : ScreensNavItem("Recipe", "recipe")
+    object EditRecipe : ScreensNavItem("EditRecipe", "edit_recipe")
+    object EditRecipeDetail : ScreensNavItem("EditRecipeDetail", "edit_recipe_detail")
 }
 
 

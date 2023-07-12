@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -39,6 +40,8 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import com.android.taco.R
 import com.android.taco.model.Recipe
+import com.android.taco.ui.theme.BrandSecondary
+import com.android.taco.ui.theme.components.image.CircularImageView
 import com.google.firebase.storage.FirebaseStorage
 
 @Composable
@@ -92,6 +95,11 @@ fun RecipeCard(recipe: Recipe, onClick: () -> Unit) {
                         contentScale = ContentScale.FillBounds,
                         modifier = Modifier
                             .fillMaxSize()
+                            .clip(shape = RoundedCornerShape(
+                                topStart = 16.dp,
+                                topEnd = 16.dp,
+                                bottomStart = 16.dp,
+                                bottomEnd = 16.dp))
                     )
                     Column(
                         verticalArrangement = Arrangement.Top,
@@ -115,12 +123,21 @@ fun RecipeCard(recipe: Recipe, onClick: () -> Unit) {
                         .padding(horizontal = 24.dp))
                 Spacer(modifier = Modifier.height(12.dp))
 
-                Text(
-                    text = recipe.creatorUserName ?: "",
-                    color = Color(0xff97a2b0).copy(alpha = 0.75f),
-                    style = TextStyle(
-                        fontSize = 14.sp)
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start,
+                    modifier = Modifier.fillMaxWidth(0.9f)
+                ) {
+                    Spacer(modifier = Modifier.width(4.dp))
+                    CircularImageView(url = recipe.creatorPhotoURL, size = 28)
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = recipe.creatorUserName ?: "",
+                        color = Color(0xff97a2b0).copy(alpha = 0.75f),
+                        style = TextStyle(
+                            fontSize = 14.sp)
+                    )
+                }
             }
         }
     }
@@ -143,25 +160,25 @@ fun getUrlForStorage(path : String, url : (url : String) -> Unit){
 }
 
 @Composable
-fun ButtonLike(onClick : () -> Unit) {
+fun ButtonLike(size : Int = 28, onClick : () -> Unit) {
     Column(
         modifier = Modifier
-            .width(width = 28.dp)
+            .width(width = size.dp)
             .clickable {
                 onClick.invoke()
             }
     ) {
         Box(contentAlignment = Alignment.Center,
             modifier = Modifier
-                .size(size = 28.dp)
+                .size(size = size.dp)
                 .clip(shape = RoundedCornerShape(10.dp))
-                .background(color = Color.White)){
+                .background(color = Color.Transparent)){
             Image(
                 painter = painterResource(id = R.drawable.heart),
                 contentDescription = "Iconly/Bold/Heart",
-                colorFilter = ColorFilter.tint(Color(0xffff8c00)),
+                colorFilter = ColorFilter.tint(BrandSecondary),
                 modifier = Modifier
-                    .size(size = 17.dp))
+                    .size(size = size.dp))
         }
 
     }

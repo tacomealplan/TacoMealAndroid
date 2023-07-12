@@ -43,7 +43,7 @@ fun CircularImageView(url : String, size : Int = 120){
         modifier = Modifier
             .size(size.dp)
             .clip(CircleShape)                       // clip to the circle shape
-            .border(2.dp, BrandSecondary, CircleShape)   // add a border (optional)
+            .border(1.dp, BrandSecondary, CircleShape)   // add a border (optional)
     )
 }
 

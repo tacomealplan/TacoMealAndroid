@@ -164,9 +164,9 @@ fun BottomSheet(viewModel: SearchViewModel) {
                 fontWeight = FontWeight.Bold)
         )
 
-        MealWidget()
+        MealWidget(){}
         Spacer(modifier = Modifier.height(24.dp))
-        CategoriesWidget(viewModel.categories)
+        CategoriesWidget(viewModel.categories, selectedItems = listOf()){}
         Spacer(modifier = Modifier.height(24.dp))
 
         SecondaryButton(text = "Filtreyi Uygula") {
