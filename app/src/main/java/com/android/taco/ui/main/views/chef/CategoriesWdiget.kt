@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.android.taco.ui.theme.BrandPrimary
 import com.android.taco.ui.theme.BrandSecondary
+import com.android.taco.ui.theme.NeutralGray3
 import com.android.taco.ui.theme.NeutralGray4
 
 @Composable
@@ -86,7 +87,7 @@ private fun List(categories: List<String>, selectedItems: List<String> = ArrayLi
                 modifier = Modifier
                     .padding(horizontal = 8.dp)
                     .clip(shape = RoundedCornerShape(40.dp))
-                    .background(color = if (selectedItems.contains(item)) BrandSecondary else NeutralGray4)
+                    .background(color = if (selectedItems.contains(item)) BrandSecondary else NeutralGray3)
                     .clickable {
                         onItemSelected.invoke(item)
                     }

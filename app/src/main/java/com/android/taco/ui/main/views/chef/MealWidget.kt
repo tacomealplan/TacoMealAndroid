@@ -36,28 +36,33 @@ import com.android.taco.ui.main.ScreensNavItem
 import com.android.taco.ui.main.views.chef.recipe.RecipeCard
 import com.android.taco.ui.theme.BrandPrimary
 import com.android.taco.ui.theme.BrandSecondary
+import com.android.taco.ui.theme.NeutralGray3
 import com.android.taco.ui.theme.NeutralGray4
 import com.android.taco.ui.theme.White
 
 @Composable
-fun MealWidget(selectedMeal : Meal? = null,
-               onItemSelected : (meal : Meal) -> Unit){
+fun MealWidget(showLabel : Boolean = true,
+                selectedMeal : Meal? = null,
+               onItemSelected : (meal : Meal) -> Unit
+){
     Column(modifier = Modifier
         .fillMaxWidth()) {
-        Row(verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth().scrollable(state = rememberScrollState(), orientation = Orientation.Horizontal)
-        ) {
-            Text(
-                text = "Öğün",
-                color = BrandPrimary,
-                style = TextStyle(
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold),
-                modifier = Modifier
-            )
+        if(showLabel){
+            Row(verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth().scrollable(state = rememberScrollState(), orientation = Orientation.Horizontal)
+            ) {
+                Text(
+                    text = "Öğün",
+                    color = BrandPrimary,
+                    style = TextStyle(
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold),
+                    modifier = Modifier
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
         }
-        Spacer(modifier = Modifier.height(16.dp))
         Row(verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
@@ -65,7 +70,7 @@ fun MealWidget(selectedMeal : Meal? = null,
                 .fillMaxWidth()
         ){
             List(selectedMeal = selectedMeal){
-
+                onItemSelected.invoke(it)
             }
         }
 
@@ -82,7 +87,7 @@ private fun List(selectedMeal : Meal? = Meal.Breakfast, onItemSelected : (meal :
                 modifier = Modifier
                     .padding(horizontal = 8.dp)
                     .clip(shape = RoundedCornerShape(40.dp))
-                    .background(color = if (selectedMeal == meal) BrandSecondary else NeutralGray4)
+                    .background(color = if (selectedMeal == meal) BrandSecondary else NeutralGray3)
                     .clickable {
                         onItemSelected.invoke(meal)
                     }

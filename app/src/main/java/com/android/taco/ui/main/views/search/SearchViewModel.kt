@@ -3,6 +3,7 @@ package com.android.taco.ui.main.views.search
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.android.taco.model.Recipe
+import com.android.taco.ui.main.views.chef.Meal
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
@@ -17,6 +18,7 @@ class SearchViewModel @Inject constructor(
     var isLoading = mutableStateOf(false)
     var searchResults = mutableListOf<Recipe>()
     var categories = mutableListOf<String>()
+    var filterMeal = mutableStateOf<Meal?>(null)
     init {
         getRecipeCategories()
     }

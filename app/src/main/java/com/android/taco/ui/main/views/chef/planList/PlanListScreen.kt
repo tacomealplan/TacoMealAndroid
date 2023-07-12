@@ -54,7 +54,7 @@ fun PlanListScreen(navController: NavController,
             }
 
             SecondaryButton(text = "Yeni Plan Oluştur") {
-
+                navController.navigate(ScreensNavItem.EditPlan.screen_route)
             }
         }
 

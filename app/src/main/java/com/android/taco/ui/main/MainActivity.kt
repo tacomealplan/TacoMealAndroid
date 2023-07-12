@@ -34,6 +34,7 @@ import com.android.taco.ui.main.views.home.HomeScreen
 import com.android.taco.ui.main.views.cart.CartScreen
 import com.android.taco.ui.main.views.chef.ChefScreen
 import com.android.taco.ui.main.views.chef.plan.PlanScreen
+import com.android.taco.ui.main.views.chef.plan.edit.PlanEditScreen
 import com.android.taco.ui.main.views.chef.recipe.detail.RecipeScreen
 import com.android.taco.ui.main.views.chef.recipe.edit.EditRecipeDetailScreen
 import com.android.taco.ui.main.views.chef.recipe.edit.EditRecipeScreen
@@ -113,6 +114,15 @@ class MainActivity : ComponentActivity() {
                 it.arguments?.getString("planId")?.let { planId ->
                     PlanScreen(planId = planId, viewModel= viewModel(), navController = navController)
                 }
+            }
+
+            composable(ScreensNavItem.EditPlan.screen_route + "/{planId}") {
+                it.arguments?.getString("planId")?.let { planId ->
+                    PlanEditScreen(planId = planId, viewModel= viewModel(), navController = navController)
+                }
+            }
+            composable(ScreensNavItem.EditPlan.screen_route) {
+                PlanEditScreen(planId = "", viewModel= viewModel(), navController = navController)
             }
 
             composable(ScreensNavItem.Recipe.screen_route + "/{recipeId}") {
@@ -204,6 +214,7 @@ sealed class ScreensNavItem(var title:String, var screen_route:String){
     object Favourites : ScreensNavItem("Favourites", "favourites")
     object Populars : ScreensNavItem("Populars", "populars")
     object Plan : ScreensNavItem("Plan", "plan")
+    object EditPlan : ScreensNavItem("EditPlan", "edit_plan")
     object Recipe : ScreensNavItem("Recipe", "recipe")
     object EditRecipe : ScreensNavItem("EditRecipe", "edit_recipe")
     object EditRecipeDetail : ScreensNavItem("EditRecipeDetail", "edit_recipe_detail")

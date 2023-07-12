@@ -68,6 +68,7 @@ fun SearchScreen(navController: NavController,
                  viewModel: SearchViewModel
 ) {
     var searchText by remember { mutableStateOf("") }
+    var filterMeal by remember { viewModel.filterMeal }
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
         confirmValueChange = { it != ModalBottomSheetValue.HalfExpanded }
@@ -108,6 +109,16 @@ fun SearchScreen(navController: NavController,
                     }
                 }
             }
+            Row(verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp)
+            ) {
+                MealWidget(showLabel = false, selectedMeal = filterMeal, onItemSelected = {selected ->
+                    filterMeal = selected
+                })
+            }
+
             if(searchText.isBlank()){
                 Row(modifier = Modifier.padding(horizontal = 24.dp)) {
                     PopularsWidget(navController)

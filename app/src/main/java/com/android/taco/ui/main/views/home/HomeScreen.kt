@@ -64,14 +64,14 @@ fun Header() {
                     .size(size = 20.dp))
             Text(
                 text = "Günaydın",
-                color = Color(0xff0a2533),
+                color = BrandPrimary,
                 style = TextStyle(
                     fontSize = 14.sp))
         }
 
         Text(
             text = FirebaseAuth.getInstance().currentUser?.displayName ?: "",
-            color = Color(0xff0a2533),
+            color = BrandPrimary,
             style = TextStyle(
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold)

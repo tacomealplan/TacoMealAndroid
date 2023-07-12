@@ -30,6 +30,7 @@ import androidx.navigation.compose.rememberNavController
 import com.android.taco.ui.main.ScreensNavItem
 import com.android.taco.ui.theme.BrandPrimary
 import com.android.taco.ui.theme.BrandSecondary
+import com.android.taco.ui.theme.NeutralGray3
 import com.android.taco.ui.theme.NeutralGray4
 
 @Composable
@@ -85,7 +86,7 @@ fun DayList(selectedDay : Day = Day.Monday, onItemSelected : (day : Day) -> Unit
                 modifier = Modifier
                     .padding(horizontal = 8.dp)
                     .clip(shape = RoundedCornerShape(40.dp))
-                    .background(color = if(selectedDay == day) BrandSecondary else NeutralGray4)
+                    .background(color = if(selectedDay == day) BrandSecondary else NeutralGray3)
                     .clickable {
                         onItemSelected.invoke(day)
                     }
