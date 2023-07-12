@@ -61,7 +61,7 @@ fun PopularsWidget(navController: NavController,
                     modifier = Modifier)
 
                 Text(
-                    text = "Hepsini Göster",
+                    text = "Hepsini Gör",
                     color = BrandSecondary,
                     textAlign = TextAlign.End,
                     style = TextStyle(

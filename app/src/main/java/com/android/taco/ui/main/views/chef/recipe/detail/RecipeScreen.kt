@@ -70,7 +70,7 @@ import com.android.taco.ui.theme.components.tabs.TabsTwoOptions
 fun RecipeScreen(recipeId : String,
                  navController: NavController,
                  viewModel: RecipeScreenViewModel){
-    var coverPhotoUrl by remember {
+    val coverPhotoUrl by remember {
         viewModel.coverPhotoUrl
     }
 

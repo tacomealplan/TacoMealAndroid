@@ -115,7 +115,7 @@ fun EditRecipeScreen(navController: NavController,
 
                 }
 
-                MealWidget(selectedMeal = null){
+                MealWidget(meals = viewModel.allMeals, selectedMeal = null){
 
                 }
 

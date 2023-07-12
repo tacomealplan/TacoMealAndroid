@@ -19,6 +19,7 @@ class EditRecipeViewModel @Inject constructor() : ViewModel() {
     var isLoading = mutableStateOf(false)
     var isNewInstance = mutableStateOf(true)
     var allCategories = mutableListOf<String>()
+    var allMeals = mutableListOf<String>()
     var selectedCategories = mutableListOf<String>()
 
     var recipe = mutableStateOf<Recipe?>(null)
@@ -63,6 +64,26 @@ class EditRecipeViewModel @Inject constructor() : ViewModel() {
                 }
                 allCategories.clear()
                 allCategories.addAll(result)
+                isLoading.value = false
+            }
+            .addOnFailureListener{
+                it.printStackTrace()
+                isLoading.value = false
+            }
+    }
+
+    private fun getRecipeMeals(){
+        firestore.collection("RecipeMeal")
+            .get()
+            .addOnSuccessListener {
+                val result = ArrayList<String>()
+                val data = it.documents
+                data.forEach { item->
+                    if(item.data != null)
+                        result.add(item.data!!["Name"].toString())
+                }
+                allMeals.clear()
+                allMeals.addAll(result)
                 isLoading.value = false
             }
             .addOnFailureListener{

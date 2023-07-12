@@ -17,6 +17,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,6 +36,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import com.android.taco.R
 import com.android.taco.model.Step
+import com.android.taco.ui.main.views.chef.recipe.getUrlForStorage
 import com.android.taco.ui.theme.TacoTheme
 import com.android.taco.ui.theme.White
 
@@ -108,28 +114,53 @@ fun StepRow(step: Step) {
                         .fillMaxWidth())
             }
             if(step.photoLink.isNotBlank()){
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.padding(12.dp).fillMaxWidth().height(150.dp)
-                ) {
-                    Image(
-                        painter = rememberImagePainter(
-                            data = step.photoLink,
-                            builder = {
-                                crossfade(false)
-                                placeholder(R.color.imagePlaceholderColor)
-                            }
-                        ),
-                        contentDescription = "description",
-                        contentScale = ContentScale.FillBounds,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
+                StepImage(step.photoLink)
 
             }
         }
 
+    }
+}
+
+@Composable
+private fun StepImage(stepPhotoLink: String) {
+    var imageUrl by remember {
+        mutableStateOf("")
+    }
+    LaunchedEffect(Unit){
+        getUrlForStorage(stepPhotoLink){
+            imageUrl = it
+        }
+    }
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .padding(vertical = 12.dp, horizontal = 24.dp)
+            .fillMaxWidth()
+            .height(150.dp)
+    ) {
+        Image(
+            painter = rememberImagePainter(
+                data = imageUrl,
+                builder = {
+                    crossfade(false)
+                    placeholder(R.color.imagePlaceholderColor)
+                }
+            ),
+            contentDescription = "description",
+            contentScale = ContentScale.FillBounds,
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(
+                    shape = RoundedCornerShape(
+                        topStart = 16.dp,
+                        topEnd = 16.dp,
+                        bottomStart = 16.dp,
+                        bottomEnd = 16.dp
+                    )
+                )
+        )
     }
 }
 

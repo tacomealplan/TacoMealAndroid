@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.android.taco.ui.main.ScreensNavItem
 import com.android.taco.ui.main.views.chef.CategoriesWidget
 import com.android.taco.ui.main.views.chef.MealWidget
 import com.android.taco.ui.main.views.chef.recipe.RecipeItem
@@ -112,10 +113,15 @@ fun SearchScreen(navController: NavController,
             Row(verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(vertical = 16.dp)
                     .padding(start = 16.dp)
             ) {
-                MealWidget(showLabel = false, selectedMeal = filterMeal, onItemSelected = {selected ->
-                    filterMeal = selected
+                MealWidget(meals = viewModel.meals, showLabel = false, selectedMeal = filterMeal, onItemSelected = {selected ->
+                    if(filterMeal == selected){
+                        filterMeal = null
+                    }else{
+                        filterMeal = selected
+                    }
                 })
             }
 
@@ -146,23 +152,22 @@ fun SearchScreen(navController: NavController,
                             )
                         }
                         viewModel.searchResults.forEach {
-                            RecipeItem(recipe = it){}
+                            RecipeItem(recipe = it){
+                                navController.navigate(ScreensNavItem.Recipe.screen_route + "/${it.id}")
+                            }
                         }
                     }
 
                 }
             }
-
-
-
-
-
         }
     }
 }
 
 @Composable
 fun BottomSheet(viewModel: SearchViewModel) {
+    var filterMeal by remember { viewModel.filterMeal }
+    var filterCategories by remember { viewModel.filterCategories }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.padding(24.dp)
@@ -174,10 +179,23 @@ fun BottomSheet(viewModel: SearchViewModel) {
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold)
         )
+        Spacer(modifier = Modifier.height(12.dp))
 
-        MealWidget(){}
+        MealWidget(meals = viewModel.meals, showLabel = false, selectedMeal = filterMeal, onItemSelected = {selected ->
+            if(filterMeal == selected){
+                filterMeal = null
+            }else{
+                filterMeal = selected
+            }
+        })
         Spacer(modifier = Modifier.height(24.dp))
-        CategoriesWidget(viewModel.categories, selectedItems = listOf()){}
+
+        CategoriesWidget(viewModel.categories, selectedItems = filterCategories){category->
+            if(filterCategories.contains(category))
+                filterCategories.remove(category)
+            else
+                filterCategories.add(category)
+        }
         Spacer(modifier = Modifier.height(24.dp))
 
         SecondaryButton(text = "Filtreyi Uygula") {

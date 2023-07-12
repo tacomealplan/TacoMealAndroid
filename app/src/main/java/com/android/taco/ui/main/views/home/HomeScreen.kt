@@ -20,29 +20,52 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.android.taco.R
+import com.android.taco.ui.main.ScreensNavItem
 import com.android.taco.ui.main.views.chef.plan.DailyMenuWidget
 import com.android.taco.ui.main.views.chef.plan.PlanWidget
 import com.android.taco.ui.main.views.populars.PopularsWidget
 import com.android.taco.ui.theme.*
+import com.android.taco.ui.theme.components.buttons.CardButton
+import com.android.taco.ui.theme.components.buttons.RightArrowButton
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     navController: NavController) {
-    Column(
-        verticalArrangement = Arrangement.SpaceAround,
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp)
-            .background(color = Color.White)
-    ) {
-        Header()
-
-        DailyMenuWidget()
-        PlanWidget(navController = navController)
-        PopularsWidget(navController = navController)
+    var activePlan by remember {
+        viewModel.activePlan
     }
+    LaunchedEffect(key1 = Unit, block = {
+        viewModel.getActivePlan()
+    })
+
+    TacoTheme() {
+        Column(
+            verticalArrangement = Arrangement.Top,
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(state = rememberScrollState())
+                .padding(24.dp)
+                .background(color = Color.White)
+        ) {
+            Header()
+            Spacer(modifier = Modifier.height(12.dp))
+            if(activePlan != null){
+                DailyMenuWidget()
+                Spacer(modifier = Modifier.height(12.dp))
+                PlanWidget(navController = navController)
+                Spacer(modifier = Modifier.height(12.dp))
+            }
+
+            PopularsWidget(navController = navController)
+            Spacer(modifier = Modifier.height(12.dp))
+            CardButton(text = "Haftalık Plan Oluştur") {
+                navController.navigate(ScreensNavItem.EditPlan.screen_route)
+            }
+        }
+    }
+
 }
 
 @Composable
@@ -66,6 +89,7 @@ fun Header() {
                 text = "Günaydın",
                 color = BrandPrimary,
                 style = TextStyle(
+                    fontWeight = FontWeight.Bold,
                     fontSize = 14.sp))
         }
 

@@ -3,8 +3,6 @@ package com.android.taco.ui.main.views.search
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.android.taco.model.Recipe
-import com.android.taco.ui.main.views.chef.Meal
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,9 +16,12 @@ class SearchViewModel @Inject constructor(
     var isLoading = mutableStateOf(false)
     var searchResults = mutableListOf<Recipe>()
     var categories = mutableListOf<String>()
-    var filterMeal = mutableStateOf<Meal?>(null)
+    var meals = mutableListOf<String>()
+    var filterMeal = mutableStateOf<String?>(null)
+    var filterCategories = mutableStateOf<ArrayList<String>>(arrayListOf())
     init {
         getRecipeCategories()
+        getRecipeMeals()
     }
 
     fun searchRecipeByText(searchText : String){
@@ -35,8 +36,8 @@ class SearchViewModel @Inject constructor(
         }*/
         isLoading.value = true
         firestore.collection("Recipe")
-            .where(Filter.greaterThanOrEqualTo("name",searchText))
-            .where(Filter.lessThan("name", searchText+"z"))
+            //.where(Filter.greaterThanOrEqualTo("name",searchText))
+            //.where(Filter.lessThan("name", searchText+"z"))
             .get()
             .addOnSuccessListener {
                 val recipes = ArrayList<Recipe>()
@@ -67,6 +68,26 @@ class SearchViewModel @Inject constructor(
                 }
                 categories.clear()
                 categories.addAll(result)
+                isLoading.value = false
+            }
+            .addOnFailureListener{
+                it.printStackTrace()
+                isLoading.value = false
+            }
+    }
+
+    private fun getRecipeMeals(){
+        firestore.collection("RecipeMeal")
+            .get()
+            .addOnSuccessListener {
+                val result = ArrayList<String>()
+                val data = it.documents
+                data.forEach { item->
+                    if(item.data != null)
+                        result.add(item.data!!["Name"].toString())
+                }
+                meals.clear()
+                meals.addAll(result)
                 isLoading.value = false
             }
             .addOnFailureListener{

@@ -41,9 +41,10 @@ import com.android.taco.ui.theme.NeutralGray4
 import com.android.taco.ui.theme.White
 
 @Composable
-fun MealWidget(showLabel : Boolean = true,
-                selectedMeal : Meal? = null,
-               onItemSelected : (meal : Meal) -> Unit
+fun MealWidget( showLabel : Boolean = true,
+                meals : List<String>,
+                selectedMeal : String? = null,
+                onItemSelected : (meal : String) -> Unit
 ){
     Column(modifier = Modifier
         .fillMaxWidth()) {
@@ -69,7 +70,7 @@ fun MealWidget(showLabel : Boolean = true,
                 .horizontalScroll(rememberScrollState())
                 .fillMaxWidth()
         ){
-            List(selectedMeal = selectedMeal){
+            List(meals = meals, selectedMeal = selectedMeal){
                 onItemSelected.invoke(it)
             }
         }
@@ -78,10 +79,10 @@ fun MealWidget(showLabel : Boolean = true,
 }
 
 @Composable
-private fun List(selectedMeal : Meal? = Meal.Breakfast, onItemSelected : (meal : Meal) -> Unit) {
+private fun List(meals : List<String>, selectedMeal : String? = null, onItemSelected : (meal : String) -> Unit) {
     Row(modifier = Modifier
     ) {
-        Meal.values().forEach { meal ->
+        meals.forEach { meal ->
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
@@ -93,7 +94,7 @@ private fun List(selectedMeal : Meal? = Meal.Breakfast, onItemSelected : (meal :
                     }
             ) {
                 Text(
-                    text = meal.name,
+                    text = meal,
                     color = if(selectedMeal == meal) Color.White else BrandPrimary,
                     modifier = Modifier.padding(8.dp),
                     style = TextStyle(
@@ -103,24 +104,8 @@ private fun List(selectedMeal : Meal? = Meal.Breakfast, onItemSelected : (meal :
     }
 }
 
-sealed class Meal(var name:String){
-    object Breakfast : Meal("Kahvaltı")
-    object Lunch : Meal("Öğle Yemeği")
-    object Dinner : Meal("Akşam Yemeği")
-    companion object {
-        fun values() : ArrayList<Meal> {
-            val result = ArrayList<Meal>()
-            result.add(Breakfast)
-            result.add(Lunch)
-            result.add(Dinner)
-            return result
-
-        }
-    }
-}
-
 @Preview
 @Composable
 fun MealWidgetPreview(){
-    MealWidget(){}
+    MealWidget(meals = listOf("Kahvaltı", "Öğle")){}
 }

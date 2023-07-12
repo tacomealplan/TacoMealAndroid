@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -110,7 +111,7 @@ fun MaterialRow(material: Material, onAdded : () -> Unit) {
         elevation = 6.dp,
         modifier = Modifier
             .fillMaxWidth()
-            .height(60.dp)
+            .wrapContentHeight()
             .padding(vertical = 6.dp)
     ) {
         Row(
@@ -126,8 +127,7 @@ fun MaterialRow(material: Material, onAdded : () -> Unit) {
                 style = TextStyle(
                     fontSize = 18.sp,
                     fontWeight = if(isTitle) FontWeight.Bold else FontWeight.Normal),
-                modifier = Modifier
-                    .width(width = 196.dp))
+                modifier = Modifier.fillMaxWidth(0.9f))
             if(!isTitle){
                 Image(
                     painter = painterResource(id = R.drawable.plus),
@@ -151,5 +151,5 @@ fun MaterialListScreenPreview(){
     MaterialListScreen(
         arrayListOf<Material>(Material("1", "Test"),
         Material("1", "**Test**"),
-        Material("1", "Test")))
+        Material("1", "Test Deneme Deneme Deneme Dneeme Dneeme ")))
 }
