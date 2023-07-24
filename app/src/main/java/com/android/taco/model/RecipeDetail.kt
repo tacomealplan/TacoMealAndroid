@@ -7,8 +7,8 @@ import java.lang.reflect.Type
 data class RecipeDetail(
     val id: String,
     val recipeId: String,
-    val materials: ArrayList<Material>,
-    val steps: ArrayList<Step>
+    var materials: ArrayList<Material>,
+    var steps: ArrayList<Step>
 ) {
 
     companion object{

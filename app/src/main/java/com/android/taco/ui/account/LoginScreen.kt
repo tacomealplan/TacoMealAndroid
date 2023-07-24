@@ -45,6 +45,7 @@ import com.android.taco.ui.theme.TacoTheme
 import com.android.taco.ui.theme.components.bars.PrimaryTopBar
 import com.android.taco.ui.theme.components.buttons.GoogleButton
 import com.android.taco.ui.theme.components.buttons.PrimaryButton
+import com.android.taco.ui.theme.components.dialogBox.ErrorDialog
 import com.android.taco.ui.theme.components.editTexts.EmailTextField
 import com.android.taco.ui.theme.components.editTexts.PasswordTextField
 import com.android.taco.ui.theme.components.editTexts.PrimaryTextField
@@ -58,6 +59,7 @@ fun LoginScreen(navController: NavHostController,
                 viewModel : AuthViewModel
 ){
     val context = LocalContext.current
+    var showErrorDialog by remember { mutableStateOf(false) }
     TacoTheme() {
         Scaffold(
             topBar = {
@@ -99,7 +101,7 @@ fun LoginScreen(navController: NavHostController,
                                     }
 
                                     is Resource.Error -> {
-
+                                        showErrorDialog = true
                                     }
                                 }
                             }
@@ -140,6 +142,12 @@ fun LoginScreen(navController: NavHostController,
                 }
                 if(viewModel.isLoading.value){
                     CircularProgress()
+                }
+
+                if(showErrorDialog){
+                    ErrorDialog(message = "Kullanıcı adı veya şifre hatalı") {
+                        showErrorDialog = false
+                    }
                 }
             }
 

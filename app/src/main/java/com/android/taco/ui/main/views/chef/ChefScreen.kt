@@ -16,6 +16,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,6 +52,10 @@ fun ChefScreen(navController: NavController,
     var selectedTab by remember {
         mutableStateOf(0)
     }
+    LaunchedEffect(key1 = Unit, block = {
+        viewModel.getMyPlans()
+        viewModel.getMyRecipes()
+    })
     TacoTheme() {
         Scaffold(topBar = {
             Row(

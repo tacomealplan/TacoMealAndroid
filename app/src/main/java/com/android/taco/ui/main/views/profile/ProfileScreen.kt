@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
@@ -18,9 +19,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.android.taco.ui.main.BottomNavItem
+import com.android.taco.ui.main.ScreensNavItem
 import com.android.taco.ui.main.views.chef.plan.PlanWidget
 import com.android.taco.ui.main.views.favourites.FavouritesWidget
 import com.android.taco.ui.theme.TacoTheme
+import com.android.taco.ui.theme.components.buttons.CardButton
 import com.android.taco.ui.theme.components.cards.ProfileCardView
 
 @Composable
@@ -46,9 +49,15 @@ fun ProfileScreen(navController: NavController,
 
             FavouritesWidget(navController, viewModel = viewModel())
 
+            //Spacer(modifier = Modifier.size(24.dp))
+
+            //PlanWidget(navController = navController)
+
             Spacer(modifier = Modifier.size(24.dp))
 
-            PlanWidget(navController = navController)
+            CardButton(text = "Haftalık Plan Oluştur") {
+                navController.navigate(ScreensNavItem.EditPlan.screen_route)
+            }
         }
     }
 

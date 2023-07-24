@@ -1,11 +1,14 @@
 package com.android.taco.ui.main.views.chef.recipe.edit
 
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.android.taco.model.Material
 import com.android.taco.model.Recipe
 import com.android.taco.model.RecipeDetail
 import com.android.taco.model.Step
+import com.android.taco.util.now
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,11 +22,16 @@ class EditRecipeViewModel @Inject constructor() : ViewModel() {
     var isLoading = mutableStateOf(false)
     var isNewInstance = mutableStateOf(true)
     var allCategories = mutableListOf<String>()
-    var allMeals = mutableListOf<String>()
-    var selectedCategories = mutableListOf<String>()
-
     var recipe = mutableStateOf<Recipe?>(null)
     var recipeDetail = mutableStateOf<RecipeDetail?>(null)
+    var allMeals = mutableListOf<String>()
+
+    var selectedCategories = mutableStateListOf<String>()
+    var recipeMeal = mutableStateOf("")
+    var recipeName = mutableStateOf("")
+    var recipeDesc = mutableStateOf("")
+    var recipePersonCount = mutableStateOf<Int?>(null)
+    var recipeDuration = mutableStateOf<Int?>(null)
 
     private val materials = MutableStateFlow<List<Material>>(listOf())
     private val steps = MutableStateFlow<List<Step>>(listOf())
@@ -32,8 +40,7 @@ class EditRecipeViewModel @Inject constructor() : ViewModel() {
 
     init {
         getRecipeCategories()
-        materials.value = listOf()
-        steps.value = listOf()
+        getRecipeMeals()
     }
 
     fun getRecipeInfo(){
@@ -41,14 +48,74 @@ class EditRecipeViewModel @Inject constructor() : ViewModel() {
     }
 
     fun createNewRecipe(){
+        isNewInstance.value = true
         recipe.value = Recipe.createNewInstance()
     }
 
-    fun addNewRecipe(){
+    private fun isRecipeValid() : Boolean{
+        return true
+    }
 
+    fun insertRecipe(onSuccess : () -> Unit, onError : () -> Unit){
+        if(!isRecipeValid()) return
+        isLoading.value = true
+        val currentUser = FirebaseAuth.getInstance().currentUser ?: return
+        recipe.value!!.createdBy = currentUser.uid
+        recipe.value!!.creatorUserName = currentUser.displayName.toString()
+        recipe.value!!.createDate = now()
+        recipe.value!!.creatorPhotoURL = currentUser.photoUrl.toString()
+        recipe.value!!.name = recipeName.value
+        recipe.value!!.description = recipeDesc.value
+        recipe.value!!.personCount = recipePersonCount.value!!
+        recipe.value!!.duration = recipeDuration.value!!
+        recipe.value!!.meal = recipeMeal.value
+        recipe.value!!.categories = ArrayList(selectedCategories.toList())
+        recipeDetail.value = RecipeDetail(id= UUID.randomUUID().toString(), recipeId = recipe.value!!.id, materials = arrayListOf(), steps = arrayListOf() )
+        recipeDetail.value!!.materials =  ArrayList(materials.value)
+        recipeDetail.value!!.steps = ArrayList(steps.value)
+        recipe.value!!.coverPhotoLink = try {
+            recipeDetail.value!!.steps.last { it.photoLink.isNotEmpty() }.photoLink
+        } catch (e: Exception) {
+            ""
+        }
+        firestore.collection("Recipe").document(recipe.value!!.id)
+            .set(Recipe.toHashMap(recipe.value!!))
+            .addOnSuccessListener {
+                insertRecipeDetail(onSuccess = {
+                    isLoading.value = false
+                    onSuccess.invoke()
+                }){
+                    isLoading.value = false
+                    onError.invoke()
+                }
+            }
+            .addOnFailureListener{
+                it.printStackTrace()
+                isLoading.value = false
+                onError.invoke()
+            }
+    }
+
+    private fun insertRecipeDetail(onSuccess : () -> Unit, onError: () -> Unit){
+        val item = HashMap<String,Any>()
+        item["id"] = recipeDetail.value!!.id
+        item["recipeId"] = recipeDetail.value!!.recipeId
+        item["materials"] = recipeDetail.value!!.materials
+        item["steps"] = recipeDetail.value!!.steps
+
+        firestore.collection("RecipeDetail").document(recipeDetail.value!!.id)
+            .set(item)
+            .addOnSuccessListener {
+                onSuccess.invoke()
+            }
+            .addOnFailureListener{
+                it.printStackTrace()
+                onError.invoke()
+            }
     }
 
     fun updateRecipe(){
+        isLoading.value = true
 
     }
 

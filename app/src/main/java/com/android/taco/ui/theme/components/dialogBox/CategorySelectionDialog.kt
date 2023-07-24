@@ -21,8 +21,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.android.taco.ui.theme.BrandSecondary
 import com.android.taco.ui.theme.TacoTheme
@@ -46,8 +48,8 @@ fun CategorySelectionDialog(items : ArrayList<String>,
                     .fillMaxSize(),
                 elevation = 8.dp
             ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(text = "Kategori Seçiniz")
+                Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxSize()) {
+                    Text(text = "Kategori Seçiniz", fontWeight = FontWeight.Bold, fontSize = 24.sp)
                     SelectableLazyList(items = items, selectedItems = selectedItems, onItemClicked = onItemClicked)
                 }
 

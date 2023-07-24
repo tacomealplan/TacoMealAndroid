@@ -86,7 +86,6 @@ fun SignUpScreen(navController: NavHostController,
                                 is Resource.Success -> {
                                     MainActivity.start(context)
                                 }
-
                                 is Resource.Error -> {
 
                                 }

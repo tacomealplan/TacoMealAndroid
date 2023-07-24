@@ -17,12 +17,7 @@ class ChefViewModel @Inject constructor(
     var myRecipes = mutableListOf<Recipe>()
     var myPlans = mutableListOf<Plan>()
 
-    init {
-        getMyRecipes()
-        getMyPlans()
-    }
-
-    private fun getMyRecipes(){
+    fun getMyRecipes(){
         FirebaseAuth.getInstance().currentUser?.uid?.let {
             firestore.collection("Recipe")
                 .whereEqualTo("createdBy",it)
@@ -46,7 +41,7 @@ class ChefViewModel @Inject constructor(
 
     }
 
-    private fun getMyPlans(){
+    fun getMyPlans(){
         FirebaseAuth.getInstance().currentUser?.uid?.let {
             firestore.collection("Plan")
                 .whereEqualTo("CreatedBy",it)

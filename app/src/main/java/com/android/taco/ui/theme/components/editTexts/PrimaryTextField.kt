@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
@@ -33,6 +34,9 @@ fun PrimaryTextField(value : String,
                      label : String = "",
                      placeholder: String,
                      enabled : Boolean = true,
+                     singleLine : Boolean = false,
+                     minLines : Int = 1,
+                     maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
                      modifier: Modifier = Modifier,
                      onValueChange: (String) -> Unit
 ) {
@@ -60,6 +64,9 @@ fun PrimaryTextField(value : String,
             shape = RoundedCornerShape(16.dp),
             enabled = enabled,
             placeholder = { Text(placeholder) },
+            minLines = minLines,
+            maxLines = maxLines,
+            singleLine = singleLine,
             textStyle = TextStyle(
                 fontSize = 16.sp),
             colors = TextFieldDefaults.textFieldColors(

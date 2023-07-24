@@ -32,21 +32,20 @@ import com.android.taco.ui.theme.components.buttons.CardButton
 import com.android.taco.ui.theme.components.buttons.SecondaryButton
 import com.android.taco.ui.theme.components.dialogBox.CategorySelectionDialog
 import com.android.taco.ui.theme.components.editTexts.PrimaryTextField
+import com.android.taco.ui.theme.components.loadingBar.CircularProgress
 
 @Composable
 fun EditRecipeScreen(navController: NavController, 
                      recipeId : String, 
                      viewModel: EditRecipeViewModel
 ){
-    var openCategorySelection by remember{
-        mutableStateOf(false)
-    }
-    var recipeName by remember{
-        mutableStateOf(viewModel.recipe.value?.name)
-    }
-    var recipeDesc by remember{
-        mutableStateOf(viewModel.recipe.value?.description)
-    }
+    var openCategorySelection by remember{mutableStateOf(false) }
+    var recipeName by remember{ viewModel.recipeName }
+    var recipeDesc by remember{ viewModel.recipeDesc }
+    var recipeMeal by remember{ viewModel.recipeMeal }
+    var recipePersonCount by remember{ viewModel.recipePersonCount }
+    var recipeDuration by remember{ viewModel.recipeDuration }
+    val recipeCategories = remember{ viewModel.selectedCategories }
 
     LaunchedEffect(key1 = Unit, block = {
         if(recipeId.isEmpty()){
@@ -75,6 +74,7 @@ fun EditRecipeScreen(navController: NavController,
                     PrimaryTextField(
                         value = recipeName ?: "",
                         placeholder = "Adı (Zorunlu Alan)",
+                        singleLine = true,
                         onValueChange = {name->
                             recipeName = name
                         }
@@ -83,47 +83,72 @@ fun EditRecipeScreen(navController: NavController,
                     PrimaryTextField(
                         value = recipeDesc ?: "",
                         placeholder = "Açıklaması (Zorunlu Alan)",
+                        minLines = 3,
+                        maxLines = 3,
                         onValueChange = {desc->
                             recipeDesc = desc
                         }
                     )
 
-                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight()) {
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight()
+                    ) {
 
                         PrimaryTextField(
-                            value = viewModel.recipe.value?.description ?: "",
-                            placeholder = "Süre (Zorunlu Alan)",
-                            onValueChange = {dur->
-                                viewModel.recipe.value?.duration = dur.toInt()
+                            value = try {
+                                if(recipeDuration != null) recipeDuration.toString() else ""
+                            } catch (e: Exception) {
+                                ""
                             },
-                            modifier = Modifier.fillMaxWidth(0.5f)
+                            placeholder = "Süre (Zorunlu)",
+                            onValueChange = { dur->
+                                recipeDuration = try {
+                                    dur.toInt()
+                                } catch (e: Exception) {
+                                    null
+                                }
+                            },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth(0.5f).height(100.dp)
                         )
 
                         PrimaryTextField(
-                            value = viewModel.recipe.value?.personCount.toString() ?: "",
-                            placeholder = "Kişi Sayısı (Zorunlu Alan)",
+                            value = try {
+                                if(recipePersonCount != null) recipePersonCount.toString() else ""
+                            } catch (e: Exception) {
+                                ""
+                            },
+                            placeholder = "Kişi Sayısı (Zorunlu)",
                             onValueChange = {count->
-                                viewModel.recipe.value?.personCount = count.toInt()
+                                recipePersonCount = try {
+                                    count.toInt()
+                                } catch (e: Exception) {
+                                    null
+                                }
                             },
-                            modifier = Modifier.fillMaxWidth(1f)
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth(1f).height(100.dp)
                         )
-
 
                     }
 
                 }
 
-                MealWidget(meals = viewModel.allMeals, selectedMeal = null){
-
+                Row(modifier = Modifier.padding(horizontal = 8.dp)) {
+                    MealWidget(meals = viewModel.allMeals, selectedMeal = recipeMeal ){selectedMeal ->
+                        recipeMeal = selectedMeal
+                    }
                 }
 
+
                 PrimaryTextField(
-                    value = "",
+                    value = recipeCategories.joinToString("-"),
                     label = "Kategoriler",
                     placeholder = "Kategoriler",
                     enabled = false,
+                    maxLines = 2,
                     onValueChange={},
                     modifier = Modifier.clickable{
                         openCategorySelection = true
@@ -136,18 +161,31 @@ fun EditRecipeScreen(navController: NavController,
 
                 Spacer(modifier = Modifier.height(12.dp))
                 SecondaryButton(text = "Kaydet") {
-                    viewModel.createNewRecipe()
+                    if(viewModel.isNewInstance.value){
+                        viewModel.insertRecipe(onSuccess = {
+
+                        }, onError = {
+
+                        })
+                    }else{
+                        viewModel.updateRecipe()
+                    }
+
                 }
+            }
 
-
-
+            if(viewModel.isLoading.value){
+                CircularProgress()
             }
 
             if(openCategorySelection){
                 CategorySelectionDialog(items= viewModel.allCategories.toList() as ArrayList<String>,
-                    selectedItems = arrayListOf(),
+                    selectedItems = ArrayList(recipeCategories.toList()),
                     onItemClicked = {
-                        viewModel.selectedCategories.add(it)
+                        if(recipeCategories.contains(it))
+                            recipeCategories.remove(it)
+                        else
+                            recipeCategories.add(it)
                     },
                     onDismiss = { openCategorySelection = false },
                     onSaved = { item ->

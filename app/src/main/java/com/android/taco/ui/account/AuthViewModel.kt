@@ -1,24 +1,25 @@
 package com.android.taco.ui.account
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.android.taco.repository.AuthRepository
 import com.android.taco.util.Resource
+import com.android.taco.util.isEmailValid
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
 import javax.inject.Inject
+
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val auth: FirebaseAuth
 ): ViewModel() {
     var isLoading = mutableStateOf(false)
+    var sendPasswordResetEmailIsValid = mutableStateOf(true)
 
     fun signIn(email : String, password : String, onResult : (res: Resource<Any>)->Unit){
         isLoading.value = true
@@ -29,9 +30,8 @@ class AuthViewModel @Inject constructor(
                         isLoading.value = false
                         onResult.invoke(Resource.Success(true))
                     } else {
-
-                        // If sign in fails, display a message to the user.
-                        //updateUI(null)
+                        isLoading.value = false
+                        onResult.invoke(Resource.Error("İşlem sırasında bir hata oluştu"))
                     }
                 }
         } catch (e: Exception) {
@@ -68,6 +68,25 @@ class AuthViewModel @Inject constructor(
         } catch (e: Exception) {
             isLoading.value = false
             onResult.invoke(Resource.Error("İşlem sırasında bir hata oluştu"))
+        }
+    }
+
+    fun sendPasswordResetEmail(email : String, onResult : (res: Resource<Any>)->Unit){
+        if(!email.isEmailValid()){
+            sendPasswordResetEmailIsValid.value = false
+            return
+        }
+        isLoading.value = true
+        val auth = FirebaseAuth.getInstance()
+
+        auth.sendPasswordResetEmail(email)
+        .addOnCompleteListener { task ->
+            isLoading.value = false
+            if (task.isSuccessful) {
+                onResult.invoke(Resource.Success(true))
+            }else{
+                onResult.invoke(Resource.Error("İşlem sırasında bir hata oluştu, lütfen daha sonra tekrar deneyiniz"))
+            }
         }
     }
 

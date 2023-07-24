@@ -132,8 +132,8 @@ fun StepsEditListScreen(viewModel: EditRecipeViewModel){
                 }
             }
             if(openNewStepDialog){
-                NewStepDialog(onDismiss = { openNewStepDialog = false }, onSaved = {step ->
-                    viewModel.addStep(Step(description = step, index = 1, id = UUID.randomUUID().toString(), photoLink = ""))
+                NewStepDialog(onDismiss = { openNewStepDialog = false }, onSaved = {stepDesc, photoUrl ->
+                    viewModel.addStep(Step(description = stepDesc, index = 1, id = UUID.randomUUID().toString(), photoLink = ""))
                     openNewStepDialog = false
                 })
             }

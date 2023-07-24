@@ -224,7 +224,7 @@ fun PlanEditScreen(planId: String,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     SecondaryButton(text = "İleri") {
-                        
+                        navController.navigate(ScreensNavItem.EditPlanInfo.screen_route       )
                     }
                 }
             }

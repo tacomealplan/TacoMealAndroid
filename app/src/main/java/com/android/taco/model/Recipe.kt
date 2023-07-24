@@ -4,15 +4,15 @@ import java.util.UUID
 
 data class Recipe(
     val id: String,
-    val meal: String,
+    var meal: String,
     var name: String,
     var personCount: Int,
-    val categories: ArrayList<String>,
-    val coverPhotoLink: String,
-    val createDate: String,
-    val createdBy: String,
-    val creatorPhotoURL: String,
-    val creatorUserName: String,
+    var categories: ArrayList<String>,
+    var coverPhotoLink: String,
+    var createDate: String,
+    var createdBy: String,
+    var creatorPhotoURL: String,
+    var creatorUserName: String,
     var description: String,
     var duration: Int,
 ) {
@@ -70,6 +70,24 @@ data class Recipe(
                 duration = 60
             )
             return recipe
+        }
+
+        fun toHashMap(recipe: Recipe) : HashMap<String,Any>{
+            val item = HashMap<String,Any>()
+            item["id"] = recipe.id
+            item["meal"] = recipe.meal
+            item["name"] = recipe.name
+            item["personCount"] = recipe.personCount
+            item["duration"] = recipe.duration
+            item["description"] = recipe.description
+            item["creatorUserName"] = recipe.creatorUserName
+            item["creatorPhotoURL"] = recipe.creatorPhotoURL
+            item["createdBy"] = recipe.createdBy
+            item["createDate"] = recipe.createDate
+            item["coverPhotoLink"] = recipe.coverPhotoLink
+            item["categories"] = recipe.categories
+
+            return item
         }
     }
 }

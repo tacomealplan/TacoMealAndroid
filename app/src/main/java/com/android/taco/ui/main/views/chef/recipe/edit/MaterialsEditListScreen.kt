@@ -59,12 +59,13 @@ import com.android.taco.ui.theme.components.list.dragAndDropList.DragDropColumn
 import com.android.taco.ui.theme.components.swipe.SwipeBackground
 import java.util.UUID
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun MaterialsEditListScreen(viewModel: EditRecipeViewModel){
     var openNewMaterialDialog by remember { mutableStateOf(false) }
     var openNewTitleDialog by remember { mutableStateOf(false) }
     val uiState = viewModel.materialsState.collectAsState()
+
     Column(verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize()
