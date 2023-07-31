@@ -114,7 +114,7 @@ fun RecipeCardById(recipeId: String, viewModel: RecipeByIdViewModel, onClick: ()
                                 .fillMaxSize()
                                 .padding(4.dp)
                         ) {
-                            ButtonLike(){}
+                            ButtonLike(isLiked = false){}
                         }
                     }
 

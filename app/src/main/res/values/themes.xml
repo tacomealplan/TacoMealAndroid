@@ -3,6 +3,7 @@
 
     <style name="Theme.App" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:statusBarColor">#FF5722</item>
+        <item name="android:dialogTheme">@style/Theme.DialogFullScreen</item>
     </style>
 
     <style name="Theme.SplashScreenApp" parent="android:Theme.Material.Light.NoActionBar">
@@ -14,5 +15,10 @@
 
     <style name="SplashScreenTheme" parent="Theme.SplashScreenApp">
         <item name="android:windowBackground">@drawable/background_image</item>
+    </style>
+
+    <style name="Theme.DialogFullScreen" parent="@style/ThemeOverlay.MaterialComponents.Dialog.Alert">
+        <item name="android:windowMinWidthMajor">100%</item>
+        <item name="android:windowMinWidthMinor">100%</item>
     </style>
 </resources>

@@ -16,6 +16,7 @@ class ChefViewModel @Inject constructor(
     var isLoading = mutableStateOf(false)
     var myRecipes = mutableListOf<Recipe>()
     var myPlans = mutableListOf<Plan>()
+    var selectedTab = mutableStateOf(0)
 
     fun getMyRecipes(){
         FirebaseAuth.getInstance().currentUser?.uid?.let {

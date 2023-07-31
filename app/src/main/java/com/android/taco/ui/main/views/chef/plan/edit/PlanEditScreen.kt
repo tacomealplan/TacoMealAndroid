@@ -26,6 +26,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -35,6 +37,7 @@ import com.android.taco.ui.main.views.chef.plan.Day
 import com.android.taco.ui.main.views.chef.plan.DayList
 import com.android.taco.ui.main.views.chef.plan.PlanViewModel
 import com.android.taco.ui.main.views.chef.recipe.RecipeCardById
+import com.android.taco.ui.main.views.chef.recipe.edit.EditRecipeDetailScreen
 import com.android.taco.ui.theme.BrandPrimary
 import com.android.taco.ui.theme.BrandSecondary
 import com.android.taco.ui.theme.TacoTheme
@@ -44,11 +47,17 @@ import com.android.taco.ui.theme.components.buttons.SecondaryButton
 
 @Composable
 fun PlanEditScreen(planId: String,
-               viewModel: PlanViewModel,
+               viewModel: PlanEditViewModel,
                navController: NavController
 ){
+    var planDetailDialog by remember{mutableStateOf(false) }
     LaunchedEffect(key1 = Unit, block = {
-        viewModel.getPlanById(planId)
+        if(planId.isNotEmpty()){
+            viewModel.getPlanById(planId)
+        }else{
+            viewModel.createNewInstance()
+        }
+
     })
     var selectedDay by remember {
         mutableStateOf<Day>(Day.Monday)
@@ -62,11 +71,24 @@ fun PlanEditScreen(planId: String,
             PrimaryTopBar(title = "Haftalık Plan Oluştur") {
                 navController.popBackStack()
             }
+        }, bottomBar = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxWidth()
+                    .padding(bottom = 12.dp, start = 12.dp, end = 12.dp)
+            ) {
+                SecondaryButton(text = "İleri") {
+                    planDetailDialog = true
+                }
+            }
         }) {
             Column(
                 verticalArrangement = Arrangement.SpaceBetween,
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxSize().padding(12.dp)
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(12.dp)
             ) {
                 Column(verticalArrangement = Arrangement.Top,
                     horizontalAlignment = Alignment.Start,
@@ -119,7 +141,7 @@ fun PlanEditScreen(planId: String,
 
                     Row(verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Start,
-                        modifier = Modifier
+                        modifier = Modifier.horizontalScroll(state = rememberScrollState())
                     ) {
                         plan?.getDay(selectedDay)?.breakfast?.forEach { recipeId ->
                             if(recipeId.isNotBlank())
@@ -161,7 +183,7 @@ fun PlanEditScreen(planId: String,
                     }
                     Row(verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Start,
-                        modifier = Modifier
+                        modifier = Modifier.horizontalScroll(state = rememberScrollState())
                     ) {
                         plan?.getDay(selectedDay)?.lunch?.forEach { recipeId ->
                             if(recipeId.isNotBlank())
@@ -204,7 +226,7 @@ fun PlanEditScreen(planId: String,
 
                     Row(verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Start,
-                        modifier = Modifier
+                        modifier = Modifier.horizontalScroll(state = rememberScrollState())
                     ) {
                         plan?.getDay(selectedDay)?.dinner?.forEach { recipeId ->
                             if(recipeId.isNotBlank())
@@ -217,18 +239,15 @@ fun PlanEditScreen(planId: String,
 
 
                 }
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    SecondaryButton(text = "İleri") {
-                        navController.navigate(ScreensNavItem.EditPlanInfo.screen_route       )
+            }
+            if(planDetailDialog){
+                TacoTheme() {
+                    Dialog(properties = DialogProperties(usePlatformDefaultWidth = false),
+                        onDismissRequest = { planDetailDialog = false}) {
+                        PlanInfoEditScreen(navController = navController, viewModel = viewModel)
                     }
                 }
             }
-
         }
     }
 }

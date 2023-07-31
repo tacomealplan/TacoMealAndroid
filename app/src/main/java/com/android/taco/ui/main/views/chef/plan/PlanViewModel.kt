@@ -18,6 +18,7 @@ class PlanViewModel @Inject constructor(
 
 
     fun getPlanById(planId : String ){
+        isLoading.value = true
         firestore.collection("Plan")
             .whereEqualTo("Id",planId)
             .get()

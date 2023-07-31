@@ -162,6 +162,8 @@ fun MaterialsEditListScreen(viewModel: EditRecipeViewModel){
 
 @Composable
 private fun MaterialRow(item: Material) {
+    val isTitle = item.name.startsWith("**") &&
+            item.name.endsWith("**")
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -179,8 +181,11 @@ private fun MaterialRow(item: Material) {
         )
         Column(modifier = Modifier.fillMaxWidth()) {
             Text(
-                text = item.name,
+                text = if(isTitle) item.name.removeSurrounding("**") else item.name,
                 color = BrandPrimary,
+                style = TextStyle(
+                    fontSize = 18.sp,
+                    fontWeight = if(isTitle) FontWeight.Bold else FontWeight.Normal),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),

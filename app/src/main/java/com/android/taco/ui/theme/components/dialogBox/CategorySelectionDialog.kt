@@ -26,6 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.android.taco.ui.theme.BrandSecondary
 import com.android.taco.ui.theme.TacoTheme
 import com.android.taco.ui.theme.components.list.multiSelectList.SelectableLazyList
@@ -38,22 +39,22 @@ fun CategorySelectionDialog(items : ArrayList<String>,
                             onSaved : (material : String) -> Unit
 ) {
     TacoTheme() {
-        Dialog(onDismissRequest = { onDismiss() }) {
+        Dialog(properties = DialogProperties(usePlatformDefaultWidth = false),
+            onDismissRequest = { onDismiss() }) {
             Card(
                 //shape = MaterialTheme.shapes.medium,
                 shape = RoundedCornerShape(10.dp),
-                // modifier = modifier.size(280.dp, 240.dp)
                 modifier = Modifier
                     .padding(8.dp)
                     .fillMaxSize(),
                 elevation = 8.dp
             ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxSize()) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxSize()
+                ) {
                     Text(text = "Kategori Seçiniz", fontWeight = FontWeight.Bold, fontSize = 24.sp)
                     SelectableLazyList(items = items, selectedItems = selectedItems, onItemClicked = onItemClicked)
                 }
-
-
             }
         }
     }
@@ -62,7 +63,7 @@ fun CategorySelectionDialog(items : ArrayList<String>,
 }
 
 @Composable
-@Preview
+@Preview(showSystemUi = true, showBackground = true)
 fun CategorySelectionDialogPreview(){
     CategorySelectionDialog(items = arrayListOf("item1", "item2"), selectedItems = arrayListOf("item1"),{},{}) {
 

@@ -1,15 +1,21 @@
 package com.android.taco.ui.main.views.chef.plan
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.EditNote
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -18,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,8 +37,11 @@ import com.android.taco.model.Plan
 import com.android.taco.ui.main.ScreensNavItem
 import com.android.taco.ui.main.views.chef.recipe.RecipeCardById
 import com.android.taco.ui.theme.BrandPrimary
+import com.android.taco.ui.theme.BrandSecondary
 import com.android.taco.ui.theme.TacoTheme
 import com.android.taco.ui.theme.components.bars.PrimaryTopBar
+import com.android.taco.ui.theme.components.buttons.SecondaryButton
+import com.android.taco.ui.theme.components.loadingBar.CircularProgress
 
 @Composable
 fun PlanScreen(planId: String,
@@ -48,10 +58,48 @@ fun PlanScreen(planId: String,
     val plan by remember {
         viewModel.plan
     }
+    if(viewModel.isLoading.value){
+        CircularProgress()
+    }
     TacoTheme() {
         Scaffold(topBar = {
-            PrimaryTopBar(title = "Plan Detayı") {
-                navController.popBackStack()
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start,
+                    modifier = Modifier.fillMaxWidth(0.9f)
+                ) {
+                    PrimaryTopBar(title = "Plan Detayı") {
+                        navController.popBackStack()
+                    }
+                }
+                Icon(
+                    imageVector = Icons.Default.EditNote,
+                    contentDescription = "Localized description",
+                    tint = BrandSecondary,
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clickable {
+                            navController.navigate(ScreensNavItem.EditPlan.screen_route+"/$planId")
+                        })
+            }
+
+        }, bottomBar = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .padding(12.dp)
+                    .fillMaxWidth()
+                    .background(color = Color.Transparent)
+            ) {
+                SecondaryButton(text = "Planı Seç") {
+
+                }
             }
         }) {
             Column(verticalArrangement = Arrangement.Top,
@@ -83,7 +131,7 @@ fun PlanScreen(planId: String,
 
                 Row(verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Start,
-                    modifier = Modifier
+                    modifier = Modifier.horizontalScroll(state = rememberScrollState())
                 ) {
                     plan?.getDay(selectedDay)?.breakfast?.forEach { recipeId ->
                         if(recipeId.isNotBlank())
@@ -104,7 +152,7 @@ fun PlanScreen(planId: String,
                 )
                 Row(verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Start,
-                    modifier = Modifier
+                    modifier = Modifier.horizontalScroll(state = rememberScrollState())
                 ) {
                     plan?.getDay(selectedDay)?.lunch?.forEach { recipeId ->
                         if(recipeId.isNotBlank())
@@ -126,7 +174,7 @@ fun PlanScreen(planId: String,
 
                 Row(verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Start,
-                    modifier = Modifier
+                    modifier = Modifier.horizontalScroll(state = rememberScrollState())
                 ) {
                     plan?.getDay(selectedDay)?.dinner?.forEach { recipeId ->
                         if(recipeId.isNotBlank())

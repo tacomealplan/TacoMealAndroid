@@ -39,24 +39,28 @@ import com.android.taco.ui.theme.BrandPrimary
 import com.android.taco.ui.theme.BrandSecondary
 import com.android.taco.ui.theme.TacoTheme
 import com.android.taco.ui.theme.components.bars.PrimaryTopBar
+import com.android.taco.ui.theme.components.bars.TitleTopBar
 import com.android.taco.ui.theme.components.buttons.PrimaryButton
 import com.android.taco.ui.theme.components.buttons.SecondaryButton
+import com.android.taco.ui.theme.components.dialogBox.CategorySelectionDialog
 import com.android.taco.ui.theme.components.editTexts.PrimaryTextField
 
 @Composable
-fun PlanInfoEditScreen(planId: String,
-               viewModel: PlanViewModel,
+fun PlanInfoEditScreen(
+               viewModel: PlanEditViewModel,
                navController: NavController
 ){
     LaunchedEffect(key1 = Unit, block = {
 
     })
+    val recipeCategories = remember{ viewModel.selectedCategories }
+    var planName by remember{ viewModel.planName }
+    var planMotivation by remember{ viewModel.planMotivation }
+    var openCategorySelection by remember{mutableStateOf(false) }
 
     TacoTheme() {
         Scaffold(topBar = {
-            PrimaryTopBar(title = "Haftalık Plan Oluştur") {
-                navController.popBackStack()
-            }
+            TitleTopBar(title = "Haftalık Plan Oluştur")
         }) {
             Column(
                 verticalArrangement = Arrangement.SpaceBetween,
@@ -74,24 +78,33 @@ fun PlanInfoEditScreen(planId: String,
                         .fillMaxWidth()) {
 
                     PrimaryTextField(
-                        value = "",
+                        value = planName,
                         label = "Adı",
                         placeholder = "Plan adını giriniz",
-                        onValueChange = {}
+                        onValueChange = {
+                            planName = it
+                        }
                     )
 
                     PrimaryTextField(
-                        value = "",
+                        value = recipeCategories.joinToString("-"),
                         label = "Kategoriler",
-                        placeholder = "Kategori Seçiniz",
-                        onValueChange = {}
+                        placeholder = "Kategoriler",
+                        enabled = false,
+                        maxLines = 2,
+                        onValueChange={},
+                        modifier = Modifier.clickable{
+                            openCategorySelection = true
+                        }
                     )
 
                     PrimaryTextField(
-                        value = "",
+                        value = planMotivation,
                         label = "Motivasyon",
                         placeholder = "Motivasyonunuzu Giriniz",
-                        onValueChange = {}
+                        onValueChange = {
+                            planMotivation = it
+                        }
                     )
                 }
 
@@ -105,7 +118,20 @@ fun PlanInfoEditScreen(planId: String,
                     }
                 }
             }
-
+            if(openCategorySelection){
+                CategorySelectionDialog(items= viewModel.allCategories.toList() as ArrayList<String>,
+                    selectedItems = ArrayList(recipeCategories.toList()),
+                    onItemClicked = {
+                        if(recipeCategories.contains(it))
+                            recipeCategories.remove(it)
+                        else
+                            recipeCategories.add(it)
+                    },
+                    onDismiss = { openCategorySelection = false },
+                    onSaved = { item ->
+                        openCategorySelection = false
+                    })
+            }
         }
     }
 }

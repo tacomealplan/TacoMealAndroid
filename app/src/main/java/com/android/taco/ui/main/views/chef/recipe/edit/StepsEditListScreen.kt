@@ -14,9 +14,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.DismissDirection
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Surface
 import androidx.compose.material.SwipeToDismiss
 import androidx.compose.material.Text
 import androidx.compose.material.rememberDismissState
@@ -37,11 +39,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.android.taco.R
 import com.android.taco.model.Step
+import com.android.taco.ui.main.views.chef.steps.StepImage
 import com.android.taco.ui.main.views.chef.steps.StepNumber
 import com.android.taco.ui.theme.BrandPrimary
 import com.android.taco.ui.theme.BrandSecondary
 import com.android.taco.ui.theme.NeutralGray2
 import com.android.taco.ui.theme.NeutralGray4
+import com.android.taco.ui.theme.White
 import com.android.taco.ui.theme.components.dialogBox.NewStepDialog
 import com.android.taco.ui.theme.components.dialogBox.NewTitleDialog
 import com.android.taco.ui.theme.components.list.dragAndDropList.DragDropColumn
@@ -133,7 +137,7 @@ fun StepsEditListScreen(viewModel: EditRecipeViewModel){
             }
             if(openNewStepDialog){
                 NewStepDialog(onDismiss = { openNewStepDialog = false }, onSaved = {stepDesc, photoUrl ->
-                    viewModel.addStep(Step(description = stepDesc, index = 1, id = UUID.randomUUID().toString(), photoLink = ""))
+                    viewModel.addStep(Step(description = stepDesc, index = 1, id = UUID.randomUUID().toString(), photoLink = photoUrl))
                     openNewStepDialog = false
                 })
             }
@@ -150,33 +154,35 @@ fun StepsEditListScreen(viewModel: EditRecipeViewModel){
 }
 
 @Composable
-private fun StepRow(item: Step) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .clickable {
-
-            },
-    ) {
-        Spacer(modifier = Modifier.width(12.dp))
-        Image(
-            painter = painterResource(id = R.drawable.baseline_format_line_spacing_24),
-            contentDescription = "Added",
-            colorFilter = ColorFilter.tint(NeutralGray2),
+private fun StepRow(step: Step) {
+    Column() {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start,
             modifier = Modifier
-                .size(size = 28.dp)
-        )
-        StepNumber(number = item.index)
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Text(
-                text = item.description,
-                color = BrandPrimary,
+                .fillMaxWidth()
+                .padding(8.dp)
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.baseline_format_line_spacing_24),
+                contentDescription = "Added",
+                colorFilter = ColorFilter.tint(NeutralGray2),
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
+                    .size(size = 28.dp)
             )
-            Divider()
+            Spacer(modifier = Modifier.width(6.dp))
+            StepNumber(step.index)
+            Spacer(modifier = Modifier.width(6.dp))
+            Text(
+                text = step.description,
+                color = Color(0xff48525f),
+                style = TextStyle(
+                    fontSize = 16.sp),
+                modifier = Modifier
+                    .fillMaxWidth())
         }
-
+        if(step.photoLink.isNotBlank()){
+            StepImage(step.photoLink)
+        }
     }
 }

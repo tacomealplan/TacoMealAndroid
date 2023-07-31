@@ -10,10 +10,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
@@ -25,6 +27,14 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.filled.ChangeCircle
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.EditAttributes
+import androidx.compose.material.icons.filled.EditNote
+import androidx.compose.material.icons.filled.ModeEdit
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -54,6 +64,7 @@ import coil.compose.rememberImagePainter
 import com.android.taco.R
 import com.android.taco.model.Material
 import com.android.taco.model.Step
+import com.android.taco.ui.main.ScreensNavItem
 import com.android.taco.ui.main.views.chef.materials.MaterialListScreen
 import com.android.taco.ui.main.views.chef.materials.MaterialRow
 import com.android.taco.ui.main.views.chef.recipe.ButtonLike
@@ -109,8 +120,8 @@ fun RecipeScreen(recipeId : String,
                             }
                         ),
                         contentDescription = "description",
-                        contentScale = ContentScale.Fit,
-                        modifier = Modifier
+                        contentScale = ContentScale.FillBounds,
+                        modifier = Modifier.fillMaxHeight(0.6f).fillMaxWidth()
                     )
                     Column(
                         verticalArrangement = Arrangement.Top,
@@ -118,7 +129,9 @@ fun RecipeScreen(recipeId : String,
                             .fillMaxSize()
                             .background(color = Color.Transparent)
                     ) {
-                        HeaderBar(navController)
+                        HeaderBar(navController, viewModel.isEditEnabled.value,
+                            viewModel.recipe.value?.id ?: ""
+                        )
                         Spacer(modifier = Modifier.height(120.dp))
                         Column(
                             verticalArrangement = Arrangement.Top,
@@ -228,7 +241,7 @@ fun RecipeScreen(recipeId : String,
 }
 
 @Composable
-private fun HeaderBar(navController: NavController) {
+private fun HeaderBar(navController: NavController, enableEdit : Boolean = false, recipeId: String) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -237,15 +250,32 @@ private fun HeaderBar(navController: NavController) {
             .padding(vertical = 12.dp, horizontal = 12.dp)
     ) {
         Icon(
-            painter = painterResource(id = R.drawable.cancel),
+            imageVector = Icons.Outlined.Cancel,
             contentDescription = "Localized description",
-            tint= Color.White,
-            modifier = Modifier.clickable {
-                navController.popBackStack()
-            })
-        ButtonLike(size = 48) {
+            tint = BrandSecondary,
+            modifier = Modifier
+                .size(48.dp)
+                .clickable {
+                    navController.popBackStack()
+                })
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            if(enableEdit){
+                Icon(
+                    imageVector = Icons.Default.EditNote,
+                    contentDescription = "Localized description",
+                    tint = BrandSecondary,
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clickable {
+                            navController.navigate(ScreensNavItem.EditRecipe.screen_route+ "/$recipeId")
+                        })
+            }
 
+            ButtonLike(isLiked = false,size = 48) {
+
+            }
         }
+
     }
 }
 

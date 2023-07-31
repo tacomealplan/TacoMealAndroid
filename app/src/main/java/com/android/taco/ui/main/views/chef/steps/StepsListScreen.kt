@@ -123,7 +123,7 @@ fun StepRow(step: Step) {
 }
 
 @Composable
-private fun StepImage(stepPhotoLink: String) {
+fun StepImage(stepPhotoLink: String) {
     var imageUrl by remember {
         mutableStateOf("")
     }

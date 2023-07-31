@@ -125,9 +125,6 @@ class MainActivity : ComponentActivity() {
             composable(ScreensNavItem.EditPlan.screen_route) {
                 PlanEditScreen(planId = "", viewModel= viewModel(), navController = navController)
             }
-            composable(ScreensNavItem.EditPlanInfo.screen_route) {
-                PlanInfoEditScreen(planId = "", viewModel= viewModel(), navController = navController)
-            }
 
             composable(ScreensNavItem.Recipe.screen_route + "/{recipeId}") {
                 it.arguments?.getString("recipeId")?.let { recipeId ->

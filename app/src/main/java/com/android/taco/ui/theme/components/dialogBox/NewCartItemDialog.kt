@@ -39,7 +39,7 @@ fun NewCartItemDialog(onDismiss:() -> Unit, onSaved : (cartItem : String) -> Uni
                 //shape = MaterialTheme.shapes.medium,
                 shape = RoundedCornerShape(10.dp),
                 // modifier = modifier.size(280.dp, 240.dp)
-                modifier = Modifier.padding(8.dp),
+                modifier = Modifier.padding(24.dp),
                 elevation = 8.dp
             ) {
                 Column(
@@ -54,7 +54,8 @@ fun NewCartItemDialog(onDismiss:() -> Unit, onSaved : (cartItem : String) -> Uni
 
                     OutlinedTextField(
                         value = cartItem,
-                        onValueChange = { cartItem = it }, modifier = Modifier.padding(8.dp),
+                        maxLines = 3,
+                        onValueChange = { cartItem = it }, modifier = Modifier.padding(8.dp).fillMaxWidth(),
                         label = { Text("Malzeme") }
                     )
 

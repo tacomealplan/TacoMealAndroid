@@ -3,8 +3,10 @@ package com.android.taco.ui.theme.components.dialogBox
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
@@ -36,7 +38,7 @@ fun NewMaterialDialog(onDismiss:() -> Unit, onSaved : (material : String) -> Uni
                 //shape = MaterialTheme.shapes.medium,
                 shape = RoundedCornerShape(10.dp),
                 // modifier = modifier.size(280.dp, 240.dp)
-                modifier = Modifier.padding(8.dp),
+                modifier = Modifier.padding(24.dp),
                 elevation = 8.dp
             ) {
                 Column(
@@ -45,10 +47,10 @@ fun NewMaterialDialog(onDismiss:() -> Unit, onSaved : (material : String) -> Uni
 
                     OutlinedTextField(
                         value = material,
-                        onValueChange = { material = it }, modifier = Modifier.padding(8.dp),
+                        maxLines = 3,
+                        onValueChange = { material = it }, modifier = Modifier.padding(8.dp).fillMaxWidth(),
                         label = { Text("Malzeme Giriniz") }
                     )
-
                     Row {
                         OutlinedButton(
                             onClick = { onDismiss() },
@@ -74,8 +76,6 @@ fun NewMaterialDialog(onDismiss:() -> Unit, onSaved : (material : String) -> Uni
                             Text(text = "Kaydet")
                         }
                     }
-
-
                 }
             }
         }

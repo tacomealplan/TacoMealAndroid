@@ -24,13 +24,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import com.android.taco.ui.main.ScreensNavItem
 import com.android.taco.ui.main.views.chef.MealWidget
+import com.android.taco.ui.theme.TacoTheme
 import com.android.taco.ui.theme.components.bars.PrimaryTopBar
 import com.android.taco.ui.theme.components.buttons.CardButton
 import com.android.taco.ui.theme.components.buttons.SecondaryButton
 import com.android.taco.ui.theme.components.dialogBox.CategorySelectionDialog
+import com.android.taco.ui.theme.components.dialogBox.ErrorDialog
+import com.android.taco.ui.theme.components.dialogBox.SuccessDialog
+import com.android.taco.ui.theme.components.dialogBox.WarningDialog
 import com.android.taco.ui.theme.components.editTexts.PrimaryTextField
 import com.android.taco.ui.theme.components.loadingBar.CircularProgress
 
@@ -40,6 +46,10 @@ fun EditRecipeScreen(navController: NavController,
                      viewModel: EditRecipeViewModel
 ){
     var openCategorySelection by remember{mutableStateOf(false) }
+    var successDialog by remember{mutableStateOf(false) }
+    var errorDialog by remember{mutableStateOf(false) }
+    var warningMessage by remember{mutableStateOf("") }
+    var recipeDetailDialog by remember{mutableStateOf(false) }
     var recipeName by remember{ viewModel.recipeName }
     var recipeDesc by remember{ viewModel.recipeDesc }
     var recipeMeal by remember{ viewModel.recipeMeal }
@@ -51,7 +61,7 @@ fun EditRecipeScreen(navController: NavController,
         if(recipeId.isEmpty()){
             viewModel.createNewRecipe()
         }else{
-            viewModel.getRecipeInfo()
+            viewModel.getRecipeInfo(recipeId = recipeId)
         }
     })
 
@@ -111,7 +121,9 @@ fun EditRecipeScreen(navController: NavController,
                                 }
                             },
                             singleLine = true,
-                            modifier = Modifier.fillMaxWidth(0.5f).height(100.dp)
+                            modifier = Modifier
+                                .fillMaxWidth(0.5f)
+                                .height(100.dp)
                         )
 
                         PrimaryTextField(
@@ -129,7 +141,9 @@ fun EditRecipeScreen(navController: NavController,
                                 }
                             },
                             singleLine = true,
-                            modifier = Modifier.fillMaxWidth(1f).height(100.dp)
+                            modifier = Modifier
+                                .fillMaxWidth(1f)
+                                .height(100.dp)
                         )
 
                     }
@@ -156,28 +170,31 @@ fun EditRecipeScreen(navController: NavController,
                 )
 
                 CardButton(text = "Adımlar & Malzemeler", modifier = Modifier.padding(vertical = 12.dp)) {
-                    navController.navigate(ScreensNavItem.EditRecipeDetail.screen_route)
+                    recipeDetailDialog = true
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
                 SecondaryButton(text = "Kaydet") {
-                    if(viewModel.isNewInstance.value){
-                        viewModel.insertRecipe(onSuccess = {
-
-                        }, onError = {
-
-                        })
-                    }else{
-                        viewModel.updateRecipe()
-                    }
-
+                    viewModel.upsertRecipe(onSuccess = {
+                        successDialog = true
+                    }, onError = {
+                        errorDialog = true
+                    }, validationFailed = {
+                        warningMessage = it
+                    })
                 }
             }
-
+            if(recipeDetailDialog){
+                TacoTheme() {
+                    Dialog(properties = DialogProperties(usePlatformDefaultWidth = false),
+                        onDismissRequest = { recipeDetailDialog = false}) {
+                        EditRecipeDetailScreen(navController = navController, viewModel = viewModel)
+                    }
+                }
+            }
             if(viewModel.isLoading.value){
                 CircularProgress()
             }
-
             if(openCategorySelection){
                 CategorySelectionDialog(items= viewModel.allCategories.toList() as ArrayList<String>,
                     selectedItems = ArrayList(recipeCategories.toList()),
@@ -191,6 +208,21 @@ fun EditRecipeScreen(navController: NavController,
                     onSaved = { item ->
                         openCategorySelection = false
                 })
+            }
+            if(warningMessage.isNotEmpty()){
+                WarningDialog(message = warningMessage) {
+                    warningMessage = ""
+                }
+            }
+            if(successDialog){
+                SuccessDialog(message = "Tarif başarıyla oluşturuldu") {
+                    navController.popBackStack()
+                }
+            }
+            if(errorDialog){
+                ErrorDialog(message = "İşlem sırasında bir hata oluştu!") {
+                    errorDialog = false
+                }
             }
         }
 

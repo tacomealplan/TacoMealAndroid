@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,18 +41,33 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import com.android.taco.R
 import com.android.taco.model.Recipe
+import com.android.taco.model.UserCart
 import com.android.taco.ui.theme.BrandSecondary
 import com.android.taco.ui.theme.components.image.CircularImageView
+import com.android.taco.util.getDate
+import com.android.taco.util.now
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
+import java.util.Calendar
+import java.util.UUID
 
 @Composable
 fun RecipeCard(recipe: Recipe, onClick: () -> Unit) {
     var coverPhotoUrl by remember {
         mutableStateOf("")
     }
+    var isRecipeLiked by remember {
+        mutableStateOf(false)
+    }
     LaunchedEffect(Unit){
         getUrlForStorage(recipe.coverPhotoLink ?: ""){
             coverPhotoUrl = it
+        }
+        getRecipeIsLiked(recipe.id) {
+            isRecipeLiked = it
         }
     }
 
@@ -95,11 +111,14 @@ fun RecipeCard(recipe: Recipe, onClick: () -> Unit) {
                         contentScale = ContentScale.FillBounds,
                         modifier = Modifier
                             .fillMaxSize()
-                            .clip(shape = RoundedCornerShape(
-                                topStart = 16.dp,
-                                topEnd = 16.dp,
-                                bottomStart = 16.dp,
-                                bottomEnd = 16.dp))
+                            .clip(
+                                shape = RoundedCornerShape(
+                                    topStart = 16.dp,
+                                    topEnd = 16.dp,
+                                    bottomStart = 16.dp,
+                                    bottomEnd = 16.dp
+                                )
+                            )
                     )
                     Column(
                         verticalArrangement = Arrangement.Top,
@@ -108,7 +127,17 @@ fun RecipeCard(recipe: Recipe, onClick: () -> Unit) {
                             .fillMaxSize()
                             .padding(4.dp)
                     ) {
-                        ButtonLike(){}
+                        ButtonLike(isRecipeLiked){
+                            if(it){
+                                addUserRecipeLike(recipeId = recipe.id){
+                                    isRecipeLiked = it
+                                }
+                            }else{
+                                removeUserRecipeLike(recipeId = recipe.id){
+                                    isRecipeLiked = it
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -158,14 +187,67 @@ fun getUrlForStorage(path : String, url : (url : String) -> Unit){
         // Handle any errors
     }
 }
+fun getRecipeIsLiked(recipeId : String, result : (res : Boolean) -> Unit){
+    val userId = FirebaseAuth.getInstance().currentUser?.uid
+    if(userId.isNullOrBlank()){
+        result.invoke(false)
+    }
+    FirebaseFirestore.getInstance().collection("UserRecipeLike")
+        .whereEqualTo("RecipeId", recipeId)
+        .whereEqualTo("UserId", userId)
+        .get()
+        .addOnSuccessListener {
+            val data = it.documents
+            if(data.isNotEmpty()){
+                result.invoke(true)
+            }
+        }
+        .addOnFailureListener{
+            it.printStackTrace()
+            result.invoke(false)
+        }
+}
+
+fun addUserRecipeLike(recipeId: String, onSuccess : () -> Unit){
+    val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
+    val item = HashMap<String,Any>()
+    item["RecipeId"] = recipeId
+    item["UserId"] = currentUserId.toString()
+    FirebaseFirestore.getInstance().collection("UserRecipeLike")
+        .add(item)
+        .addOnSuccessListener {
+            it.path
+            onSuccess.invoke()
+        }
+        .addOnFailureListener{
+            it.printStackTrace()
+        }
+}
+
+fun removeUserRecipeLike(recipeId: String, onSuccess : () -> Unit){
+    val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
+    FirebaseFirestore.getInstance().collection("UserRecipeLike")
+        .whereEqualTo("RecipeId", recipeId)
+        .whereEqualTo("UserId", currentUserId)
+        .get()
+        .addOnSuccessListener {documents ->
+            if(documents.isEmpty) return@addOnSuccessListener
+            FirebaseFirestore.getInstance().collection("UserRecipeLike")
+                .document(documents.documents.first().id)
+                .delete()
+                .addOnSuccessListener {
+                    onSuccess.invoke()
+                }
+        }
+}
 
 @Composable
-fun ButtonLike(size : Int = 28, onClick : () -> Unit) {
+fun ButtonLike(isLiked : Boolean, size : Int = 28, onClick : (state : Boolean) -> Unit) {
     Column(
         modifier = Modifier
             .width(width = size.dp)
             .clickable {
-                onClick.invoke()
+                onClick.invoke(!isLiked)
             }
     ) {
         Box(contentAlignment = Alignment.Center,
@@ -174,7 +256,7 @@ fun ButtonLike(size : Int = 28, onClick : () -> Unit) {
                 .clip(shape = RoundedCornerShape(10.dp))
                 .background(color = Color.Transparent)){
             Image(
-                painter = painterResource(id = R.drawable.heart),
+                painter = painterResource(id =if(isLiked) R.drawable.heart else R.drawable.heart_empty),
                 contentDescription = "Iconly/Bold/Heart",
                 colorFilter = ColorFilter.tint(BrandSecondary),
                 modifier = Modifier

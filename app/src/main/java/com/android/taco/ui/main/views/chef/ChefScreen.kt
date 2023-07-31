@@ -50,7 +50,7 @@ fun ChefScreen(navController: NavController,
                viewModel: ChefViewModel
 ) {
     var selectedTab by remember {
-        mutableStateOf(0)
+        viewModel.selectedTab
     }
     LaunchedEffect(key1 = Unit, block = {
         viewModel.getMyPlans()

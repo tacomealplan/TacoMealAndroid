@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.android.taco.model.Recipe
 import com.android.taco.model.RecipeDetail
 import com.android.taco.ui.main.views.chef.recipe.getUrlForStorage
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -17,6 +18,7 @@ class RecipeScreenViewModel @Inject constructor(
     var isLoading = mutableStateOf(false)
     var hasError = mutableStateOf(false)
     var recipe = mutableStateOf<Recipe?>(null)
+    var isEditEnabled = mutableStateOf(false)
     var recipeDetail = mutableStateOf<RecipeDetail?>(null)
     var coverPhotoUrl = mutableStateOf("")
 
@@ -38,6 +40,8 @@ class RecipeScreenViewModel @Inject constructor(
                         coverPhotoUrl.value = url
                     }
                     getRecipeDetailById(recipeId)
+                    isEditEnabled.value = (FirebaseAuth.getInstance().currentUser?.uid
+                        ?: "") == recipe.value!!.createdBy
                 }
                 else
                     hasError.value = true
@@ -48,7 +52,6 @@ class RecipeScreenViewModel @Inject constructor(
                 isLoading.value = false
             }
     }
-
 
     private fun getRecipeDetailById(recipeId : String ){
         firestore.collection("RecipeDetail")

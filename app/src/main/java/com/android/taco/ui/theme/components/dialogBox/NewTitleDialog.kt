@@ -36,7 +36,7 @@ fun NewTitleDialog(onDismiss:() -> Unit, onSaved : (title : String) -> Unit) {
                 //shape = MaterialTheme.shapes.medium,
                 shape = RoundedCornerShape(10.dp),
                 // modifier = modifier.size(280.dp, 240.dp)
-                modifier = Modifier.padding(8.dp),
+                modifier = Modifier.padding(24.dp),
                 elevation = 8.dp
             ) {
                 Column(
@@ -45,7 +45,7 @@ fun NewTitleDialog(onDismiss:() -> Unit, onSaved : (title : String) -> Unit) {
 
                     OutlinedTextField(
                         value = title,
-                        onValueChange = { title = it }, modifier = Modifier.padding(8.dp),
+                        onValueChange = { title = it }, modifier = Modifier.padding(8.dp).fillMaxWidth(),
                         label = { Text("Başlık Giriniz") }
                     )
 
