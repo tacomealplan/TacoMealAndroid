@@ -68,6 +68,9 @@ import com.android.taco.ui.main.ScreensNavItem
 import com.android.taco.ui.main.views.chef.materials.MaterialListScreen
 import com.android.taco.ui.main.views.chef.materials.MaterialRow
 import com.android.taco.ui.main.views.chef.recipe.ButtonLike
+import com.android.taco.ui.main.views.chef.recipe.addUserRecipeLike
+import com.android.taco.ui.main.views.chef.recipe.getRecipeIsLiked
+import com.android.taco.ui.main.views.chef.recipe.removeUserRecipeLike
 import com.android.taco.ui.main.views.chef.steps.StepListScreen
 import com.android.taco.ui.theme.BrandPrimary
 import com.android.taco.ui.theme.BrandSecondary
@@ -94,9 +97,15 @@ fun RecipeScreen(recipeId : String,
     val recipeDetail by remember {
         viewModel.recipeDetail
     }
+    var isRecipeLiked by remember {
+        mutableStateOf(false)
+    }
 
     LaunchedEffect(key1 = Unit, block = {
         viewModel.getRecipeById(recipeId)
+        getRecipeIsLiked(recipeId = recipeId) {
+            isRecipeLiked = it
+        }
     })
 
     TacoTheme() {
@@ -131,7 +140,9 @@ fun RecipeScreen(recipeId : String,
                     ) {
                         HeaderBar(navController, viewModel.isEditEnabled.value,
                             viewModel.recipe.value?.id ?: ""
-                        )
+                        ,isRecipeLiked){
+                            isRecipeLiked = it
+                        }
                         Spacer(modifier = Modifier.height(120.dp))
                         Column(
                             verticalArrangement = Arrangement.Top,
@@ -241,7 +252,12 @@ fun RecipeScreen(recipeId : String,
 }
 
 @Composable
-private fun HeaderBar(navController: NavController, enableEdit : Boolean = false, recipeId: String) {
+private fun HeaderBar(navController: NavController,
+                      enableEdit : Boolean = false,
+                      recipeId: String,
+                      isRecipeLiked : Boolean,
+                      onLikeChanged : (isLiked : Boolean) -> Unit
+) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -270,9 +286,16 @@ private fun HeaderBar(navController: NavController, enableEdit : Boolean = false
                             navController.navigate(ScreensNavItem.EditRecipe.screen_route+ "/$recipeId")
                         })
             }
-
-            ButtonLike(isLiked = false,size = 48) {
-
+            ButtonLike(isRecipeLiked,size = 48){
+                if(it){
+                    addUserRecipeLike(recipeId = recipeId){
+                        onLikeChanged.invoke(it)
+                    }
+                }else{
+                    removeUserRecipeLike(recipeId = recipeId){
+                        onLikeChanged.invoke(it)
+                    }
+                }
             }
         }
 
@@ -290,7 +313,7 @@ private fun BottomProfileView(ppUrl : String, username : String){
     ){
         Text(
             text = "Oluşturan",
-            color = Color(0xff0a2533),
+            color = BrandPrimary,
             style = TextStyle(
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold),

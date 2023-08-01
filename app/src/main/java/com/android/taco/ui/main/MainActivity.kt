@@ -8,16 +8,13 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.DarkGray
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -28,14 +25,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.android.taco.R
-import com.android.taco.model.Plan
 import com.android.taco.ui.theme.TacoTheme
 import com.android.taco.ui.main.views.home.HomeScreen
 import com.android.taco.ui.main.views.cart.CartScreen
 import com.android.taco.ui.main.views.chef.ChefScreen
-import com.android.taco.ui.main.views.chef.plan.PlanScreen
+import com.android.taco.ui.main.views.chef.plan.detail.PlanScreen
 import com.android.taco.ui.main.views.chef.plan.edit.PlanEditScreen
-import com.android.taco.ui.main.views.chef.plan.edit.PlanInfoEditScreen
 import com.android.taco.ui.main.views.chef.recipe.detail.RecipeScreen
 import com.android.taco.ui.main.views.chef.recipe.edit.EditRecipeDetailScreen
 import com.android.taco.ui.main.views.chef.recipe.edit.EditRecipeScreen
@@ -44,9 +39,7 @@ import com.android.taco.ui.main.views.populars.PopularsScreen
 import com.android.taco.ui.main.views.profile.ProfileEditScreen
 import com.android.taco.ui.main.views.profile.ProfileScreen
 import com.android.taco.ui.main.views.search.SearchScreen
-import com.android.taco.ui.theme.BrandPrimary
 import com.android.taco.ui.theme.BrandSecondary
-import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

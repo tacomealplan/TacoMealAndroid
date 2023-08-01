@@ -7,6 +7,7 @@ data class Plan(
     val id: String,
     val creatorProfileURL: String,
     val creatorUserName: String,
+    val createdBy: String,
     val motivation: String,
     val name: String,
     val mon : PlanDay,
@@ -46,7 +47,8 @@ data class Plan(
                 fri = Gson().fromJson(data["Fri"].toString(), PlanDay::class.java),
                 satur = Gson().fromJson(data["Satur"].toString(), PlanDay::class.java),
                 sun = Gson().fromJson(data["Sun"].toString(), PlanDay::class.java),
-                updateDate = data["UpdateDate"].toString()
+                updateDate = data["UpdateDate"].toString(),
+                createdBy = data["CreatedBy"].toString()
             )
             return plan
         }
@@ -65,7 +67,8 @@ data class Plan(
                 fri = PlanDay(breakfast = listOf("",""), lunch = listOf("",""), dinner = listOf("","")),
                 satur = PlanDay(breakfast = listOf("",""), lunch = listOf("",""), dinner = listOf("","")),
                 sun = PlanDay(breakfast = listOf("",""), lunch = listOf("",""), dinner = listOf("","")),
-                updateDate = "2023/04/27 23:57"
+                updateDate = "2023/04/27 23:57",
+                createdBy = "1234567890"
             )
             return plan
         }

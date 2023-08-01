@@ -8,11 +8,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -26,14 +24,13 @@ import com.android.taco.ui.main.views.chef.plan.PlanWidget
 import com.android.taco.ui.main.views.populars.PopularsWidget
 import com.android.taco.ui.theme.*
 import com.android.taco.ui.theme.components.buttons.CardButton
-import com.android.taco.ui.theme.components.buttons.RightArrowButton
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     navController: NavController) {
-    var activePlan by remember {
+    val activePlan by remember {
         viewModel.activePlan
     }
     LaunchedEffect(key1 = Unit, block = {
@@ -52,9 +49,9 @@ fun HomeScreen(
             Header()
             Spacer(modifier = Modifier.height(12.dp))
             if(activePlan != null){
-                DailyMenuWidget()
+                DailyMenuWidget(activePlan!!.planId, viewModel = androidx.lifecycle.viewmodel.compose.viewModel())
                 Spacer(modifier = Modifier.height(12.dp))
-                PlanWidget(navController = navController)
+                PlanWidget(navController = navController, activePlanId = activePlan!!.planId)
                 Spacer(modifier = Modifier.height(12.dp))
             }
 
@@ -86,20 +83,12 @@ fun Header() {
                 modifier = Modifier
                     .size(size = 20.dp))
             Text(
-                text = "Günaydın",
+                text = "Günaydın ${FirebaseAuth.getInstance().currentUser?.displayName ?: ""}",
                 color = BrandPrimary,
                 style = TextStyle(
                     fontWeight = FontWeight.Bold,
-                    fontSize = 14.sp))
+                    fontSize = 16.sp))
         }
-
-        Text(
-            text = FirebaseAuth.getInstance().currentUser?.displayName ?: "",
-            color = BrandPrimary,
-            style = TextStyle(
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold)
-        )
     }
 }
 

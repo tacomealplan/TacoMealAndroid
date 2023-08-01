@@ -54,8 +54,15 @@ fun RecipeCardById(recipeId: String, viewModel: RecipeByIdViewModel, onClick: ()
     val recipe : Recipe? by remember {
         viewModel.recipe
     }
+
+    var isRecipeLiked by remember {
+        mutableStateOf(false)
+    }
     LaunchedEffect(Unit){
         viewModel.getRecipeById(recipeId = recipeId)
+        getRecipeIsLiked(recipeId = recipeId) {
+            isRecipeLiked = it
+        }
     }
 
     Surface(
@@ -114,7 +121,17 @@ fun RecipeCardById(recipeId: String, viewModel: RecipeByIdViewModel, onClick: ()
                                 .fillMaxSize()
                                 .padding(4.dp)
                         ) {
-                            ButtonLike(isLiked = false){}
+                            ButtonLike(isRecipeLiked){
+                                if(it){
+                                    addUserRecipeLike(recipeId = recipeId){
+                                        isRecipeLiked = it
+                                    }
+                                }else{
+                                    removeUserRecipeLike(recipeId = recipeId){
+                                        isRecipeLiked = it
+                                    }
+                                }
+                            }
                         }
                     }
 

@@ -25,6 +25,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -33,66 +34,67 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.android.taco.R
+import com.android.taco.model.Recipe
 import com.android.taco.ui.theme.BrandSecondary
 
 @Composable
-fun MealCard(){
+fun MealCard(recipe: Recipe){
     Surface(
         elevation = 9.dp, // play with the elevation values
         shape = RoundedCornerShape(16.dp),
         modifier = Modifier.padding(4.dp)
     ) {
-        Column(modifier = Modifier
+        Box (modifier = Modifier.size(width = 265.dp, height = 172.dp)
             .background(color = BrandSecondary)
-            .size(width = 265.dp, height = 172.dp)) {
-            Spacer(modifier = Modifier.fillMaxHeight(0.5f))
-            Text(
-                text = "Deniz Mahsüllü \nNoodle",
-                color = Color.White,
-                style = TextStyle(
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold),
+        ){
+            Image(
+                painter = painterResource(id = R.drawable.imagecardbg),
+                contentDescription = "Iconly/Bold/Heart",
                 modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .width(width = 189.dp))
-
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Image(
-                        painter = painterResource(id = R.drawable.love),
-                        contentDescription = "Iconly/Light/Time Circle",
-                        contentScale = ContentScale.Fit,
-                        modifier = Modifier
-                            .size(size = 20.dp))
-                    Spacer(modifier = Modifier.size(4.dp))
+                    .fillMaxSize()
+            )
+            Column(modifier = Modifier
+                .background(color = Color.Transparent)
+                .size(width = 265.dp, height = 172.dp)) {
+                Spacer(modifier = Modifier.fillMaxHeight(0.5f))
+                Text(
+                    text = recipe.name,
+                    color = Color.White,
+                    style = TextStyle(
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold),
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .width(width = 189.dp))
+                Spacer(modifier = Modifier.fillMaxHeight(0.25f))
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                ) {
                     Text(
-                        text = "Ceren Taşsın",
-                        color = Color.White.copy(alpha = 0.75f),
+                        text = recipe.creatorUserName,
+                        color = Color.White,
                         style = TextStyle(
-                            fontSize = 14.sp))
-                }
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold)
+                    )
 
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Image(
-                        painter = painterResource(id = R.drawable.time_circle),
-                        contentDescription = "Iconly/Light/Time Circle",
-                        modifier = Modifier
-                            .size(size = 16.dp))
-                    Spacer(modifier = Modifier.size(4.dp))
                     Text(
-                        text = "20 dk",
-                        color = Color.White.copy(alpha = 0.75f),
+                        text = "${recipe.duration} dk",
+                        color = Color.White,
                         style = TextStyle(
-                            fontSize = 14.sp))
-                }
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    )
 
+                }
             }
         }
+
     }
 }
 
@@ -100,5 +102,5 @@ fun MealCard(){
 @Preview
 @Composable
 fun MealCardPreview(){
-    MealCard()
+    MealCard(Recipe.dummyInstance())
 }

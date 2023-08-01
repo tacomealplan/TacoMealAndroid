@@ -31,10 +31,11 @@ import com.android.taco.ui.main.ScreensNavItem
 import com.android.taco.ui.theme.BrandPrimary
 import com.android.taco.ui.theme.BrandSecondary
 import com.android.taco.ui.theme.NeutralGray3
-import com.android.taco.ui.theme.NeutralGray4
+import java.util.Calendar
+import java.util.Date
 
 @Composable
-fun PlanWidget(navController: NavController){
+fun PlanWidget(navController: NavController, activePlanId : String = ""){
     Column(modifier = Modifier
         .fillMaxWidth()) {
         Row(verticalAlignment = Alignment.CenterVertically,
@@ -49,17 +50,6 @@ fun PlanWidget(navController: NavController){
                     fontWeight = FontWeight.Bold),
                 modifier = Modifier
             )
-
-            Text(
-                text = "Hepsini Gör",
-                color = BrandSecondary,
-                textAlign = TextAlign.End,
-                style = TextStyle(
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold),
-                modifier = Modifier.clickable {
-                    navController.navigate(ScreensNavItem.Plan.screen_route)
-                })
         }
         Spacer(modifier = Modifier.height(16.dp))
         Row(verticalAlignment = Alignment.CenterVertically,
@@ -68,8 +58,8 @@ fun PlanWidget(navController: NavController){
                 .horizontalScroll(rememberScrollState())
                 .fillMaxWidth()
         ){
-            DayList(selectedDay = Day.Tuesday){
-
+            DayList(selectedDay = Day.getCurrentDay()){
+                navController.navigate(ScreensNavItem.Plan.screen_route + "/${activePlanId}")
             }
         }
 
@@ -86,7 +76,7 @@ fun DayList(selectedDay : Day = Day.Monday, onItemSelected : (day : Day) -> Unit
                 modifier = Modifier
                     .padding(horizontal = 8.dp)
                     .clip(shape = RoundedCornerShape(40.dp))
-                    .background(color = if(selectedDay == day) BrandSecondary else NeutralGray3)
+                    .background(color = if (selectedDay == day) BrandSecondary else NeutralGray3)
                     .clickable {
                         onItemSelected.invoke(day)
                     }
@@ -122,6 +112,37 @@ sealed class Day(var name:String){
             result.add(Sunday)
             return result
 
+        }
+
+        fun getCurrentDay() :Day{
+            val calendar: Calendar = Calendar.getInstance()
+            calendar.time = Date()
+            val day: Int = calendar.get(Calendar.DAY_OF_WEEK)
+
+            when (day) {
+                Calendar.SUNDAY -> {
+                    return Sunday
+                }
+                Calendar.MONDAY -> {
+                    return Monday
+                }
+                Calendar.TUESDAY -> {
+                    return Tuesday
+                }
+                Calendar.WEDNESDAY -> {
+                    return Wednesday
+                }
+                Calendar.THURSDAY -> {
+                    return Thursday
+                }
+                Calendar.FRIDAY -> {
+                    return Friday
+                }
+                Calendar.SATURDAY -> {
+                    return Saturday
+                }
+            }
+            return Monday
         }
     }
 }
