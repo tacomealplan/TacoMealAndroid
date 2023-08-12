@@ -21,28 +21,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import com.android.taco.model.Plan
-import com.android.taco.ui.main.ScreensNavItem
-import com.android.taco.ui.main.views.chef.plan.Day
-import com.android.taco.ui.main.views.chef.plan.DayList
-import com.android.taco.ui.main.views.chef.plan.PlanViewModel
-import com.android.taco.ui.main.views.chef.recipe.RecipeCardById
-import com.android.taco.ui.theme.BrandPrimary
-import com.android.taco.ui.theme.BrandSecondary
 import com.android.taco.ui.theme.TacoTheme
-import com.android.taco.ui.theme.components.bars.PrimaryTopBar
 import com.android.taco.ui.theme.components.bars.TitleTopBar
-import com.android.taco.ui.theme.components.buttons.PrimaryButton
 import com.android.taco.ui.theme.components.buttons.SecondaryButton
 import com.android.taco.ui.theme.components.dialogBox.CategorySelectionDialog
+import com.android.taco.ui.theme.components.dialogBox.ErrorDialog
+import com.android.taco.ui.theme.components.dialogBox.SuccessDialog
+import com.android.taco.ui.theme.components.dialogBox.WarningDialog
 import com.android.taco.ui.theme.components.editTexts.PrimaryTextField
 
 @Composable
@@ -53,6 +40,9 @@ fun PlanInfoEditScreen(
     LaunchedEffect(key1 = Unit, block = {
 
     })
+    var successDialog by remember{mutableStateOf(false) }
+    var errorDialog by remember{mutableStateOf(false) }
+    var warningMessage by remember{mutableStateOf("") }
     val recipeCategories = remember{ viewModel.selectedCategories }
     var planName by remember{ viewModel.planName }
     var planMotivation by remember{ viewModel.planMotivation }
@@ -114,7 +104,13 @@ fun PlanInfoEditScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     SecondaryButton(text = "Kaydet") {
-                        
+                        viewModel.upsertPlan(onSuccess = {
+                            successDialog = true
+                        }, onError = {
+                            errorDialog = true
+                        }, validationFailed = {
+                            warningMessage = it
+                        })
                     }
                 }
             }
@@ -131,6 +127,22 @@ fun PlanInfoEditScreen(
                     onSaved = { item ->
                         openCategorySelection = false
                     })
+            }
+
+            if(warningMessage.isNotEmpty()){
+                WarningDialog(message = warningMessage) {
+                    warningMessage = ""
+                }
+            }
+            if(successDialog){
+                SuccessDialog(message = "Plan başarıyla oluşturuldu") {
+                    navController.popBackStack()
+                }
+            }
+            if(errorDialog){
+                ErrorDialog(message = "İşlem sırasında bir hata oluştu!") {
+                    errorDialog = false
+                }
             }
         }
     }

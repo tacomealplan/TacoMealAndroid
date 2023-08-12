@@ -24,6 +24,7 @@ import com.android.taco.ui.main.views.chef.plan.PlanWidget
 import com.android.taco.ui.main.views.populars.PopularsWidget
 import com.android.taco.ui.theme.*
 import com.android.taco.ui.theme.components.buttons.CardButton
+import com.android.taco.util.getTimeMessage
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
@@ -49,7 +50,9 @@ fun HomeScreen(
             Header()
             Spacer(modifier = Modifier.height(12.dp))
             if(activePlan != null){
-                DailyMenuWidget(activePlan!!.planId, viewModel = androidx.lifecycle.viewmodel.compose.viewModel())
+                DailyMenuWidget(activePlan!!.planId, viewModel = androidx.lifecycle.viewmodel.compose.viewModel()){recipeId ->
+                    navController.navigate(ScreensNavItem.Recipe.screen_route+ "/${recipeId}")
+                }
                 Spacer(modifier = Modifier.height(12.dp))
                 PlanWidget(navController = navController, activePlanId = activePlan!!.planId)
                 Spacer(modifier = Modifier.height(12.dp))
@@ -83,7 +86,7 @@ fun Header() {
                 modifier = Modifier
                     .size(size = 20.dp))
             Text(
-                text = "Günaydın ${FirebaseAuth.getInstance().currentUser?.displayName ?: ""}",
+                text = "${getTimeMessage()} ${FirebaseAuth.getInstance().currentUser?.displayName ?: ""}",
                 color = BrandPrimary,
                 style = TextStyle(
                     fontWeight = FontWeight.Bold,

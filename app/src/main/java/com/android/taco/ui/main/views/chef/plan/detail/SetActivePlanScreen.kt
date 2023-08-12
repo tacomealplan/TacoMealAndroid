@@ -4,8 +4,10 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.selection.selectable
@@ -21,80 +23,64 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.android.taco.ui.theme.BrandPrimary
 import com.android.taco.ui.theme.TacoTheme
+import com.android.taco.ui.theme.components.buttons.SecondaryButton
 
 @Composable
-fun SetActivePlanScreen(){
+fun SetActivePlanScreen(planSelected : (week : Int) -> Unit){
+    val radioOptions = listOf("Bu hafta", "Gelecek hafta")
+    val selectedOption = remember { mutableStateOf(radioOptions[0]) }
     TacoTheme {
         Column(verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
+                .padding(24.dp)
                 .fillMaxWidth()
                 .wrapContentHeight()
         ) {
-            Text(text = "Lütfen planın uygulanacağı haftayı seçiniz", color = BrandPrimary)
-            SimpleRadioButtonComponent()
+            Text(text = "Lütfen planın uygulanacağı haftayı seçiniz",
+                color = BrandPrimary,
+                modifier = Modifier.padding(vertical = 12.dp)
+            )
+            SimpleRadioButtonComponent(items = radioOptions, selectedOption.value){
+                selectedOption.value = it
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+            SecondaryButton(text = "Planı Seç") {
+                planSelected.invoke(if(selectedOption.value == radioOptions[0]) 0 else 1)
+            }
         }
     }
 }
 
 @Composable
-fun SimpleRadioButtonComponent() {
-    val radioOptions = listOf("Bu hafta", "Gelecek hafta")
-    val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[2]) }
+fun SimpleRadioButtonComponent(items : List<String>, selectedOption : String, onOptionSelected : (item : String) -> Unit) {
     Column(
-        // we are using column to align our
-        // imageview to center of the screen.
         modifier = Modifier
             .fillMaxWidth()
-            .fillMaxHeight(),
-
-        // below line is used for
-        // specifying vertical arrangement.
+            .wrapContentHeight(),
         verticalArrangement = Arrangement.Center,
-
-        // below line is used for
-        // specifying horizontal arrangement.
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        // we are displaying all our
-        // radio buttons in column.
-        Column {
-            // below line is use to set data to
-            // each radio button in columns.
-            radioOptions.forEach { text ->
+        Column(verticalArrangement = Arrangement.Center) {
+            items.forEach { text ->
                 Row(
-                    Modifier
-                        // using modifier to add max
-                        // width to our radio button.
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
                         .fillMaxWidth()
-                        // below method is use to add
-                        // selectable to our radio button.
                         .selectable(
-                            // this method is called when
-                            // radio button is selected.
                             selected = (text == selectedOption),
-                            // below method is called on
-                            // clicking of radio button.
-                            onClick = { onOptionSelected(text) }
+                            onClick = { onOptionSelected.invoke(text) }
                         )
-                        // below line is use to add
-                        // padding to radio button.
                         .padding(horizontal = 16.dp)
                 ) {
 
                     RadioButton(
-                        // inside this method we are
-                        // adding selected with a option.
-                        selected = (text == selectedOption),modifier = Modifier.padding(all = Dp(value = 8F)),
+                        selected = (text == selectedOption),
+                        modifier = Modifier.padding(all = 8.dp),
                         onClick = {
-                            // inside on click method we are setting a
-                            // selected option of our radio buttons.
-                            onOptionSelected(text)
-
+                            onOptionSelected.invoke(text)
                         }
                     )
-                    // below line is use to add
-                    // text to our radio buttons.
                     Text(
                         text = text,
                         modifier = Modifier.padding(start = 16.dp)
@@ -108,5 +94,5 @@ fun SimpleRadioButtonComponent() {
 @Composable
 @Preview(showBackground = true, showSystemUi = true)
 fun SetActivePlanScreenPreview(){
-    SetActivePlanScreen()
+    SetActivePlanScreen(){}
 }

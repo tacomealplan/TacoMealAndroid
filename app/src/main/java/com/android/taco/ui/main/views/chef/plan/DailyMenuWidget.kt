@@ -30,7 +30,8 @@ import com.android.taco.ui.theme.components.loadingBar.CircularProgress
 
 @Composable
 fun DailyMenuWidget(planId: String,
-                    viewModel: PlanViewModel
+                    viewModel: PlanViewModel,
+                    onRecipeSelected : (recipeId : String) -> Unit
 ) {
     val dailyRecipes = remember {
         viewModel.dailyRecipes
@@ -65,7 +66,9 @@ fun DailyMenuWidget(planId: String,
                     .fillMaxWidth()
             ){
                 dailyRecipes.forEach {
-                    MealCard(recipe = it)
+                    MealCard(recipe = it){recipeId ->
+                        onRecipeSelected.invoke(recipeId)
+                    }
                 }
                 if(dailyRecipes.isEmpty()){
                     Surface(shape = RoundedCornerShape(8.dp), color = NeutralGray4) {
@@ -77,7 +80,5 @@ fun DailyMenuWidget(planId: String,
                 }
             }
         }
-
-
     }
 }

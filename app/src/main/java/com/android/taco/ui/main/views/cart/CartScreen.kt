@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
@@ -21,6 +22,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -45,6 +47,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.android.taco.R
 import com.android.taco.ui.theme.Black
 import com.android.taco.ui.theme.BrandSecondary
+import com.android.taco.ui.theme.NeutralGray4
 import com.android.taco.ui.theme.TacoTheme
 import com.android.taco.ui.theme.White
 import com.android.taco.ui.theme.components.bars.PrimaryTopBar
@@ -91,7 +94,16 @@ fun CartScreen(viewModel: CartViewModel) {
                             modifier = Modifier.fillMaxSize()) {
                             CircularProgressIndicator(color = BrandSecondary)
                         }
-                    }else{
+                    }else if(cartItems.isEmpty()){
+                        Row (horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()){
+                            Surface(shape = RoundedCornerShape(8.dp), color = NeutralGray4) {
+                                Text(text = "Henüz listeye bir malzeme eklemediniz",
+                                    modifier = Modifier.padding(4.dp)
+                                )
+                            }
+                        }
+                    }
+                    else{
                         cartItems.forEach {item->
                             CartItem(cartItem = item.materialName,
                                 isSelected = item.isChecked

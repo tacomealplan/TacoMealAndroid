@@ -25,3 +25,17 @@ fun getDate(str : String) : Date?{
     }
     return dateFormated
 }
+
+fun getTimeMessage() : String{
+    val cal: Calendar = Calendar.getInstance(Locale("tr","TR"))
+    val today = Date()
+    cal.time = today
+    val hour = cal.get(Calendar.HOUR_OF_DAY)
+    return if(hour in 4..11){
+        "Günaydın"
+    }else if (hour in 12..15){
+        "İyi Öğlenler"
+    }else {
+        "İyi Akşamlar"
+    }
+}

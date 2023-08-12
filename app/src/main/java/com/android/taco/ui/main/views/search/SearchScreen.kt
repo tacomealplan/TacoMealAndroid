@@ -3,8 +3,6 @@ package com.android.taco.ui.main.views.search
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,18 +13,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -48,25 +41,26 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.android.taco.model.Recipe
 import com.android.taco.ui.main.ScreensNavItem
 import com.android.taco.ui.main.views.chef.CategoriesWidget
 import com.android.taco.ui.main.views.chef.MealWidget
 import com.android.taco.ui.main.views.chef.recipe.RecipeItem
-import com.android.taco.ui.main.views.populars.PopularsScreen
 import com.android.taco.ui.main.views.populars.PopularsWidget
 import com.android.taco.ui.theme.BrandPrimary
 import com.android.taco.ui.theme.BrandSecondary
-import com.android.taco.ui.theme.White
 import com.android.taco.ui.theme.components.buttons.FilterButton
-import com.android.taco.ui.theme.components.buttons.PrimaryButton
 import com.android.taco.ui.theme.components.buttons.SecondaryButton
 import com.android.taco.ui.theme.components.editTexts.SearchTextField
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun SearchScreen(navController: NavController,
-                 viewModel: SearchViewModel
+fun SearchScreen(
+    navController: NavController,
+    viewModel: SearchViewModel,
+    forSelectingRecipes: Boolean = false,
+    onRecipeSelected: ((recipe: Recipe) -> Unit)? = null
 ) {
     var searchText by remember { mutableStateOf("") }
     var filterMeal by remember { viewModel.filterMeal }
@@ -125,7 +119,7 @@ fun SearchScreen(navController: NavController,
                 })
             }
 
-            if(searchText.isBlank()){
+            if(searchText.isBlank() && !forSelectingRecipes){
                 Row(modifier = Modifier.padding(horizontal = 24.dp)) {
                     PopularsWidget(navController)
                 }
@@ -153,7 +147,12 @@ fun SearchScreen(navController: NavController,
                         }
                         viewModel.searchResults.forEach {
                             RecipeItem(recipe = it){
-                                navController.navigate(ScreensNavItem.Recipe.screen_route + "/${it.id}")
+                                if(forSelectingRecipes){
+                                    onRecipeSelected?.invoke(it)
+                                }else{
+                                    navController.navigate(ScreensNavItem.Recipe.screen_route + "/${it.id}")
+                                }
+
                             }
                         }
                     }

@@ -20,6 +20,7 @@ import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.EditNote
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -36,18 +37,20 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.android.taco.model.Day
 import com.android.taco.ui.main.ScreensNavItem
-import com.android.taco.ui.main.views.chef.plan.Day
 import com.android.taco.ui.main.views.chef.plan.DayList
 import com.android.taco.ui.main.views.chef.plan.PlanViewModel
-import com.android.taco.ui.main.views.chef.recipe.RecipeCardById
+import com.android.taco.ui.main.views.chef.recipe.RecipeCard
 import com.android.taco.ui.theme.BrandPrimary
 import com.android.taco.ui.theme.BrandSecondary
 import com.android.taco.ui.theme.TacoTheme
 import com.android.taco.ui.theme.components.bars.PrimaryTopBar
 import com.android.taco.ui.theme.components.buttons.SecondaryButton
+import com.android.taco.ui.theme.components.dialogBox.DeleteComfirmDialog
+import com.android.taco.ui.theme.components.dialogBox.ErrorDialog
+import com.android.taco.ui.theme.components.dialogBox.SuccessDialog
 import com.android.taco.ui.theme.components.loadingBar.CircularProgress
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
@@ -62,17 +65,21 @@ fun PlanScreen(planId: String,
         initialValue = ModalBottomSheetValue.Hidden,
         confirmValueChange = { it != ModalBottomSheetValue.HalfExpanded }
     )
+    var showSuccessDialog by remember { mutableStateOf(false) }
+    var showErrorDialog by remember { mutableStateOf(false) }
+    var deletePlanDialog by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
-
     LaunchedEffect(key1 = Unit, block = {
         viewModel.getPlanById(planId)
     })
     var selectedDay by remember {
         mutableStateOf<Day>(Day.Monday)
     }
-
     val plan by remember {
         viewModel.plan
+    }
+    val planRecipes = remember {
+        viewModel.planRecipes
     }
     if(viewModel.isLoading.value){
         CircularProgress()
@@ -83,7 +90,16 @@ fun PlanScreen(planId: String,
             sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
             sheetElevation = 9.dp,
             sheetContent = {
-                Text(text = "Bottom Shhet")
+                SetActivePlanScreen(){
+                    viewModel.setActivePlan(planId = plan!!.id, week = it, onSuccess = {
+                        coroutineScope.launch {
+                            sheetState.hide()
+                        }
+                        showSuccessDialog = true
+                    }, onError = {
+                        showErrorDialog = true
+                    })
+                }
             },
             modifier = Modifier.fillMaxSize()
         ) {
@@ -96,13 +112,24 @@ fun PlanScreen(planId: String,
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Start,
-                        modifier = Modifier.fillMaxWidth(0.9f)
+                        modifier = Modifier.fillMaxWidth(0.75f)
                     ) {
                         PrimaryTopBar(title = "Plan Detayı") {
                             navController.popBackStack()
                         }
                     }
-                    if(plan != null && plan!!.createdBy == FirebaseAuth.getInstance().currentUser?.uid ?: ""){
+                    if(plan != null && plan!!.createdBy == (FirebaseAuth.getInstance().currentUser?.uid ?: "")
+                    ){
+                        Icon(
+                            imageVector = Icons.Default.DeleteForever,
+                            contentDescription = "Localized description",
+                            tint = Color.Red,
+                            modifier = Modifier
+                                .size(36.dp)
+                                .clickable {
+                                    deletePlanDialog = true
+                                }
+                        )
                         Icon(
                             imageVector = Icons.Default.EditNote,
                             contentDescription = "Localized description",
@@ -111,12 +138,12 @@ fun PlanScreen(planId: String,
                                 .size(48.dp)
                                 .clickable {
                                     navController.navigate(ScreensNavItem.EditPlan.screen_route + "/$planId")
-                                })
+                                }
+                        )
                     }
                 }
 
             }, bottomBar = {
-                //if(viewModel.activePlan.value?.planId != planId){
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center,
@@ -131,7 +158,6 @@ fun PlanScreen(planId: String,
                         }
                     }
                 }
-                // }
             }) {
                 Column(verticalArrangement = Arrangement.Top,
                     horizontalAlignment = Alignment.Start,
@@ -164,13 +190,14 @@ fun PlanScreen(planId: String,
                         horizontalArrangement = Arrangement.Start,
                         modifier = Modifier.horizontalScroll(state = rememberScrollState())
                     ) {
-                        plan?.getDay(selectedDay)?.breakfast?.forEach { recipeId ->
-                            if(recipeId.isNotBlank())
-                                RecipeCardById(recipeId = recipeId, viewModel = viewModel()){
-                                    navController.navigate(ScreensNavItem.Recipe.screen_route + "/${recipeId}")
-                                }
+                        if(planRecipes.isNotEmpty()){
+                            plan?.getDay(selectedDay)?.breakfast?.forEach { recipeId ->
+                                if(recipeId.isNotBlank() && planRecipes.any { it.id == recipeId })
+                                    RecipeCard(recipe = planRecipes.first { it.id == recipeId }){
+                                        navController.navigate(ScreensNavItem.Recipe.screen_route + "/${recipeId}")
+                                    }
+                            }
                         }
-
                     }
 
                     Text(
@@ -185,13 +212,14 @@ fun PlanScreen(planId: String,
                         horizontalArrangement = Arrangement.Start,
                         modifier = Modifier.horizontalScroll(state = rememberScrollState())
                     ) {
-                        plan?.getDay(selectedDay)?.lunch?.forEach { recipeId ->
-                            if(recipeId.isNotBlank())
-                                RecipeCardById(recipeId = recipeId, viewModel = viewModel()){
-                                    navController.navigate(ScreensNavItem.Recipe.screen_route + "/${recipeId}")
-                                }
+                        if(planRecipes.isNotEmpty()){
+                            plan?.getDay(selectedDay)?.lunch?.forEach { recipeId ->
+                                if(recipeId.isNotBlank() && planRecipes.any { it.id == recipeId })
+                                    RecipeCard(recipe = planRecipes.first { it.id == recipeId }){
+                                        navController.navigate(ScreensNavItem.Recipe.screen_route + "/${recipeId}")
+                                    }
+                            }
                         }
-
                     }
 
                     Text(
@@ -207,20 +235,42 @@ fun PlanScreen(planId: String,
                         horizontalArrangement = Arrangement.Start,
                         modifier = Modifier.horizontalScroll(state = rememberScrollState())
                     ) {
-                        plan?.getDay(selectedDay)?.dinner?.forEach { recipeId ->
-                            if(recipeId.isNotBlank())
-                                RecipeCardById(recipeId = recipeId, viewModel = viewModel()){
-                                    navController.navigate(ScreensNavItem.Recipe.screen_route + "/${recipeId}")
-                                }
+                        if(planRecipes.isNotEmpty()){
+                            plan?.getDay(selectedDay)?.dinner?.forEach { recipeId ->
+                                if(recipeId.isNotBlank() && planRecipes.any { it.id == recipeId })
+                                    RecipeCard(recipe = planRecipes.first { it.id == recipeId }){
+                                        navController.navigate(ScreensNavItem.Recipe.screen_route + "/${recipeId}")
+                                    }
+                            }
                         }
-
                     }
-
                 }
-
-
             }
         }
 
+    }
+    if(deletePlanDialog){
+        DeleteComfirmDialog(message = "Planı silmek istediğinize emin misiniz?",onConfirmed = {
+            plan?.let { viewModel.deletePlan(it.id, onSuccess = {
+                deletePlanDialog = false
+                navController.popBackStack()
+            }, onError = {
+                showErrorDialog = true
+            }) }
+        }, onDismiss = {
+            deletePlanDialog = false
+        })
+    }
+
+    if(showSuccessDialog){
+        SuccessDialog(message = "İşlem Başarılı!") {
+            showSuccessDialog = false
+        }
+    }
+
+    if(showErrorDialog){
+        ErrorDialog(message = "İşlem sırasında bir hata oluştu, lütfen daha sonra tekrar deneyiniz") {
+            showErrorDialog = false
+        }
     }
 }

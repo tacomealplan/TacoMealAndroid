@@ -2,6 +2,7 @@ package com.android.taco.ui.main.views.chef.recipe
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,11 +39,13 @@ import com.android.taco.model.Recipe
 import com.android.taco.ui.theme.BrandSecondary
 
 @Composable
-fun MealCard(recipe: Recipe){
+fun MealCard(recipe: Recipe, onSelected : (recipeId : String) -> Unit){
     Surface(
         elevation = 9.dp, // play with the elevation values
         shape = RoundedCornerShape(16.dp),
-        modifier = Modifier.padding(4.dp)
+        modifier = Modifier.padding(4.dp).clickable {
+            onSelected.invoke(recipe.id)
+        }
     ) {
         Box (modifier = Modifier.size(width = 265.dp, height = 172.dp)
             .background(color = BrandSecondary)
@@ -102,5 +105,5 @@ fun MealCard(recipe: Recipe){
 @Preview
 @Composable
 fun MealCardPreview(){
-    MealCard(Recipe.dummyInstance())
+    MealCard(Recipe.dummyInstance()){}
 }

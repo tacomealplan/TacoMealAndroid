@@ -53,6 +53,18 @@ class RecipeScreenViewModel @Inject constructor(
             }
     }
 
+    fun deleteRecipe(recipeId : String, onSuccess: () -> Unit, onError: () -> Unit){
+        isLoading.value = true
+        firestore.collection("Recipe").document(recipeId)
+            .delete()
+            .addOnSuccessListener {
+                onSuccess.invoke()
+            }
+            .addOnFailureListener {
+                isLoading.value = false
+                onError.invoke()
+            }
+    }
     private fun getRecipeDetailById(recipeId : String ){
         firestore.collection("RecipeDetail")
             .whereEqualTo("recipeId",recipeId)

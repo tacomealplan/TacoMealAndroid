@@ -83,7 +83,7 @@ fun ChefScreen(navController: NavController,
                         navController.navigate(ScreensNavItem.Recipe.screen_route + "/${selectedRecipe.id}")
                     }
                 }else{
-                    PlanListScreen(navController = navController, planList = viewModel.myPlans.toList() as ArrayList<Plan>){ selectedPlan ->
+                    PlanListScreen(navController = navController, planList = viewModel.myPlans.toList()){ selectedPlan ->
                         navController.navigate(ScreensNavItem.Plan.screen_route + "/${selectedPlan.id}")
                     }
                 }

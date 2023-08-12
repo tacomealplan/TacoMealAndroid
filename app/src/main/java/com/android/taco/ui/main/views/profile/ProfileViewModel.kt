@@ -26,7 +26,11 @@ class ProfileViewModel @Inject constructor(
     var bio = mutableStateOf("")
     init {
         username.value = FirebaseAuth.getInstance().currentUser?.displayName ?: ""
-        ppUrl.value = FirebaseAuth.getInstance().currentUser?.photoUrl.toString()
+        var ppUri = FirebaseAuth.getInstance().currentUser?.photoUrl
+        ppUrl.value = (ppUri ?: "").toString()
+        if(ppUrl.value.isBlank()){
+            ppUrl.value = "https://firebasestorage.googleapis.com/v0/b/pisirgecus.appspot.com/o/ProfileImages%2Fdefault.jpeg?alt=media&token=ff0ac150-1e61-4953-a170-00c100eeae1a"
+        }
         getUserBio()
     }
 

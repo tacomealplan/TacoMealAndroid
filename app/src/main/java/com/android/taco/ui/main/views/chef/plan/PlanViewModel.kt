@@ -3,14 +3,17 @@ package com.android.taco.ui.main.views.chef.plan
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import com.android.taco.model.Day
 import com.android.taco.model.Plan
 import com.android.taco.model.Recipe
 import com.android.taco.model.UserPlan
 import com.android.taco.ui.main.views.chef.recipe.getUrlForStorage
 import com.android.taco.util.getCurrentWeekOfYear
+import com.android.taco.util.now
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,6 +23,7 @@ class PlanViewModel @Inject constructor(
     val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
     var isLoading = mutableStateOf(false)
     var plan = mutableStateOf<Plan?>(null)
+    var planRecipes = mutableStateListOf<Recipe>()
     var dailyRecipes = mutableStateListOf<Recipe>()
     var activePlan = mutableStateOf<UserPlan?>(null)
 
@@ -38,6 +42,54 @@ class PlanViewModel @Inject constructor(
                 }
                 if(plans.isNotEmpty())
                     plan.value = plans.first()
+                val planRecipeIdList = arrayListOf<String>()
+                Day.values().forEach { day->
+                    try {
+                        val dailyPlan = plan.value!!.getDay(day)
+                        planRecipeIdList.addAll(dailyPlan.breakfast)
+                        planRecipeIdList.addAll(dailyPlan.lunch)
+                        planRecipeIdList.addAll(dailyPlan.dinner)
+                    } catch (e: Exception) {}
+                }
+                getPlanRecipes(planRecipeIdList)
+            }
+            .addOnFailureListener{
+                it.printStackTrace()
+                isLoading.value = false
+            }
+    }
+
+    fun deletePlan(planId : String, onSuccess: () -> Unit, onError: () -> Unit){
+        isLoading.value = true
+        firestore.collection("Plan").document(planId)
+            .delete()
+            .addOnSuccessListener {
+                onSuccess.invoke()
+            }
+            .addOnFailureListener {
+                isLoading.value = false
+                onError.invoke()
+            }
+    }
+
+    private fun getPlanRecipes(planRecipeIdList : ArrayList<String>){
+        if(planRecipeIdList.isEmpty()) {
+            isLoading.value = false
+            return
+        }
+        firestore.collection("Recipe")
+            .whereIn("id", planRecipeIdList)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val recipes = ArrayList<Recipe>()
+                val data = snapshot.documents
+                data.forEach { item->
+                    if(item.data != null)
+                        recipes.add(Recipe.newInstance(item.data!!))
+                }
+                planRecipeIdList.forEach { id->
+                    planRecipes.add(recipes.first { it.id == id })
+                }
                 isLoading.value = false
             }
             .addOnFailureListener{
@@ -46,32 +98,25 @@ class PlanViewModel @Inject constructor(
             }
     }
 
-    fun getActivePlan(){
-        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
-        val weekOfYear = getCurrentWeekOfYear()
+    fun setActivePlan(planId: String, week : Int, onSuccess : () -> Unit, onError : () -> Unit){
+        isLoading.value = true
+        val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
+        val item = HashMap<String,Any>()
+        item["CreateDate"] = now()
+        item["PlanId"] = planId
+        item["isActive"] = true
+        item["WeekOfYear"] = getCurrentWeekOfYear() + week
+        item["UserId"] = currentUserId.toString()
         firestore.collection("UserPlan")
-            .whereEqualTo("UserId",userId)
-            //.whereEqualTo("isActive", true)
-            //.whereEqualTo("WeekOfYear",weekOfYear )
-            .get()
+            .add(item)
             .addOnSuccessListener {
-                val data = it.documents
-                data.forEach { item->
-                    if(item.data != null){
-                        val plan = UserPlan.newInstance(item.data!!)
-                        if(plan.isActive && plan.weekOfYear.toInt() == weekOfYear){
-                            this.activePlan.value = plan
-                            return@forEach
-                        }
-                    }
-
-                }
+                onSuccess.invoke()
+                isLoading.value = false
             }
             .addOnFailureListener{
-                it.printStackTrace()
+                onError.invoke()
+                isLoading.value = false
             }
-
-
     }
 
     fun getDailyRecipes(planId: String){
@@ -91,6 +136,7 @@ class PlanViewModel @Inject constructor(
                 if(plans.isNotEmpty()){
                     val plan = plans.first()
                     val dailyPlan = plan.getDay(Day.getCurrentDay())
+                    dailyRecipeIdList.clear()
                     dailyRecipeIdList.addAll(dailyPlan.breakfast)
                     dailyRecipeIdList.addAll(dailyPlan.lunch)
                     dailyRecipeIdList.addAll(dailyPlan.dinner)
@@ -118,6 +164,7 @@ class PlanViewModel @Inject constructor(
                     if(item.data != null)
                         recipes.add(Recipe.newInstance(item.data!!))
                 }
+                dailyRecipes.clear()
                 dailyRecipeIdList.forEach { id->
                     dailyRecipes.add(recipes.first { it.id == id })
                 }

@@ -31,8 +31,6 @@ class HomeViewModel @Inject constructor():ViewModel() {
         val weekOfYear = getCurrentWeekOfYear()
         firestore.collection("UserPlan")
             .whereEqualTo("UserId",userId)
-            //.whereEqualTo("isActive", true)
-            //.whereEqualTo("WeekOfYear",weekOfYear )
             .get()
             .addOnSuccessListener {
                 val data = it.documents

@@ -3,8 +3,6 @@ package com.android.taco.ui.main.views.chef.recipe.detail
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,18 +22,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Cancel
-import androidx.compose.material.icons.filled.ChangeCircle
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.EditAttributes
+import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.EditNote
-import androidx.compose.material.icons.filled.ModeEdit
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Cancel
-import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -44,7 +35,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -52,7 +42,6 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -62,11 +51,8 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberImagePainter
 import com.android.taco.R
-import com.android.taco.model.Material
-import com.android.taco.model.Step
 import com.android.taco.ui.main.ScreensNavItem
 import com.android.taco.ui.main.views.chef.materials.MaterialListScreen
-import com.android.taco.ui.main.views.chef.materials.MaterialRow
 import com.android.taco.ui.main.views.chef.recipe.ButtonLike
 import com.android.taco.ui.main.views.chef.recipe.addUserRecipeLike
 import com.android.taco.ui.main.views.chef.recipe.getRecipeIsLiked
@@ -75,8 +61,9 @@ import com.android.taco.ui.main.views.chef.steps.StepListScreen
 import com.android.taco.ui.theme.BrandPrimary
 import com.android.taco.ui.theme.BrandSecondary
 import com.android.taco.ui.theme.NeutralGray2
-import com.android.taco.ui.theme.NeutralGray4
 import com.android.taco.ui.theme.TacoTheme
+import com.android.taco.ui.theme.components.dialogBox.DeleteComfirmDialog
+import com.android.taco.ui.theme.components.dialogBox.ErrorDialog
 import com.android.taco.ui.theme.components.image.CircularImageView
 import com.android.taco.ui.theme.components.tabs.TabsTwoOptions
 
@@ -100,6 +87,8 @@ fun RecipeScreen(recipeId : String,
     var isRecipeLiked by remember {
         mutableStateOf(false)
     }
+    var deleteRecipeDialog by remember { mutableStateOf(false) }
+    var showErrorDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = Unit, block = {
         viewModel.getRecipeById(recipeId)
@@ -140,9 +129,11 @@ fun RecipeScreen(recipeId : String,
                     ) {
                         HeaderBar(navController, viewModel.isEditEnabled.value,
                             viewModel.recipe.value?.id ?: ""
-                        ,isRecipeLiked){
-                            isRecipeLiked = it
-                        }
+                        ,isRecipeLiked, onLikeChanged = {
+                                isRecipeLiked = it
+                            }, onRecipeDelete = {
+                                deleteRecipeDialog = true
+                            })
                         Spacer(modifier = Modifier.height(120.dp))
                         Column(
                             verticalArrangement = Arrangement.Top,
@@ -249,6 +240,28 @@ fun RecipeScreen(recipeId : String,
         }
     }
 
+    if(deleteRecipeDialog){
+        DeleteComfirmDialog(message = "Tarifi silmek istediğinize emin misiniz?",onConfirmed = {
+            recipe?.let {
+                viewModel.deleteRecipe(it.id, onSuccess = {
+                    deleteRecipeDialog = false
+                    navController.popBackStack()
+                }, onError = {
+                    showErrorDialog = true
+                })
+            }
+        }, onDismiss = {
+            deleteRecipeDialog = false
+        })
+    }
+
+    if(showErrorDialog){
+        ErrorDialog(message = "İşlem sırasında bir hata oluştu, lütfen daha sonra tekrar deneyiniz") {
+            showErrorDialog = false
+        }
+    }
+
+
 }
 
 @Composable
@@ -256,7 +269,8 @@ private fun HeaderBar(navController: NavController,
                       enableEdit : Boolean = false,
                       recipeId: String,
                       isRecipeLiked : Boolean,
-                      onLikeChanged : (isLiked : Boolean) -> Unit
+                      onLikeChanged : (isLiked : Boolean) -> Unit,
+                      onRecipeDelete : () -> Unit
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -276,6 +290,16 @@ private fun HeaderBar(navController: NavController,
                 })
         Row(verticalAlignment = Alignment.CenterVertically) {
             if(enableEdit){
+                Icon(
+                    imageVector = Icons.Default.DeleteForever,
+                    contentDescription = "Localized description",
+                    tint = Color.Red,
+                    modifier = Modifier
+                        .size(36.dp)
+                        .clickable {
+                            onRecipeDelete.invoke()
+                        }
+                )
                 Icon(
                     imageVector = Icons.Default.EditNote,
                     contentDescription = "Localized description",
