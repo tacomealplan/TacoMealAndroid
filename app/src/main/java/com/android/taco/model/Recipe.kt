@@ -24,7 +24,7 @@ data class Recipe(
                 meal = data["meal"].toString(),
                 name = data["name"].toString(),
                 personCount = data["personCount"].toString().toInt(),
-                categories = ArrayList<String>(),
+                categories = data["categories"] as ArrayList<String>,
                 coverPhotoLink = data["coverPhotoLink"].toString(),
                 createDate = data["createDate"].toString(),
                 createdBy = data["createdBy"].toString(),

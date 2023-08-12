@@ -10,13 +10,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
@@ -36,6 +39,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.android.taco.ui.main.views.chef.recipe.RecipeCard
 import com.android.taco.ui.theme.BrandPrimary
 import com.android.taco.ui.theme.BrandSecondary
 import com.android.taco.ui.theme.NeutralGray3
@@ -60,9 +64,36 @@ fun CategoriesWidget(categories : List<String>, selectedItems: List<String> = Ar
                 modifier = Modifier
             )
         }
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
-        Row(verticalAlignment = Alignment.CenterVertically,
+        LazyHorizontalGrid(
+            rows = GridCells.Fixed(3),
+            modifier = Modifier.height(136.dp)
+
+        ) {
+            items(categories) {item->
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                        .wrapContentHeight()
+                        .clip(shape = RoundedCornerShape(40.dp))
+                        .background(color = if (selectedItems.contains(item)) BrandSecondary else NeutralGray3)
+                        .clickable {
+                            onItemSelected.invoke(item)
+                        }
+                ) {
+                    Text(
+                        text = item,
+                        color = if(selectedItems.contains(item)) Color.White else BrandPrimary,
+                        modifier = Modifier.padding(8.dp),
+                        style = TextStyle(
+                            fontSize = 16.sp))
+                }
+            }
+        }
+
+        /*Row(verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .horizontalScroll(state = rememberScrollState())
@@ -72,7 +103,7 @@ fun CategoriesWidget(categories : List<String>, selectedItems: List<String> = Ar
                 onItemSelected.invoke(it)
 
             }
-        }
+        }*/
 
     }
 }

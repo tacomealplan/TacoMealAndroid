@@ -77,7 +77,11 @@ fun SearchScreen(
         sheetState = sheetState,
         sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
         sheetElevation = 9.dp,
-        sheetContent = { BottomSheet(viewModel = viewModel) },
+        sheetContent = { BottomSheet(viewModel = viewModel){
+            coroutineScope.launch {
+                sheetState.hide()
+            }
+        } },
         modifier = Modifier.fillMaxSize()
     ) {
         Column(
@@ -164,12 +168,12 @@ fun SearchScreen(
 }
 
 @Composable
-fun BottomSheet(viewModel: SearchViewModel) {
+fun BottomSheet(viewModel: SearchViewModel, dissmis : () -> Unit) {
     var filterMeal by remember { viewModel.filterMeal }
-    var filterCategories by remember { viewModel.filterCategories }
+    val filterCategories = remember { viewModel.filterCategories }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.padding(24.dp)
+        modifier = Modifier.padding(horizontal = 24.dp)
     ) {
         Text(
             text = "Filtre",
@@ -178,7 +182,7 @@ fun BottomSheet(viewModel: SearchViewModel) {
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold)
         )
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         MealWidget(meals = viewModel.meals, showLabel = false, selectedMeal = filterMeal, onItemSelected = {selected ->
             if(filterMeal == selected){
@@ -187,7 +191,7 @@ fun BottomSheet(viewModel: SearchViewModel) {
                 filterMeal = selected
             }
         })
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         CategoriesWidget(viewModel.categories, selectedItems = filterCategories){category->
             if(filterCategories.contains(category))
@@ -195,29 +199,33 @@ fun BottomSheet(viewModel: SearchViewModel) {
             else
                 filterCategories.add(category)
         }
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
-        SecondaryButton(text = "Filtreyi Uygula") {
-
+        Row(verticalAlignment = Alignment.Top, modifier = Modifier.fillMaxWidth()) {
+            SecondaryButton(text = "Filtreyi Uygula", modifier = Modifier.fillMaxWidth(0.5f)) {
+                dissmis.invoke()
+            }
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .height(height = 54.dp)
+                    .width(width = 327.dp)
+                    .clip(shape = RoundedCornerShape(16.dp))
+                    .clickable {
+                        filterMeal = null
+                        filterCategories.clear()
+                    }
+            ) {
+                Text(
+                    text = "Filtreyi Temizle",
+                    color = BrandSecondary,
+                    textAlign = TextAlign.Center,
+                    style = TextStyle(
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold))
+            }
         }
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .height(height = 54.dp)
-                .width(width = 327.dp)
-                .clip(shape = RoundedCornerShape(16.dp))
-                .clickable {
 
-                }
-        ) {
-            Text(
-                text = "Filtreyi Temizle",
-                color = BrandSecondary,
-                textAlign = TextAlign.Center,
-                style = TextStyle(
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold))
-        }
     }
 }
 

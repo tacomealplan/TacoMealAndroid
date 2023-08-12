@@ -29,6 +29,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.android.taco.ui.theme.BrandSecondary
 import com.android.taco.ui.theme.TacoTheme
+import com.android.taco.ui.theme.components.editTexts.SearchTextField
 import com.android.taco.ui.theme.components.list.multiSelectList.SelectableLazyList
 
 @Composable
@@ -38,6 +39,7 @@ fun CategorySelectionDialog(items : ArrayList<String>,
                             onDismiss:() -> Unit,
                             onSaved : (material : String) -> Unit
 ) {
+    var searchText by remember { mutableStateOf("") }
     TacoTheme() {
         Dialog(properties = DialogProperties(usePlatformDefaultWidth = false),
             onDismissRequest = { onDismiss() }) {
@@ -53,7 +55,10 @@ fun CategorySelectionDialog(items : ArrayList<String>,
                     modifier = Modifier.fillMaxSize()
                 ) {
                     Text(text = "Kategori Seçiniz", fontWeight = FontWeight.Bold, fontSize = 24.sp)
-                    SelectableLazyList(items = items, selectedItems = selectedItems, onItemClicked = onItemClicked)
+                    SearchTextField(value = searchText, placeholder = "Ara", modifier = Modifier.fillMaxWidth(), onValueChange = {value ->
+                        searchText = value
+                    })
+                    SelectableLazyList(items = items.filter { it.lowercase().contains(searchText.lowercase()) } as ArrayList<String>, selectedItems = selectedItems, onItemClicked = onItemClicked)
                 }
             }
         }
