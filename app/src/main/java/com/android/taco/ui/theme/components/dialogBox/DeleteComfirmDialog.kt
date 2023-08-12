@@ -41,7 +41,7 @@ fun DeleteComfirmDialog(message : String,onDismiss:() -> Unit, onConfirmed : () 
                 ) {
 
                     Text(
-                        text = "Planı silmek istediğinize emin misiniz?",
+                        text = message,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.padding(8.dp).fillMaxWidth(),
                         color = BrandPrimary,

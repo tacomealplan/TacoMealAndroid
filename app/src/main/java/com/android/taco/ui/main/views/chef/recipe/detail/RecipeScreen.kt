@@ -16,12 +16,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DeleteForever
@@ -51,6 +53,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberImagePainter
 import com.android.taco.R
+import com.android.taco.model.UserCart
 import com.android.taco.ui.main.ScreensNavItem
 import com.android.taco.ui.main.views.chef.materials.MaterialListScreen
 import com.android.taco.ui.main.views.chef.recipe.ButtonLike
@@ -62,6 +65,7 @@ import com.android.taco.ui.theme.BrandPrimary
 import com.android.taco.ui.theme.BrandSecondary
 import com.android.taco.ui.theme.NeutralGray2
 import com.android.taco.ui.theme.TacoTheme
+import com.android.taco.ui.theme.White
 import com.android.taco.ui.theme.components.dialogBox.DeleteComfirmDialog
 import com.android.taco.ui.theme.components.dialogBox.ErrorDialog
 import com.android.taco.ui.theme.components.image.CircularImageView
@@ -84,11 +88,10 @@ fun RecipeScreen(recipeId : String,
     val recipeDetail by remember {
         viewModel.recipeDetail
     }
-    var isRecipeLiked by remember {
-        mutableStateOf(false)
-    }
+    var isRecipeLiked by remember { mutableStateOf(false) }
     var deleteRecipeDialog by remember { mutableStateOf(false) }
     var showErrorDialog by remember { mutableStateOf(false) }
+    val recipeCartItems = remember { viewModel.userRecipeCartItems }
 
     LaunchedEffect(key1 = Unit, block = {
         viewModel.getRecipeById(recipeId)
@@ -105,7 +108,7 @@ fun RecipeScreen(recipeId : String,
                 .fillMaxSize()
                 .background(color = Color.White)
         ) {
-            if(viewModel.isLoading.value){
+            if(viewModel.screenLoading.value){
                 CircularProgressIndicator(color = BrandSecondary)
             }else{
                 Box(modifier = Modifier.fillMaxWidth()) {
@@ -119,7 +122,9 @@ fun RecipeScreen(recipeId : String,
                         ),
                         contentDescription = "description",
                         contentScale = ContentScale.FillBounds,
-                        modifier = Modifier.fillMaxHeight(0.6f).fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxHeight(0.6f)
+                            .fillMaxWidth()
                     )
                     Column(
                         verticalArrangement = Arrangement.Top,
@@ -220,7 +225,10 @@ fun RecipeScreen(recipeId : String,
                                 }
                                 if(selectedTab == 0){
                                     if(recipeDetail?.materials?.isNotEmpty() == true){
-                                        MaterialListScreen(recipeDetail?.materials ?: arrayListOf())
+                                        MaterialListScreen(materialList = recipeDetail?.materials ?: arrayListOf(),
+                                            materialsInCartList = recipeCartItems){
+                                            viewModel.addUserCartItem(it)
+                                        }
                                     }
                                 }
                                 else{
@@ -274,41 +282,62 @@ private fun HeaderBar(navController: NavController,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
+        horizontalArrangement = Arrangement.Start,
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 12.dp, horizontal = 12.dp)
     ) {
-        Icon(
-            imageVector = Icons.Outlined.Cancel,
-            contentDescription = "Localized description",
-            tint = BrandSecondary,
-            modifier = Modifier
-                .size(48.dp)
-                .clickable {
-                    navController.popBackStack()
-                })
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Surface(modifier = Modifier.wrapContentSize(),
+            color = White,
+            shape = RoundedCornerShape(8.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.Cancel,
+                contentDescription = "Localized description",
+                tint = BrandSecondary,
+                modifier = Modifier
+                    .size(36.dp)
+                    .clickable {
+                        navController.popBackStack()
+                    })
+        }
+        Spacer(modifier = Modifier.fillMaxWidth(0.5f))
+        Row(verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.End,
+            modifier = Modifier.fillMaxWidth()
+        ) {
             if(enableEdit){
-                Icon(
-                    imageVector = Icons.Default.DeleteForever,
-                    contentDescription = "Localized description",
-                    tint = Color.Red,
-                    modifier = Modifier
-                        .size(36.dp)
-                        .clickable {
-                            onRecipeDelete.invoke()
-                        }
-                )
-                Icon(
-                    imageVector = Icons.Default.EditNote,
-                    contentDescription = "Localized description",
-                    tint = BrandSecondary,
-                    modifier = Modifier
-                        .size(48.dp)
-                        .clickable {
-                            navController.navigate(ScreensNavItem.EditRecipe.screen_route+ "/$recipeId")
-                        })
+                Surface(modifier = Modifier.wrapContentSize(),
+                    color = White,
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.DeleteForever,
+                        contentDescription = "Localized description",
+                        tint = Color.Red,
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clickable {
+                                onRecipeDelete.invoke()
+                            }
+                    )
+                }
+                Spacer(modifier = Modifier.width(12.dp))
+                Surface(modifier = Modifier.wrapContentSize(),
+                    color = White,
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.EditNote,
+                        contentDescription = "Localized description",
+                        tint = BrandSecondary,
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clickable {
+                                navController.navigate(ScreensNavItem.EditRecipe.screen_route + "/$recipeId")
+                            })
+                }
+                Spacer(modifier = Modifier.width(12.dp))
             }
             ButtonLike(isRecipeLiked,size = 48){
                 if(it){

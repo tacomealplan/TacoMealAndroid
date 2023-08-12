@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.android.taco.R
 import com.android.taco.model.Material
+import com.android.taco.model.UserCart
 import com.android.taco.ui.theme.BrandPrimary
 import com.android.taco.ui.theme.TacoTheme
 import com.android.taco.ui.theme.White
@@ -39,7 +40,10 @@ import com.android.taco.ui.theme.components.buttons.PrimaryButton
 import com.android.taco.ui.theme.components.buttons.SecondaryButton
 
 @Composable
-fun MaterialListScreen(materialList: ArrayList<Material>){
+fun MaterialListScreen(materialList: ArrayList<Material>,
+                       materialsInCartList : List<UserCart>,
+                       onMaterialAddedToCart : (material : Material) -> Unit
+){
     TacoTheme() {
         Column(
             verticalArrangement = Arrangement.Top,
@@ -92,9 +96,12 @@ fun MaterialListScreen(materialList: ArrayList<Material>){
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier//.verticalScroll(state = rememberScrollState()).fillMaxSize()
             ) {
-                materialList.forEach {
-                    MaterialRow(it){}
-
+                materialList.forEach {material ->
+                    MaterialRow(material = material,
+                        isInCart = materialsInCartList.any { it.materialId ==  material.id}
+                    ){
+                        onMaterialAddedToCart.invoke(material)
+                    }
                 }
 
             }
@@ -102,7 +109,7 @@ fun MaterialListScreen(materialList: ArrayList<Material>){
     }
 }
 @Composable
-fun MaterialRow(material: Material, onAdded : () -> Unit) {
+fun MaterialRow(material: Material,isInCart: Boolean = false, onAdded : () -> Unit) {
     val isTitle = material.name.startsWith("**") &&
             material.name.endsWith("**")
     Surface(
@@ -129,16 +136,27 @@ fun MaterialRow(material: Material, onAdded : () -> Unit) {
                     fontWeight = if(isTitle) FontWeight.Bold else FontWeight.Normal),
                 modifier = Modifier.fillMaxWidth(0.9f))
             if(!isTitle){
-                Image(
-                    painter = painterResource(id = R.drawable.plus),
-                    contentDescription = "Added",
-                    colorFilter = ColorFilter.tint(Color(0xffff8c00)),
-                    modifier = Modifier
-                        .size(size = 28.dp)
-                        .clickable {
-                            onAdded.invoke()
-                        }
-                )
+                if(isInCart){
+                    Image(
+                        painter = painterResource(id = R.drawable.tick),
+                        contentDescription = "Added",
+                        colorFilter = ColorFilter.tint(Color(0xffff8c00)),
+                        modifier = Modifier
+                            .size(size = 28.dp)
+                    )
+                }else{
+                    Image(
+                        painter = painterResource(id = R.drawable.plus),
+                        contentDescription = "Added",
+                        colorFilter = ColorFilter.tint(Color(0xffff8c00)),
+                        modifier = Modifier
+                            .size(size = 28.dp)
+                            .clickable {
+                                onAdded.invoke()
+                            }
+                    )
+                }
+
             }
 
         }
@@ -151,5 +169,10 @@ fun MaterialListScreenPreview(){
     MaterialListScreen(
         arrayListOf<Material>(Material("1", "Test"),
         Material("1", "**Test**"),
-        Material("1", "Test Deneme Deneme Deneme Dneeme Dneeme ")))
+        Material("1", "Test Deneme Deneme Deneme Dneeme Dneeme "),
+        Material("1213", "Deneme")),
+        arrayListOf(UserCart("0","","",isChecked = false,"1213","","",""))
+    ){
+
+    }
 }
