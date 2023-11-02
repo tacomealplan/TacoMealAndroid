@@ -2,6 +2,10 @@ package com.android.taco.ui.account
 
 import android.content.Intent
 import android.provider.Settings.Global.getString
+import androidx.activity.compose.ManagedActivityResultLauncher
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,8 +56,16 @@ import com.android.taco.ui.theme.components.editTexts.PasswordTextField
 import com.android.taco.ui.theme.components.editTexts.PrimaryTextField
 import com.android.taco.ui.theme.components.loadingBar.CircularProgress
 import com.android.taco.util.Resource
+import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.google.firebase.auth.AuthResult
+import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 @Composable
 fun LoginScreen(navController: NavHostController,
@@ -60,6 +73,15 @@ fun LoginScreen(navController: NavHostController,
 ){
     val context = LocalContext.current
     var showErrorDialog by remember { mutableStateOf(false) }
+    val launcher = rememberFirebaseAuthLauncher(
+        onAuthComplete = { result ->
+            viewModel.isLoading.value = false
+            MainActivity.start(context)
+        },
+        onAuthError = {
+            viewModel.isLoading.value = false
+        }
+    )
     TacoTheme() {
         Scaffold(
             topBar = {
@@ -77,8 +99,8 @@ fun LoginScreen(navController: NavHostController,
                         .padding(it)
 
                 ) {
-                    var email by remember { mutableStateOf("acetinkaya892@gmail.com") }
-                    var password by remember { mutableStateOf("123456") }
+                    var email by remember { mutableStateOf("") }
+                    var password by remember { mutableStateOf("") }
                     Column(horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier
                             .fillMaxWidth()
@@ -135,7 +157,14 @@ fun LoginScreen(navController: NavHostController,
                                 fontSize = 16.sp))
                         Spacer(modifier = Modifier.size(16.dp))
                         GoogleButton {
-
+                            viewModel.isLoading.value = true
+                            val gso =
+                                GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                                    .requestIdToken(context.getString(R.string.your_web_client_id))
+                                    .requestEmail()
+                                    .build()
+                            val googleSignInClient = GoogleSignIn.getClient(context, gso)
+                            launcher.launch(googleSignInClient.signInIntent)
                         }
                     }
                     Spacer(modifier = Modifier.height(16.dp))
@@ -151,6 +180,27 @@ fun LoginScreen(navController: NavHostController,
                 }
             }
 
+        }
+    }
+}
+
+@Composable
+fun rememberFirebaseAuthLauncher(
+    onAuthComplete: (AuthResult) -> Unit,
+    onAuthError: (ApiException) -> Unit
+): ManagedActivityResultLauncher<Intent, ActivityResult> {
+    val scope = rememberCoroutineScope()
+    return rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+        try {
+            val account = task.getResult(ApiException::class.java)!!
+            val credential = GoogleAuthProvider.getCredential(account.idToken!!, null)
+            scope.launch {
+                val authResult = Firebase.auth.signInWithCredential(credential).await()
+                onAuthComplete(authResult)
+            }
+        } catch (e: ApiException) {
+            onAuthError(e)
         }
     }
 }
