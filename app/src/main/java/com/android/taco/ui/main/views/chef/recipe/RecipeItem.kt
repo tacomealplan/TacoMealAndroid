@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
@@ -67,6 +68,14 @@ fun RecipeItem(recipe : Recipe, onClick : () -> Unit){
                     contentScale = ContentScale.FillBounds,
                     modifier = Modifier
                         .fillMaxSize()
+                        .clip(
+                            shape = RoundedCornerShape(
+                                topStart = 16.dp,
+                                topEnd = 16.dp,
+                                bottomStart = 16.dp,
+                                bottomEnd = 16.dp
+                            )
+                        )
                 )
             }
 

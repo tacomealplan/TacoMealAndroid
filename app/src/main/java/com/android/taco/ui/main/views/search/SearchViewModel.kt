@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.android.taco.model.Recipe
 import com.android.taco.util.containsAny
-import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -16,8 +15,10 @@ class SearchViewModel @Inject constructor(
 ): ViewModel() {
     val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
     var isLoading = mutableStateOf(false)
+    var allRecipes = mutableListOf<Recipe>()
     var searchResults = mutableListOf<Recipe>()
     var categories = mutableListOf<String>()
+    var searchText = mutableStateOf("")
     var meals = mutableListOf<String>()
     var filterMeal = mutableStateOf<String?>(null)
     var filterCategories = mutableStateListOf<String>()
@@ -26,7 +27,7 @@ class SearchViewModel @Inject constructor(
         getRecipeMeals()
     }
 
-    fun searchRecipeByText(searchText : String){
+    fun getAllRecipes(){
         isLoading.value = true
         firestore.collection("Recipe")
             .get()
@@ -36,15 +37,12 @@ class SearchViewModel @Inject constructor(
                 data.forEach { item->
                     if(item.data != null){
                         val tempRecipe = Recipe.newInstance(item.data!!)
-                        if(tempRecipe.name.lowercase().contains(searchText.lowercase())
-                            && (filterCategories.isEmpty() || tempRecipe.categories.containsAny(filterCategories))
-                            && (filterMeal.value.isNullOrEmpty() || tempRecipe.meal == filterMeal.value)
-                        ){
-                            recipes.add(tempRecipe)
-                        }
+                        recipes.add(tempRecipe)
                     }
 
                 }
+                allRecipes.clear()
+                allRecipes.addAll(recipes)
                 searchResults.clear()
                 searchResults.addAll(recipes)
                 isLoading.value = false
@@ -53,6 +51,22 @@ class SearchViewModel @Inject constructor(
                 it.printStackTrace()
                 isLoading.value = false
             }
+    }
+
+    fun searchRecipesByFilter(){
+        isLoading.value = true
+        val recipes = ArrayList<Recipe>()
+        allRecipes.forEach {item->
+            if(item.name.lowercase().contains(searchText.value.lowercase())
+                && (filterCategories.isEmpty() || item.categories.containsAny(filterCategories))
+                && (filterMeal.value.isNullOrEmpty() || item.meal == filterMeal.value)
+            ){
+                recipes.add(item)
+            }
+        }
+        searchResults.clear()
+        searchResults.addAll(recipes)
+        isLoading.value = false
     }
 
     private fun getRecipeCategories(){

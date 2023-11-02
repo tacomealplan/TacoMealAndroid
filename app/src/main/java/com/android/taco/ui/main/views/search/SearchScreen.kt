@@ -23,8 +23,8 @@ import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Text
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -46,7 +46,6 @@ import com.android.taco.ui.main.ScreensNavItem
 import com.android.taco.ui.main.views.chef.CategoriesWidget
 import com.android.taco.ui.main.views.chef.MealWidget
 import com.android.taco.ui.main.views.chef.recipe.RecipeItem
-import com.android.taco.ui.main.views.populars.PopularsWidget
 import com.android.taco.ui.theme.BrandPrimary
 import com.android.taco.ui.theme.BrandSecondary
 import com.android.taco.ui.theme.components.buttons.FilterButton
@@ -62,13 +61,17 @@ fun SearchScreen(
     forSelectingRecipes: Boolean = false,
     onRecipeSelected: ((recipe: Recipe) -> Unit)? = null
 ) {
-    var searchText by remember { mutableStateOf("") }
+    var searchText by remember { viewModel.searchText }
     var filterMeal by remember { viewModel.filterMeal }
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
         confirmValueChange = { it != ModalBottomSheetValue.HalfExpanded }
     )
     val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(key1 = Unit, block = {
+        viewModel.getAllRecipes()
+    })
 
     BackHandler(sheetState.isVisible) {
         coroutineScope.launch { sheetState.hide() }
@@ -98,7 +101,7 @@ fun SearchScreen(
                 SearchTextField(value = searchText, placeholder = "Ara", modifier = Modifier.fillMaxWidth(0.8f), onValueChange = {value ->
                     searchText = value
                     if(searchText.isNotBlank() && !viewModel.isLoading.value)
-                        viewModel.searchRecipeByText(searchText)
+                        viewModel.searchRecipesByFilter()
                 })
 
                 FilterButton {
@@ -120,48 +123,42 @@ fun SearchScreen(
                     }else{
                         filterMeal = selected
                     }
+                    viewModel.searchRecipesByFilter()
                 })
             }
 
-            if(searchText.isBlank() && !forSelectingRecipes){
-                Row(modifier = Modifier.padding(horizontal = 24.dp)) {
-                    PopularsWidget(navController)
-                }
-            }else{
-                Column(modifier = Modifier
-                    .fillMaxSize()
-                    .padding(24.dp)
-                    .verticalScroll(rememberScrollState())
-                ) {
-                    if(viewModel.isLoading.value){
-                        Box(contentAlignment = Alignment.Center,
-                            modifier = Modifier.fillMaxSize()
-                        ) {
-                            CircularProgressIndicator(color = BrandSecondary)
-                        }
-
-                    }else{
-                        if(viewModel.searchResults.isEmpty()){
-                            Text(
-                                text = "Aradağınız kriterlerde tarif bulunamadı",
-                                color = BrandPrimary,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                        }
-                        viewModel.searchResults.forEach {
-                            RecipeItem(recipe = it){
-                                if(forSelectingRecipes){
-                                    onRecipeSelected?.invoke(it)
-                                }else{
-                                    navController.navigate(ScreensNavItem.Recipe.screen_route + "/${it.id}")
-                                }
-
+            Column(modifier = Modifier
+                .fillMaxSize()
+                .padding(vertical = 8.dp, horizontal = 16.dp)
+                .verticalScroll(rememberScrollState())
+            ) {
+                if(viewModel.isLoading.value){
+                    Box(contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        CircularProgressIndicator(color = BrandSecondary)
+                    }
+                }else{
+                    if(viewModel.searchResults.isEmpty()){
+                        Text(
+                            text = "Aradağınız kriterlerde tarif bulunamadı",
+                            color = BrandPrimary,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                    viewModel.searchResults.forEach {
+                        RecipeItem(recipe = it){
+                            if(forSelectingRecipes){
+                                onRecipeSelected?.invoke(it)
+                            }else{
+                                navController.navigate(ScreensNavItem.Recipe.screen_route + "/${it.id}")
                             }
+
                         }
                     }
-
                 }
+
             }
         }
     }
@@ -190,6 +187,7 @@ fun BottomSheet(viewModel: SearchViewModel, dissmis : () -> Unit) {
             }else{
                 filterMeal = selected
             }
+            viewModel.searchRecipesByFilter()
         })
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -198,11 +196,13 @@ fun BottomSheet(viewModel: SearchViewModel, dissmis : () -> Unit) {
                 filterCategories.remove(category)
             else
                 filterCategories.add(category)
+            viewModel.searchRecipesByFilter()
         }
         Spacer(modifier = Modifier.height(12.dp))
 
         Row(verticalAlignment = Alignment.Top, modifier = Modifier.fillMaxWidth()) {
             SecondaryButton(text = "Filtreyi Uygula", modifier = Modifier.fillMaxWidth(0.5f)) {
+                viewModel.searchRecipesByFilter()
                 dissmis.invoke()
             }
             Box(
@@ -214,6 +214,7 @@ fun BottomSheet(viewModel: SearchViewModel, dissmis : () -> Unit) {
                     .clickable {
                         filterMeal = null
                         filterCategories.clear()
+                        viewModel.searchRecipesByFilter()
                     }
             ) {
                 Text(
