@@ -32,7 +32,7 @@ fun SwipeBackground(dismissState: DismissState) {
             DismissValue.Default -> Color.LightGray
             DismissValue.DismissedToEnd -> Color.Green
             DismissValue.DismissedToStart -> Color.Red
-        }
+        }, label = ""
     )
     val alignment = when (direction) {
         DismissDirection.StartToEnd -> Alignment.CenterStart
