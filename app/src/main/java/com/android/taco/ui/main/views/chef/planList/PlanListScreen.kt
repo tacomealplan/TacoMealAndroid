@@ -27,6 +27,7 @@ import com.android.taco.ui.theme.components.buttons.SecondaryButton
 
 @Composable
 fun PlanListScreen(navController: NavController,
+                   activePlanId: String?,
                    planList: List<Plan>,
                    onPlanSelected : (plan : Plan) -> Unit
 ){
@@ -46,7 +47,7 @@ fun PlanListScreen(navController: NavController,
             ) {
                 items(planList) {plan ->
                     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(vertical = 8.dp)) {
-                        PlanItem(plan = plan) {
+                        PlanItem(plan = plan, isActive = plan.id == activePlanId) {
                             onPlanSelected.invoke(plan)
                         }
                     }

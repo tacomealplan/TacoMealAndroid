@@ -138,6 +138,8 @@ fun RecipeCardById(recipeId: String, viewModel: RecipeByIdViewModel, onClick: ()
                     Text(
                         text = recipe?.name ?: "",
                         color = Color(0xff0a2533),
+                        maxLines = 2,
+                        minLines = 2,
                         style = TextStyle(
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold),

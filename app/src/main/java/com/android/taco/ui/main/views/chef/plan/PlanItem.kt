@@ -35,11 +35,12 @@ import com.android.taco.R
 import com.android.taco.model.Plan
 import com.android.taco.ui.main.views.chef.recipe.getUrlForStorage
 import com.android.taco.ui.theme.BrandPrimary
+import com.android.taco.ui.theme.components.buttons.CheckButton
 import com.android.taco.ui.theme.components.buttons.RightArrowButton
 import com.android.taco.ui.theme.components.image.CircularImageView
 
 @Composable
-fun PlanItem(plan: Plan, onClick : () -> Unit){
+fun PlanItem(plan: Plan, isActive : Boolean = false, onClick : () -> Unit){
     var creatorPpUrl by remember {
         mutableStateOf("")
     }
@@ -65,8 +66,8 @@ fun PlanItem(plan: Plan, onClick : () -> Unit){
             Spacer(modifier = Modifier.width(12.dp))
             Column(verticalArrangement = Arrangement.Center,
                 modifier = Modifier
-                .fillMaxHeight()
-                .fillMaxWidth(0.8f)) {
+                    .fillMaxHeight()
+                    .fillMaxWidth(0.8f)) {
                 Text(
                     text = plan.name,
                     color = BrandPrimary,
@@ -91,11 +92,20 @@ fun PlanItem(plan: Plan, onClick : () -> Unit){
                 )
             }
             Column(horizontalAlignment = Alignment.End,
-                modifier = Modifier.fillMaxWidth(1f).padding(end = 12.dp)
+                modifier = Modifier
+                    .fillMaxWidth(1f)
+                    .padding(end = 12.dp)
             ) {
-                RightArrowButton(size = 36) {
-
+                if(isActive){
+                    CheckButton(size = 36) {
+                        onClick.invoke()
+                    }
+                }else{
+                    RightArrowButton(size = 36) {
+                        onClick.invoke()
+                    }
                 }
+
             }
         }
     }
@@ -104,5 +114,5 @@ fun PlanItem(plan: Plan, onClick : () -> Unit){
 @Preview
 @Composable
 fun PlanItemPreview(){
-    PlanItem(plan = Plan.dummyInstance()){}
+    PlanItem(plan = Plan.dummyInstance(), isActive = false){}
 }

@@ -3,6 +3,7 @@ package com.android.taco.ui.main.views.home
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.android.taco.model.Plan
 import com.android.taco.model.Recipe
 import com.android.taco.model.RecipeDetail
 import com.android.taco.model.UserPlan
@@ -22,6 +23,7 @@ class HomeViewModel @Inject constructor():ViewModel() {
     val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
     var isLoading = mutableStateOf(false)
     var hasError = mutableStateOf(false)
+    var hasNoPlan = mutableStateOf(false)
     var recipe = mutableStateOf<Recipe?>(null)
     var activePlan = mutableStateOf<UserPlan?>(null)
 
@@ -42,12 +44,26 @@ class HomeViewModel @Inject constructor():ViewModel() {
                             return@forEach
                         }
                     }
-
                 }
             }
             .addOnFailureListener{
                 it.printStackTrace()
             }
+    }
+
+    fun getMyPlans(){
+        FirebaseAuth.getInstance().currentUser?.uid?.let {
+            firestore.collection("Plan")
+                .whereEqualTo("CreatedBy",it)
+                .get()
+                .addOnSuccessListener {
+                    val data = it.documents
+                    hasNoPlan.value = data.isEmpty()
+                }
+                .addOnFailureListener{
+                    hasNoPlan.value = true
+                }
+        }
 
 
     }

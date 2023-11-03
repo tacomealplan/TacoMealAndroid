@@ -52,9 +52,14 @@ fun ChefScreen(navController: NavController,
     var selectedTab by remember {
         viewModel.selectedTab
     }
+
+    var activePlan by remember {
+        viewModel.activePlan
+    }
     LaunchedEffect(key1 = Unit, block = {
         viewModel.getMyPlans()
         viewModel.getMyRecipes()
+        viewModel.getActivePlan()
     })
     TacoTheme() {
         Scaffold(topBar = {
@@ -83,7 +88,7 @@ fun ChefScreen(navController: NavController,
                         navController.navigate(ScreensNavItem.Recipe.screen_route + "/${selectedRecipe.id}")
                     }
                 }else{
-                    PlanListScreen(navController = navController, planList = viewModel.myPlans.toList()){ selectedPlan ->
+                    PlanListScreen(navController = navController, planList = viewModel.myPlans.toList(), activePlanId = activePlan?.planId){ selectedPlan ->
                         navController.navigate(ScreensNavItem.Plan.screen_route + "/${selectedPlan.id}")
                     }
                 }

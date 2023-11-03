@@ -63,7 +63,7 @@ fun RecipeCard(recipe: Recipe, onClick: () -> Unit) {
         mutableStateOf(false)
     }
     LaunchedEffect(Unit){
-        getUrlForStorage(recipe.coverPhotoLink ?: ""){
+        getUrlForStorage(recipe.coverPhotoLink){
             coverPhotoUrl = it
         }
         getRecipeIsLiked(recipe.id) {
@@ -144,6 +144,8 @@ fun RecipeCard(recipe: Recipe, onClick: () -> Unit) {
                 Text(
                     text = recipe.name ?: "",
                     color = Color(0xff0a2533),
+                    maxLines = 2,
+                    minLines = 2,
                     style = TextStyle(
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold),

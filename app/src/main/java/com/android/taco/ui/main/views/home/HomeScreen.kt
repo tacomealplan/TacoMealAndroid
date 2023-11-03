@@ -1,5 +1,6 @@
 package com.android.taco.ui.main.views.home
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -34,8 +35,12 @@ fun HomeScreen(
     val activePlan by remember {
         viewModel.activePlan
     }
+    val hasNoPlan by remember {
+        viewModel.hasNoPlan
+    }
     LaunchedEffect(key1 = Unit, block = {
         viewModel.getActivePlan()
+        viewModel.getMyPlans()
     })
 
     TacoTheme() {
@@ -60,8 +65,10 @@ fun HomeScreen(
 
             PopularsWidget(navController = navController)
             Spacer(modifier = Modifier.height(12.dp))
-            CardButton(text = "Haftalık Plan Oluştur") {
-                navController.navigate(ScreensNavItem.EditPlan.screen_route)
+            AnimatedVisibility(visible = hasNoPlan) {
+                CardButton(text = "Haftalık Plan Oluştur") {
+                    navController.navigate(ScreensNavItem.EditPlan.screen_route)
+                }
             }
         }
     }
