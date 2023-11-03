@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.android.taco.ui.theme.BrandSecondary
 import com.android.taco.ui.theme.Green
 
 @Composable
@@ -35,7 +36,7 @@ fun CheckButton(size: Int = 28, onClick : () -> Unit) {
                 .clickable {
                     onClick.invoke()
                 }
-                .background(color = Green)){
+                .background(color = BrandSecondary)){
             Icon(
                 imageVector = Icons.Filled.Check,
                 contentDescription = "Check",

@@ -1,7 +1,9 @@
 package com.android.taco.ui.main.views.chef.steps
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,26 +39,32 @@ import coil.compose.rememberImagePainter
 import com.android.taco.R
 import com.android.taco.model.Step
 import com.android.taco.ui.main.views.chef.recipe.getUrlForStorage
+import com.android.taco.ui.theme.BrandPrimary
 import com.android.taco.ui.theme.TacoTheme
 import com.android.taco.ui.theme.White
+import com.android.taco.ui.theme.components.dialogBox.ImagePreviewDialog
 
 @Composable
 fun StepListScreen(stepList: ArrayList<Step>){
+    var showImagePreview by remember {
+        mutableStateOf(false)
+    }
+    var previewImageUrl by remember {
+        mutableStateOf("")
+    }
     TacoTheme() {
         Column(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.background(color = Color.White)
         ) {
-
-
             Row(horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
                     text = "Adımlar",
-                    color = Color(0xff0a2533),
+                    color = BrandPrimary,
                     style = TextStyle(
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold)
@@ -77,16 +85,25 @@ fun StepListScreen(stepList: ArrayList<Step>){
                 modifier = Modifier
             ) {
                 stepList.forEach {
-                    StepRow(it)
+                    StepRow(it){
+                        previewImageUrl = it
+                        showImagePreview = true
+                    }
                 }
 
+            }
+        }
+
+        if(showImagePreview){
+            ImagePreviewDialog(imageUrl = previewImageUrl) {
+                showImagePreview = false
             }
         }
     }
 }
 
 @Composable
-fun StepRow(step: Step) {
+fun StepRow(step: Step, onImageLongClick : (url : String) -> Unit) {
     Surface(
         shape = RoundedCornerShape(16.dp),
         color = White,
@@ -114,7 +131,7 @@ fun StepRow(step: Step) {
                         .fillMaxWidth())
             }
             if(step.photoLink.isNotBlank()){
-                StepImage(step.photoLink)
+                StepImage(step.photoLink, onImageLongClick)
 
             }
         }
@@ -122,8 +139,11 @@ fun StepRow(step: Step) {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun StepImage(stepPhotoLink: String) {
+fun StepImage(stepPhotoLink: String,
+              onImageLongClick : (url : String) -> Unit
+) {
     var imageUrl by remember {
         mutableStateOf("")
     }
@@ -159,6 +179,12 @@ fun StepImage(stepPhotoLink: String) {
                         bottomStart = 16.dp,
                         bottomEnd = 16.dp
                     )
+                )
+                .combinedClickable(
+                    onClick = { },
+                    onLongClick = {
+                        onImageLongClick.invoke(imageUrl)
+                    },
                 )
         )
     }

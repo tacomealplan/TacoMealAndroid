@@ -182,7 +182,7 @@ private fun StepRow(step: Step) {
                     .fillMaxWidth())
         }
         if(step.photoLink.isNotBlank()){
-            StepImage(step.photoLink)
+            StepImage(step.photoLink){}
         }
     }
 }
