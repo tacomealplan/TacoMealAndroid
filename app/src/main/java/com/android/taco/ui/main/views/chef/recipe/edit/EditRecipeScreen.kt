@@ -83,7 +83,7 @@ fun EditRecipeScreen(navController: NavController,
                 Column() {
                     PrimaryTextField(
                         value = recipeName ?: "",
-                        placeholder = "Adı (Zorunlu Alan)",
+                        placeholder = "Adı",
                         singleLine = true,
                         onValueChange = {name->
                             recipeName = name
@@ -92,7 +92,7 @@ fun EditRecipeScreen(navController: NavController,
 
                     PrimaryTextField(
                         value = recipeDesc ?: "",
-                        placeholder = "Açıklaması (Zorunlu Alan)",
+                        placeholder = "Açıklaması",
                         minLines = 3,
                         maxLines = 3,
                         onValueChange = {desc->
@@ -112,7 +112,7 @@ fun EditRecipeScreen(navController: NavController,
                             } catch (e: Exception) {
                                 ""
                             },
-                            placeholder = "Süre (Zorunlu)",
+                            placeholder = "Süre",
                             onValueChange = { dur->
                                 recipeDuration = try {
                                     dur.toInt()
@@ -132,7 +132,7 @@ fun EditRecipeScreen(navController: NavController,
                             } catch (e: Exception) {
                                 ""
                             },
-                            placeholder = "Kişi Sayısı (Zorunlu)",
+                            placeholder = "Kişi Sayısı",
                             onValueChange = {count->
                                 recipePersonCount = try {
                                     count.toInt()
