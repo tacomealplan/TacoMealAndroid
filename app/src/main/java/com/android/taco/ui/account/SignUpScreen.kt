@@ -1,5 +1,7 @@
 package com.android.taco.ui.account
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -7,10 +9,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -22,15 +22,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -44,6 +41,7 @@ import com.android.taco.ui.theme.components.editTexts.PasswordTextField
 import com.android.taco.ui.theme.components.editTexts.PrimaryTextField
 import com.android.taco.ui.theme.components.loadingBar.CircularProgress
 import com.android.taco.util.Resource
+
 
 @Composable
 fun SignUpScreen(navController: NavHostController,
@@ -106,7 +104,10 @@ fun SignUpScreen(navController: NavHostController,
                             fontWeight = FontWeight.Bold,
                             fontSize = 16.sp,
                             modifier = Modifier.clickable {
-
+                                //"https://www.tacomealplan.com/sozlesmeler"
+                                val browserIntent =
+                                    Intent(Intent.ACTION_VIEW, Uri.parse("https://www.tacomealplan.com/sozlesmeler"))
+                                context.startActivity(browserIntent)
                             }
                         )
 
@@ -123,7 +124,10 @@ fun SignUpScreen(navController: NavHostController,
                             color = BrandPrimary,
                             fontSize = 16.sp,
                             modifier = Modifier.clickable {
-
+                                //https://www.tacomealplan.com/kvkk
+                                val browserIntent =
+                                    Intent(Intent.ACTION_VIEW, Uri.parse("https://www.tacomealplan.com/kvkk"))
+                                context.startActivity(browserIntent)
                             }
                         )
                     }
