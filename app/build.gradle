@@ -9,10 +9,10 @@ plugins {
 
 android {
     compileSdk 33
-    namespace 'com.android.taco'
+    namespace 'com.tacomeal.taco'
 
     defaultConfig {
-        applicationId "com.android.taco"
+        applicationId "com.tacomeal.taco"
         minSdk 23
         targetSdk 33
         versionCode 100

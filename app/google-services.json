@@ -14,6 +14,50 @@
       },
       "oauth_client": [
         {
+          "client_id": "172135876131-l55jluv452nclku1mdtjilvon85a9ak6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.android.taco",
+            "certificate_hash": "9ad8bf1a378406a56e64b1dc8d0a145c9f0caa59"
+          }
+        },
+        {
+          "client_id": "172135876131-dkuq0qfne15svcse329hafqp75kp8lo0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAESMBT4yxEwA-l88lLSPoU2FsbfPaxUZA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "172135876131-dkuq0qfne15svcse329hafqp75kp8lo0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "172135876131-pmqkugtul03pdrdp2f567o4a0m5up8nm.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.taco.TacoMeal"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:172135876131:android:71028c1a13ec6741dbd396",
+        "android_client_info": {
+          "package_name": "com.tacomeal.taco"
+        }
+      },
+      "oauth_client": [
+        {
           "client_id": "172135876131-dkuq0qfne15svcse329hafqp75kp8lo0.apps.googleusercontent.com",
           "client_type": 3
         }
